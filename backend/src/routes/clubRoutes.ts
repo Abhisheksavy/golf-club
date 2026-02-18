@@ -1,7 +1,15 @@
 import { Router } from "express";
-import { createClub, editClub } from "../controllers/clubController";
+import {
+  getClubs,
+  getClubById,
+  getAvailableClubs,
+} from "../controllers/clubController";
+import { authMiddleware } from "../middlewares/auth";
 
 const clubRouter = Router();
-clubRouter.post("/createClub", createClub);
-clubRouter.post("/editClub", editClub);
+
+clubRouter.get("/", authMiddleware, getClubs);
+clubRouter.get("/available", authMiddleware, getAvailableClubs);
+clubRouter.get("/:id", getClubById);
+
 export default clubRouter;

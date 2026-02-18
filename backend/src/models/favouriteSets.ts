@@ -15,13 +15,7 @@ const favoriteSetSchema = new mongoose.Schema(
       trim: true,
     },
 
-    clubs: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Club",
-        required: true,
-      },
-    ],
+    clubs: [{ type: String }],
   },
   { timestamps: true }
 );

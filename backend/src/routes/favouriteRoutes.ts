@@ -1,6 +1,18 @@
 import { Router } from "express";
-import { favourite } from "../controllers/favouriteController";
+import {
+  createFavourite,
+  getFavourites,
+  getFavouriteById,
+  updateFavourite,
+  deleteFavourite,
+} from "../controllers/favouriteController";
 
-const favouriteRouters = Router();
-favouriteRouters.post("/favourite", favourite);
-export default favouriteRouters;
+const favouriteRouter = Router();
+
+favouriteRouter.post("/", createFavourite);
+favouriteRouter.get("/", getFavourites);
+favouriteRouter.get("/:id", getFavouriteById);
+favouriteRouter.put("/:id", updateFavourite);
+favouriteRouter.delete("/:id", deleteFavourite);
+
+export default favouriteRouter;
