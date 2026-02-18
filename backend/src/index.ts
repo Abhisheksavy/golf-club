@@ -11,6 +11,13 @@ app.use(cors());
 app.use("/api/v1", router);
 const port = process.env.PORT;
 
+app.get("/health-check", (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: "Server is running successfully 🚀",
+  });
+});
+
 connectDB().then(() => {
   app.listen(port, () => {
     console.log(`server is running on port ${port}`);
