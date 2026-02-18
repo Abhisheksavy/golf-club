@@ -1,9 +1,9 @@
 import { NavLink } from "react-router-dom";
-import { getStoredUser, useLogout } from "../../hooks/useAuth";
+// import { getStoredUser, useLogout } from "../../hooks/useAuth";
 
 const Navbar = () => {
-  const user = getStoredUser();
-  const logout = useLogout();
+  // const user = getStoredUser();
+  // const logout = useLogout();
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
@@ -30,7 +30,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        {/* <div className="flex items-center gap-4">
           <span className="text-sm text-golf-200 hidden sm:inline">
             {user?.email}
           </span>
@@ -40,7 +40,7 @@ const Navbar = () => {
           >
             Logout
           </button>
-        </div>
+        </div> */}
       </div>
     </nav>
   );
