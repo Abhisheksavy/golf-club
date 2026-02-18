@@ -1,77 +1,76 @@
-import { useState, useEffect, useCallback } from "react";
-import type { FavouriteSet, Club } from "../types";
-import { seedFavouriteSets } from "../data/mockFavouriteSets";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  getFavourites,
+  getFavouriteById,
+  createFavourite,
+  updateFavourite,
+  deleteFavourite,
+} from "../api/favourites";
+import type { Club } from "../types";
 
-const STORAGE_KEY = "golf-favourite-sets";
-
-const loadSets = (): FavouriteSet[] => {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored) {
-    return JSON.parse(stored);
-  }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(seedFavouriteSets));
-  return seedFavouriteSets;
-};
-
-const saveSets = (sets: FavouriteSet[]) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(sets));
-};
+const QUERY_KEY = "favourites";
 
 export const useFavouriteSets = () => {
-  const [sets, setSets] = useState<FavouriteSet[]>(loadSets);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    saveSets(sets);
-  }, [sets]);
+  const { data: sets = [], isLoading } = useQuery({
+    queryKey: [QUERY_KEY],
+    queryFn: getFavourites,
+  });
 
-  const createSet = useCallback((name: string, clubs: Club[]) => {
-    const newSet: FavouriteSet = {
-      _id: `set-${Date.now()}`,
-      user: "user-001",
-      setName: name,
-      clubs,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    setSets((prev) => [...prev, newSet]);
-    return newSet;
-  }, []);
+  const createMutation = useMutation({
+    mutationFn: ({ name, clubs }: { name: string; clubs: Club[] }) =>
+      createFavourite(name, clubs.map((c) => c._id)),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEY] }),
+  });
 
-  const deleteSet = useCallback((setId: string) => {
-    setSets((prev) => prev.filter((s) => s._id !== setId));
-  }, []);
+  const updateMutation = useMutation({
+    mutationFn: ({ id, update }: { id: string; update: { setName?: string; clubs?: string[] } }) =>
+      updateFavourite(id, update),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEY] }),
+  });
 
-  const renameSet = useCallback((setId: string, newName: string) => {
-    setSets((prev) =>
-      prev.map((s) =>
-        s._id === setId
-          ? { ...s, setName: newName, updatedAt: new Date().toISOString() }
-          : s
-      )
-    );
-  }, []);
+  const deleteMutation = useMutation({
+    mutationFn: deleteFavourite,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEY] }),
+  });
 
-  const updateSetClubs = useCallback((setId: string, clubs: Club[]) => {
-    setSets((prev) =>
-      prev.map((s) =>
-        s._id === setId
-          ? { ...s, clubs, updatedAt: new Date().toISOString() }
-          : s
-      )
-    );
-  }, []);
+  const createSet = (name: string, clubs: Club[]) => {
+    createMutation.mutate({ name, clubs });
+  };
 
-  const getSet = useCallback(
-    (setId: string) => sets.find((s) => s._id === setId),
-    [sets]
-  );
+  const deleteSet = (setId: string) => {
+    deleteMutation.mutate(setId);
+  };
+
+  const renameSet = (setId: string, newName: string) => {
+    updateMutation.mutate({ id: setId, update: { setName: newName } });
+  };
+
+  const updateSetClubs = (setId: string, clubs: Club[]) => {
+    updateMutation.mutate({
+      id: setId,
+      update: { clubs: clubs.map((c) => c._id) },
+    });
+  };
+
+  const getSet = (setId: string) => sets.find((s) => s._id === setId);
 
   return {
     sets,
+    isLoading,
     createSet,
     deleteSet,
     renameSet,
     updateSetClubs,
     getSet,
   };
+};
+
+export const useFavouriteSetDetail = (setId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEY, setId],
+    queryFn: () => getFavouriteById(setId),
+    enabled: !!setId,
+  });
 };

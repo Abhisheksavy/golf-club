@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { mockClubs } from "../data/mockClubs";
-import { useFavouriteSets } from "../hooks/useFavouriteSets";
+import { getClubs } from "../api/clubs";
+import { useFavouriteSets, useFavouriteSetDetail } from "../hooks/useFavouriteSets";
 import ClubCard from "../components/ui/ClubCard";
 import SaveSetModal from "../components/ui/SaveSetModal";
 import ConfirmModal from "../components/ui/ConfirmModal";
@@ -12,25 +13,39 @@ import type { Club } from "../types";
 const FavouriteSetDetail = () => {
   const { setId } = useParams<{ setId: string }>();
   const navigate = useNavigate();
-  const { getSet, renameSet, updateSetClubs, deleteSet } = useFavouriteSets();
+  const { renameSet, updateSetClubs, deleteSet } = useFavouriteSets();
 
   const [showRenameModal, setShowRenameModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showAddClubsModal, setShowAddClubsModal] = useState(false);
+  const [pendingClubs, setPendingClubs] = useState<Set<string>>(new Set());
 
-  const set = getSet(setId || "");
+  const { data: set, isLoading } = useFavouriteSetDetail(setId || "");
+  const { data: allClubsData } = useQuery({
+    queryKey: ["clubs"],
+    queryFn: () => getClubs({ limit: 100 }),
+  });
+  const allClubs = allClubsData?.clubs ?? [];
+
+  if (isLoading) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-12 text-center text-gray-500">
+        Loading...
+      </div>
+    );
+  }
 
   if (!set) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-12 text-center">
         <h2 className="text-xl font-semibold text-gray-900 mb-2">
-          Set not found
+          Bag not found
         </h2>
         <p className="text-gray-500 mb-4">
-          This favourite set doesn't exist or was deleted.
+          This favourite bag doesn't exist or was deleted.
         </p>
-        <button onClick={() => navigate("/my-sets")} className="btn-primary">
-          Back to My Sets
+        <button onClick={() => navigate("/my-bags")} className="btn-primary">
+          Back to My Bags
         </button>
       </div>
     );
@@ -38,7 +53,7 @@ const FavouriteSetDetail = () => {
 
   const setClubs = set.clubs as Club[];
   const setClubIds = new Set(setClubs.map((c) => c._id));
-  const availableClubs = mockClubs.filter((c) => !setClubIds.has(c._id));
+  const availableClubs = allClubs.filter((c) => !setClubIds.has(c._id));
 
   const handleRemoveClub = (clubId: string) => {
     const updated = setClubs.filter((c) => c._id !== clubId);
@@ -46,9 +61,22 @@ const FavouriteSetDetail = () => {
     toast.success("Club removed");
   };
 
-  const handleAddClub = (club: Club) => {
-    updateSetClubs(set._id, [...setClubs, club]);
-    toast.success(`${club.name} added`);
+  const handleTogglePending = (club: Club) => {
+    setPendingClubs((prev) => {
+      const next = new Set(prev);
+      next.has(club._id) ? next.delete(club._id) : next.add(club._id);
+      return next;
+    });
+  };
+
+  const handleConfirmAddClubs = () => {
+    const toAdd = availableClubs.filter((c) => pendingClubs.has(c._id));
+    if (toAdd.length > 0) {
+      updateSetClubs(set._id, [...setClubs, ...toAdd]);
+      toast.success(`${toAdd.length} club${toAdd.length > 1 ? "s" : ""} added`);
+    }
+    setPendingClubs(new Set());
+    setShowAddClubsModal(false);
   };
 
   const handleRename = (newName: string) => {
@@ -59,14 +87,14 @@ const FavouriteSetDetail = () => {
   const handleDelete = () => {
     deleteSet(set._id);
     toast.success(`"${set.setName}" deleted`);
-    navigate("/my-sets");
+    navigate("/my-bags");
   };
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
       {/* Back link */}
       <button
-        onClick={() => navigate("/my-sets")}
+        onClick={() => navigate("/my-bags")}
         className="text-sm text-golf-600 hover:text-golf-700 mb-4 inline-flex items-center gap-1"
       >
         <svg
@@ -114,10 +142,10 @@ const FavouriteSetDetail = () => {
       {/* Clubs in this set */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-gray-900">
-          Clubs in this Set
+          Clubs in this Bag
         </h2>
         <button
-          onClick={() => setShowAddClubsModal(true)}
+          onClick={() => { setPendingClubs(new Set()); setShowAddClubsModal(true); }}
           className="btn-primary text-sm"
         >
           + Add Clubs
@@ -126,7 +154,7 @@ const FavouriteSetDetail = () => {
 
       {setClubs.length === 0 ? (
         <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-          <p className="text-gray-500 mb-3">No clubs in this set yet.</p>
+          <p className="text-gray-500 mb-3">No clubs in this Bag yet.</p>
           <button
             onClick={() => setShowAddClubsModal(true)}
             className="btn-primary text-sm"
@@ -203,7 +231,7 @@ const FavouriteSetDetail = () => {
       {/* Add Clubs Modal */}
       <Modal
         isOpen={showAddClubsModal}
-        onClose={() => setShowAddClubsModal(false)}
+        onClose={() => { setPendingClubs(new Set()); setShowAddClubsModal(false); }}
         title="Add Clubs"
       >
         {availableClubs.length === 0 ? (
@@ -211,23 +239,31 @@ const FavouriteSetDetail = () => {
             All clubs are already in this set.
           </p>
         ) : (
-          <div className="max-h-96 overflow-y-auto -mx-6 px-6">
-            <div className="grid grid-cols-2 gap-3">
-              {availableClubs.map((club) => (
-                <ClubCard
-                  key={club._id}
-                  club={club}
-                  isSelected={false}
-                  onToggle={() => handleAddClub(club)}
-                />
-              ))}
+          <>
+            <p className="text-xs text-gray-500 mb-3">
+              Select clubs to add, then click Done.
+            </p>
+            <div className="max-h-96 overflow-y-auto -mx-6 px-6">
+              <div className="grid grid-cols-2 gap-3">
+                {availableClubs.map((club) => (
+                  <ClubCard
+                    key={club._id}
+                    club={club}
+                    isSelected={pendingClubs.has(club._id)}
+                    onToggle={handleTogglePending}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
+          </>
         )}
-        <div className="flex justify-end mt-4">
+        <div className="flex items-center justify-between mt-4">
+          <span className="text-sm text-gray-500">
+            {pendingClubs.size > 0 && `${pendingClubs.size} selected`}
+          </span>
           <button
-            onClick={() => setShowAddClubsModal(false)}
-            className="btn-secondary text-sm"
+            onClick={handleConfirmAddClubs}
+            className="btn-primary text-sm"
           >
             Done
           </button>

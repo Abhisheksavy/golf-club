@@ -7,7 +7,7 @@ export const useRequestMagicLink = () => {
   return useMutation({
     mutationFn: (email: string) => requestMagicLink(email),
     onSuccess: (data) => {
-      console.log("data====", data);
+     
       
       toast.success(data.message);
     },

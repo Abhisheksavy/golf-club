@@ -1,81 +1,234 @@
-import { useState, useMemo } from "react";
-import { toast } from "react-toastify";
-import { mockClubs } from "../data/mockClubs";
-import { useClubSelection } from "../hooks/useClubSelection";
-import { useFavouriteSets } from "../hooks/useFavouriteSets";
-import ClubCard from "../components/ui/ClubCard";
-import SelectionBar from "../components/ui/SelectionBar";
-import SaveSetModal from "../components/ui/SaveSetModal";
+import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { getFavourites } from "../api/favourites";
+import type { Club } from "../types";
 
 const Dashboard = () => {
-  const [search, setSearch] = useState("");
-  const [showSaveModal, setShowSaveModal] = useState(false);
-  const { selectedCount, selectedClubs, toggle, clear, isSelected } =
-    useClubSelection();
-  const { createSet } = useFavouriteSets();
-
-  const filteredClubs = useMemo(() => {
-    const q = search.toLowerCase().trim();
-    if (!q) return mockClubs;
-    return mockClubs.filter(
-      (club) =>
-        club.name.toLowerCase().includes(q) ||
-        club.description?.toLowerCase().includes(q)
-    );
-  }, [search]);
-
-  const handleSaveSet = (name: string) => {
-    createSet(name, selectedClubs);
-    clear();
-    toast.success(`"${name}" saved with ${selectedClubs.length} clubs!`);
-  };
+  const { data: bags = [] } = useQuery({
+    queryKey: ["favourites"],
+    queryFn: getFavourites,
+  });
 
   return (
-    <>
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Browse Clubs</h1>
-          <input
-            type="text"
-            placeholder="Search clubs..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="input-field sm:max-w-xs"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filteredClubs.map((club) => (
-            <ClubCard
-              key={club._id}
-              club={club}
-              isSelected={isSelected(club._id)}
-              onToggle={toggle}
-            />
-          ))}
-        </div>
-
-        {filteredClubs.length === 0 && (
-          <p className="text-center text-gray-500 py-12">
-            No clubs match "{search}"
+    <div className="min-h-screen bg-slate-50">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+        {/* ── Hero ── */}
+        <div className="text-center mb-12">
+          {/* <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-4 ring-1 ring-emerald-200">
+            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+            Golf Club Rental
+          </div> */}
+          <h1 className="text-4xl font-bold text-slate-900 tracking-tight mb-3">
+            What would you like to do?
+          </h1>
+          <p className="text-slate-500 text-base max-w-sm mx-auto">
+            Choose an action to get started with your round.
           </p>
+        </div>
+
+        {/* ── Action Cards ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-14">
+          {/* Flow A: Create/Manage Bags */}
+          <Link
+            to="/my-bags"
+            className="group relative bg-white rounded-2xl ring-1 ring-slate-200 p-8 text-center transition-all duration-200 hover:shadow-xl hover:-translate-y-1 overflow-hidden"
+          >
+            {/* Background accent */}
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+            <div className="relative">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 mb-5 group-hover:bg-emerald-100 group-hover:scale-110 transition-all duration-200 ring-1 ring-emerald-100">
+                <svg
+                  className="w-8 h-8"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+                  />
+                </svg>
+              </div>
+              <h2 className="text-xl font-bold text-slate-900 mb-2">
+                Create / Manage Bags
+              </h2>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                Build your favourite club sets and manage your saved bags.
+              </p>
+              <div className="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 group-hover:gap-2.5 transition-all">
+                Go to My Bags
+                <svg
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                  />
+                </svg>
+              </div>
+            </div>
+          </Link>
+
+          {/* Flow B: Reserve Clubs */}
+          <Link
+            to="/reserve/course"
+            className="group relative bg-white rounded-2xl ring-1 ring-slate-200 p-8 text-center transition-all duration-200 hover:shadow-xl hover:-translate-y-1 overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-sky-50/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+            <div className="relative">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-sky-50 text-sky-600 mb-5 group-hover:bg-sky-100 group-hover:scale-110 transition-all duration-200 ring-1 ring-sky-100">
+                <svg
+                  className="w-8 h-8"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
+                  />
+                </svg>
+              </div>
+              <h2 className="text-xl font-bold text-slate-900 mb-2">
+                Reserve Clubs
+              </h2>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                Pick a course, choose a date, and reserve clubs for your round.
+              </p>
+              <div className="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-sky-600 group-hover:gap-2.5 transition-all">
+                Make a Reservation
+                <svg
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                  />
+                </svg>
+              </div>
+            </div>
+          </Link>
+        </div>
+
+        {/* ── Your Bags ── */}
+        {bags.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">Your Bags</h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Quick access to your saved sets
+                </p>
+              </div>
+              <Link
+                to="/my-bags"
+                className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 transition-colors"
+              >
+                View all
+                <svg
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                  />
+                </svg>
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {bags.slice(0, 3).map((bag) => {
+                const clubs = bag.clubs as Club[];
+                const thumbnails = clubs.slice(0, 2);
+
+                return (
+                  <Link
+                    key={bag._id}
+                    to={`/my-bags/${bag._id}`}
+                    className="group bg-white rounded-2xl ring-1 ring-slate-200 overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+                  >
+                    <div className="h-40 bg-slate-50 flex overflow-hidden">
+                      {thumbnails.length > 0 ? (
+                        thumbnails?.map((club, i) => (
+                          <div
+                            key={club._id}
+                            className="flex-1 overflow-hidden"
+                            style={{
+                              borderRight:
+                                i < thumbnails.length - 1
+                                  ? "2px solid rgba(255,255,255,0.8)"
+                                  : "none",
+                            }}
+                          >
+                            {club.image ? (
+                              <img
+                                src={club.image}
+                                alt={club.name}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-slate-100" />
+                            )}
+                          </div>
+                        ))
+                      ) : (
+                        <div className="flex-1 flex items-center justify-center text-slate-300">
+                          <svg
+                            className="w-8 h-8"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={1}
+                              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                            />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="p-4 flex items-center justify-between">
+                      <div>
+                        <p className="font-semibold text-slate-900 text-sm">
+                          {bag.setName}
+                        </p>
+                        <p className="text-xs text-slate-400 mt-0.5">
+                          {clubs.length} {clubs.length === 1 ? "club" : "clubs"}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
         )}
       </div>
-
-      <SelectionBar
-        count={selectedCount}
-        onSave={() => setShowSaveModal(true)}
-        onClear={clear}
-      />
-
-      <SaveSetModal
-        isOpen={showSaveModal}
-        onClose={() => setShowSaveModal(false)}
-        onSave={handleSaveSet}
-      />
-
-      {selectedCount > 0 && <div className="h-16" />}
-    </>
+    </div>
   );
 };
 

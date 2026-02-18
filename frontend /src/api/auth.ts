@@ -3,6 +3,8 @@ import type { AuthResponse, MagicLinkResponse } from "../types";
 
 export const requestMagicLink = async (email: string): Promise<MagicLinkResponse> => {
   const { data } = await apiClient.post<MagicLinkResponse>("/auth/requestMagicLink", { email });
+  console.log("data", data);
+  
   return data;
 };
 

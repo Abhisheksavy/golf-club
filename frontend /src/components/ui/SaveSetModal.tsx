@@ -34,13 +34,13 @@ const SaveSetModal = ({
     <Modal isOpen={isOpen} onClose={onClose} title={title}>
       <form onSubmit={handleSubmit}>
         <label
-          htmlFor="set-name"
+          htmlFor="bag-name"
           className="block text-sm font-medium text-gray-700 mb-1"
         >
           Set Name
         </label>
         <input
-          id="set-name"
+          id="bag-name"
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
