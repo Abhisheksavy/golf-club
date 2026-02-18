@@ -64,7 +64,6 @@ export const requestMagicLink = async (req: any, res: any) => {
 export const verifyMagicLink = async (req: any, res: any) => {
   try {
     const { token } = req.query;
-    console.log("token", token);
     
 
     const storedToken = await LoginToken.findOne({ token });
