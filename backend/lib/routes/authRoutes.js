@@ -5,5 +5,6 @@ const authController_1 = require("../controllers/authController");
 const authRouter = (0, express_1.Router)();
 authRouter.post("/requestMagicLink", authController_1.requestMagicLink);
 authRouter.post("/verify", authController_1.verifyMagicLink);
+authRouter.post("/login", authController_1.loginWithPassword);
 exports.default = authRouter;
 //# sourceMappingURL=authRoutes.js.map

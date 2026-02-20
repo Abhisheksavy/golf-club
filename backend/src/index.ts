@@ -14,7 +14,7 @@ const port = process.env.PORT;
 app.get("/health-check", (req, res) => {
   return res.status(200).json({
     success: true,
-    message: "Server is running successfully 🚀",
+    message: "Server is running successfully ",
   });
 });
 

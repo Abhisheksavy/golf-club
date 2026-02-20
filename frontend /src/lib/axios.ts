@@ -18,14 +18,20 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle 401 responses globally
+// Handle 401 responses globally.
+// Only force-redirect to /login if the user HAD a token that is now invalid/expired.
+// If there was never a token (unauthenticated guest browsing), let the error bubble
+// up silently so the rental flow continues uninterrupted.
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/login";
+      const hadToken = !!localStorage.getItem("token");
+      if (hadToken) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   }

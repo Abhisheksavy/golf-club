@@ -1,32 +1,101 @@
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { useRental } from "../../context/RentalContext";
 import { createReservation } from "../../api/reservations";
+import { createFavourite } from "../../api/favourites";
+import { isAuthenticated } from "../../hooks/useAuth";
+
+const HANDEDNESS_LABEL = { right: "Right-Handed", left: "Left-Handed" };
+const GENDER_LABEL = { male: "Male", female: "Female" };
+const LEVEL_LABEL = {
+  beginner: "Beginner",
+  intermediate: "Intermediate",
+  expert: "Expert",
+};
+const STRENGTH_LABEL = { gentle: "Gentle Swing", strong: "Strong Swing" };
 
 const RentalSummary = () => {
   const navigate = useNavigate();
-  const { selectedCourse, selectedDate, selectedClubs, saveToBag } = useRental();
+  const queryClient = useQueryClient();
+  const {
+    selectedCourse,
+    selectedDate,
+    selectedClubs,
+    saveToBag,
+    isGuest,
+    handedness,
+    gender,
+    height,
+    playingLevel,
+    swingStrength,
+  } = useRental();
 
-  if (!selectedCourse || !selectedDate || selectedClubs.length === 0) {
-    navigate("/reserve/course");
+  if (selectedClubs.length === 0) {
+    navigate("/reserve/clubs", { replace: true });
     return null;
   }
 
-  const mutation = useMutation({
+  const canCheckout = !!(selectedCourse && selectedDate);
+  const loggedIn = isAuthenticated();
+
+  const reservationMutation = useMutation({
     mutationFn: createReservation,
     onSuccess: () => {
-      navigate("/reserve/confirm");
+      queryClient.invalidateQueries({ queryKey: ["reservations"] });
+      navigate("/reserve/confirm", {
+        state: {
+          course: selectedCourse,
+          date: selectedDate,
+          clubs: selectedClubs,
+        },
+      });
     },
     onError: () => {
       toast.error("Failed to create reservation. Please try again.");
     },
   });
 
-  const handleConfirm = () => {
-    mutation.mutate({
-      course: selectedCourse.name,
-      date: selectedDate,
+  const saveBagMutation = useMutation({
+    mutationFn: ({ name, clubs }: { name: string; clubs: string[] }) =>
+      createFavourite(name, clubs),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["favourites"] });
+      toast.success("Bag saved to your Locker Room!");
+      navigate("/my-bags");
+    },
+    onError: () => {
+      toast.error("Failed to save bag. Please try again.");
+    },
+  });
+
+  const handleSaveBag = () => {
+    if (!loggedIn) {
+      sessionStorage.setItem("returnTo", "/reserve/summary");
+      navigate("/login");
+      return;
+    }
+    const bagName = `My Bag — ${new Date().toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    })}`;
+    saveBagMutation.mutate({
+      name: bagName,
+      clubs: selectedClubs.map((c) => c._id),
+    });
+  };
+
+  const handlePlayRound = () => {
+    if (!canCheckout) return;
+    if (!loggedIn) {
+      sessionStorage.setItem("returnTo", "/reserve/summary");
+      navigate("/login");
+      return;
+    }
+    reservationMutation.mutate({
+      course: selectedCourse!.name,
+      date: selectedDate!,
       clubs: selectedClubs.map((c) => c._id),
       saveToBag,
     });
@@ -34,28 +103,79 @@ const RentalSummary = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Review Your Reservation</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">
+        Review Your Selection
+      </h1>
 
       <div className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-100">
+        {/* Guest preferences */}
+        {isGuest &&
+          (handedness || gender || height || playingLevel || swingStrength) && (
+            <div className="p-4">
+              <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">
+                Your Preferences
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {handedness && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                    {HANDEDNESS_LABEL[handedness]}
+                  </span>
+                )}
+                {gender && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                    {GENDER_LABEL[gender]}
+                  </span>
+                )}
+                {height && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                    {height}
+                  </span>
+                )}
+                {playingLevel && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-golf-100 text-golf-700">
+                    {LEVEL_LABEL[playingLevel]}
+                  </span>
+                )}
+                {swingStrength && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-golf-100 text-golf-700">
+                    {STRENGTH_LABEL[swingStrength]}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
         {/* Course */}
-        <div className="p-4">
-          <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Course</p>
-          <p className="font-semibold text-gray-900">{selectedCourse.name}</p>
-          <p className="text-sm text-gray-500">{selectedCourse.location}</p>
-        </div>
+        {selectedCourse && (
+          <div className="p-4">
+            <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+              Course
+            </p>
+            <p className="font-semibold text-gray-900">{selectedCourse.name}</p>
+            {(selectedCourse.address || selectedCourse.location) && (
+              <p className="text-sm text-gray-500">
+                {selectedCourse.address ?? selectedCourse.location}
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Date */}
-        <div className="p-4">
-          <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Date</p>
-          <p className="font-semibold text-gray-900">
-            {new Date(selectedDate).toLocaleDateString("en-US", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </p>
-        </div>
+        {selectedDate && (
+          <div className="p-4">
+            <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+              Date
+            </p>
+            <p className="font-semibold text-gray-900">
+              {new Date(selectedDate).toLocaleDateString("en-US", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+          </div>
+        )}
 
         {/* Clubs */}
         <div className="p-4">
@@ -67,10 +187,21 @@ const RentalSummary = () => {
               <div key={club._id} className="flex items-center gap-3">
                 <div className="w-10 h-8 rounded bg-gray-100 overflow-hidden flex-shrink-0">
                   {club.image && (
-                    <img src={club.image} alt={club.name} className="w-full h-full object-cover" />
+                    <img
+                      src={club.image}
+                      alt={club.name}
+                      className="w-full h-full object-cover"
+                    />
                   )}
                 </div>
-                <span className="text-sm text-gray-900">{club.name}</span>
+                <div className="flex-1 min-w-0">
+                  <span className="text-sm text-gray-900">{club.name}</span>
+                  {club.category && (
+                    <span className="ml-2 text-xs text-gray-400 capitalize">
+                      {club.category.replace(/-/g, " ")}
+                    </span>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -85,18 +216,49 @@ const RentalSummary = () => {
         )}
       </div>
 
-      <div className="flex justify-between mt-8">
-        <button onClick={() => navigate("/reserve/clubs")} className="btn-secondary">
+      {/* Action buttons */}
+      <div className="flex flex-col sm:flex-row gap-3 justify-between mt-8">
+        <button
+          onClick={() => navigate("/reserve/clubs")}
+          className="btn-secondary"
+        >
           Back
         </button>
-        <button
-          onClick={handleConfirm}
-          disabled={mutation.isPending}
-          className="btn-primary disabled:opacity-50"
-        >
-          {mutation.isPending ? "Confirming..." : "Confirm Reservation"}
-        </button>
+
+        <div className="flex flex-col sm:flex-row gap-3">
+          {/* Save to Locker Room (logged-in) or Save to Session (guest) — always available */}
+          <button
+            onClick={handleSaveBag}
+            disabled={saveBagMutation.isPending}
+            className="btn-secondary disabled:opacity-50"
+          >
+            {saveBagMutation.isPending ? "Saving..." : "Save to Locker Room"}
+          </button>
+
+          {/* Play a Round — only if course + date selected */}
+          {canCheckout && (
+            <button
+              onClick={handlePlayRound}
+              disabled={reservationMutation.isPending}
+              className="btn-primary disabled:opacity-50"
+            >
+              {reservationMutation.isPending ? "Confirming..." : "Play a Round"}
+            </button>
+          )}
+        </div>
       </div>
+
+      {!loggedIn && (
+        <p className="text-xs text-gray-400 text-right mt-3">
+          <button
+            onClick={() => navigate("/login")}
+            className="text-golf-600 hover:underline"
+          >
+            Log in
+          </button>{" "}
+          to save permanently to your Locker Room.
+        </p>
+      )}
     </div>
   );
 };

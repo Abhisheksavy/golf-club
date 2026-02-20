@@ -14,9 +14,12 @@ export const getClubs = async (params?: {
   return data.data;
 };
 
-export const getAvailableClubs = async (course: string, date: string): Promise<AvailableClub[]> => {
+export const getAvailableClubs = async (
+  course: string,
+  date?: string
+): Promise<AvailableClub[]> => {
   const { data } = await apiClient.get("/clubs/available", {
-    params: { course, date },
+    params: { course, ...(date ? { date } : {}) },
   });
   return data.data;
 };

@@ -1,6 +1,7 @@
 import type { Response as ExpressResponse } from "express";
 import type { AuthRequest } from "../middlewares/auth";
 import { Favourite } from "../models/favouriteSets";
+import { DeletionLog } from "../models/deletionLog";
 import { StatusCodes } from "http-status-codes";
 import { Response } from "../utils/response";
 import { fetchProductsByIds } from "./clubController";
@@ -64,9 +65,16 @@ export const getFavourites = async (
   res: ExpressResponse
 ): Promise<void> => {
   try {
-    const favourites = await Favourite.find({ user: req.userId }).sort({ updatedAt: -1 });
+    console.log("req", req.userId);
+    
+    const favourites = await Favourite.find({
+      user: req.userId,
+      isDeleted: { $ne: true },
+    }).sort({ updatedAt: -1 });
 
-    const allClubIds = [...new Set(favourites.flatMap((f) => f.clubs as string[]))];
+    const allClubIds = [
+      ...new Set(favourites.flatMap((f) => f.clubs as string[])),
+    ];
     const clubMap = new Map(
       (await fetchProductsByIds(allClubIds)).map((c) => [c._id, c])
     );
@@ -107,6 +115,7 @@ export const getFavouriteById = async (
     const favourite = await Favourite.findOne({
       _id: req.params.id,
       user: req.userId,
+      isDeleted: { $ne: true },
     });
 
     if (!favourite) {
@@ -154,7 +163,7 @@ export const updateFavourite = async (
     if (clubs !== undefined) update.clubs = clubs;
 
     const favourite = await Favourite.findOneAndUpdate(
-      { _id: req.params.id, user: req.userId },
+      { _id: req.params.id, user: req.userId, isDeleted: { $ne: true } },
       update,
       { new: true }
     );
@@ -197,10 +206,13 @@ export const deleteFavourite = async (
   res: ExpressResponse
 ): Promise<void> => {
   try {
-    const favourite = await Favourite.findOneAndDelete({
-      _id: req.params.id,
-      user: req.userId,
-    });
+    const deletedAt = new Date();
+
+    const favourite = await Favourite.findOneAndUpdate(
+      { _id: req.params.id, user: req.userId, isDeleted: { $ne: true } },
+      { isDeleted: true, deletedAt },
+      { new: true }
+    );
 
     if (!favourite) {
       res
@@ -208,15 +220,21 @@ export const deleteFavourite = async (
         .json(
           Response.failure("Favourite bag not found", null, StatusCodes.OK)
         );
-
       return;
     }
 
+    // Write deletion log
+    await DeletionLog.create({
+      entityType: "FavouriteSet",
+      entityId: favourite._id,
+      entitySnapshot: favourite.toObject(),
+      deletedBy: req.userId,
+      deletedAt,
+    });
+
     res
       .status(StatusCodes.OK)
-      .json(
-        Response.success("Favourite bag deleted", favourite, StatusCodes.OK)
-      );
+      .json(Response.success("Favourite bag deleted", null, StatusCodes.OK));
   } catch (error) {
     console.error("deleteFavourite error:", error);
     res

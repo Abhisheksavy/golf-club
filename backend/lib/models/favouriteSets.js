@@ -18,6 +18,15 @@ const favoriteSetSchema = new mongoose_1.default.Schema({
         trim: true,
     },
     clubs: [{ type: String }],
+    isDeleted: {
+        type: Boolean,
+        default: false,
+        index: true,
+    },
+    deletedAt: {
+        type: Date,
+        default: null,
+    },
 }, { timestamps: true });
 exports.Favourite = mongoose_1.default.model("FAVOURITE", favoriteSetSchema);
 //# sourceMappingURL=favouriteSets.js.map

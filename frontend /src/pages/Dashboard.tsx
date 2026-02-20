@@ -185,7 +185,7 @@ const Dashboard = () => {
                               <img
                                 src={club.image}
                                 alt={club.name}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                className="w-full h-full object-inherit group-hover:scale-105 transition-transform duration-300"
                               />
                             ) : (
                               <div className="w-full h-full bg-slate-100" />

@@ -14,6 +14,12 @@ app.use(express_1.default.json());
 app.use((0, cors_1.default)());
 app.use("/api/v1", routes_1.default);
 const port = process.env.PORT;
+app.get("/health-check", (req, res) => {
+    return res.status(200).json({
+        success: true,
+        message: "Server is running successfully ",
+    });
+});
 (0, db_1.default)().then(() => {
     app.listen(port, () => {
         console.log(`server is running on port ${port}`);

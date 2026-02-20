@@ -17,7 +17,7 @@ export interface MagicLinkResponse {
 // Club types
 export interface Club {
   _id: string;
-  product_type:string
+  product_type: string;
   booqableProductId: string;
   name: string;
   sku?: string;
@@ -27,10 +27,14 @@ export interface Club {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  category?: string;
+  shaftType?: string;
+  ironType?: string;
 }
 
 export interface AvailableClub extends Club {
   available: boolean;
+  unavailabilityReason?: 'at-this-course' | 'on-this-date' | null;
 }
 
 export interface PaginatedClubs {
@@ -56,6 +60,7 @@ export interface Course {
   id: string;
   name: string;
   location: string;
+  address?: string;
 }
 
 // Reservation types

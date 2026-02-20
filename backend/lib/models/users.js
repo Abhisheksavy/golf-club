@@ -17,6 +17,10 @@ const userSchema = new mongoose_1.default.Schema({
         type: Boolean,
         default: false,
     },
+    password: {
+        type: String,
+        required: false,
+    },
 }, { timestamps: true });
 exports.USER = mongoose_1.default.model("USER", userSchema);
 //# sourceMappingURL=users.js.map

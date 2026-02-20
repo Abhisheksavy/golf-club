@@ -1,34 +1,37 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { RentalProvider } from "../../context/RentalContext";
 
-const steps = [
-  { path: "/reserve/course", label: "Course" },
-  { path: "/reserve/date", label: "Date" },
-  { path: "/reserve/clubs", label: "Clubs" },
-  { path: "/reserve/summary", label: "Summary" },
-  { path: "/reserve/confirm", label: "Done" },
+// Major phase steps shown in the step indicator
+const PHASE_STEPS = [
+  { label: "Course", paths: ["/reserve/course", "/reserve/date"] },
+  { label: "Preferences", paths: ["/reserve/auth", "/reserve/handedness", "/reserve/gender", "/reserve/height", "/reserve/preference", "/reserve/level", "/reserve/strength", "/reserve/bag-select", "/reserve/bag-review"] },
+  { label: "Clubs", paths: ["/reserve/clubs"] },
+  { label: "Summary", paths: ["/reserve/summary", "/reserve/confirm"] },
 ];
 
 const RentalLayout = () => {
   const location = useLocation();
-  const currentIndex = steps.findIndex((s) => s.path === location.pathname);
+
+  const currentPhaseIndex = PHASE_STEPS.findIndex((phase) =>
+    phase.paths.some((p) => location.pathname === p)
+  );
 
   return (
     <RentalProvider>
       <div className="max-w-4xl mx-auto px-4 py-6">
         {/* Step indicator */}
         <div className="flex items-center justify-center mb-8">
-          {steps.map((step, i) => (
-            <div key={step.path} className="flex items-center">
+          {PHASE_STEPS.map((phase, i) => (
+            <div key={phase.label} className="flex items-center">
               <div className="flex flex-col items-center">
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                    i <= currentIndex
+                    i <= currentPhaseIndex
                       ? "bg-golf-600 text-white"
                       : "bg-gray-200 text-gray-500"
                   }`}
                 >
-                  {i < currentIndex ? (
+                  {i < currentPhaseIndex ? (
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
@@ -36,12 +39,12 @@ const RentalLayout = () => {
                     i + 1
                   )}
                 </div>
-                <span className="text-xs mt-1 text-gray-500 hidden sm:block">{step.label}</span>
+                <span className="text-xs mt-1 text-gray-500 hidden sm:block">{phase.label}</span>
               </div>
-              {i < steps.length - 1 && (
+              {i < PHASE_STEPS.length - 1 && (
                 <div
                   className={`w-12 sm:w-20 h-0.5 mx-1 ${
-                    i < currentIndex ? "bg-golf-600" : "bg-gray-200"
+                    i < currentPhaseIndex ? "bg-golf-600" : "bg-gray-200"
                   }`}
                 />
               )}

@@ -1,14 +1,13 @@
 import { useEffect } from "react";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useVerifyMagicLink } from "../hooks/useAuth";
 
 const Verify = () => {
-  // const [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { mutate, isPending, isError, error } = useVerifyMagicLink();
 
-  // const token = searchParams.get("token");
-  const token = "34284ece639a148a8b6ecb0911d134753f663041db2eb5a9e1482605ee3d1e83"
+  const token = searchParams.get("token");
 
   useEffect(() => {
     if (token) {

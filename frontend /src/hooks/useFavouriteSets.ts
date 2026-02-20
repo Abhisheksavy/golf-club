@@ -16,6 +16,7 @@ export const useFavouriteSets = () => {
   const { data: sets = [], isLoading } = useQuery({
     queryKey: [QUERY_KEY],
     queryFn: getFavourites,
+    refetchOnMount: "always",
   });
 
   const createMutation = useMutation({

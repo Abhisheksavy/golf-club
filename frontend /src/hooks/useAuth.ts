@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { requestMagicLink, verifyMagicLink } from "../api/auth";
+import { requestMagicLink, verifyMagicLink, loginWithPassword } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -26,7 +26,36 @@ export const useVerifyMagicLink = () => {
     onSuccess: (data) => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-      navigate("/dashboard");
+      const returnTo = sessionStorage.getItem("returnTo");
+      if (returnTo) {
+        sessionStorage.removeItem("returnTo");
+        navigate(returnTo);
+      } else {
+        navigate("/dashboard");
+      }
+    },
+  });
+};
+
+export const usePasswordLogin = () => {
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      loginWithPassword(email, password),
+    onSuccess: (data) => {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      const returnTo = sessionStorage.getItem("returnTo");
+      if (returnTo) {
+        sessionStorage.removeItem("returnTo");
+        navigate(returnTo);
+      } else {
+        navigate("/dashboard");
+      }
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Login failed");
     },
   });
 };
@@ -49,5 +78,6 @@ export const getStoredUser = () => {
 };
 
 export const isAuthenticated = () => {
+  if (import.meta.env.VITE_SKIP_AUTH === "true") return true;
   return !!localStorage.getItem("token");
 };

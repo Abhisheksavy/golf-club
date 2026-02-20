@@ -17,11 +17,11 @@ export const authMiddleware = (
   next: NextFunction
 ): void => {
   // Dev bypass — set SKIP_AUTH=true in .env to skip JWT verification
-  if (process.env.SKIP_AUTH === "true") {
-    req.userId = process.env.DEV_USER_ID || "000000000000000000000001";
-    next();
-    return;
-  }
+  // if (process.env.SKIP_AUTH === "true") {
+  //   req.userId = process.env.DEV_USER_ID || "000000000000000000000001";
+  //   next();
+  //   return;
+  // }
 
   try {
     const authHeader = req.headers.authorization;

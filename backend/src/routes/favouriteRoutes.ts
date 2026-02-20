@@ -10,9 +10,9 @@ import {
 const favouriteRouter = Router();
 
 favouriteRouter.post("/", createFavourite);
-favouriteRouter.get("/", getFavourites);
-favouriteRouter.get("/:id", getFavouriteById);
+favouriteRouter.get("/",getFavourites);
+favouriteRouter.get("/:id",getFavouriteById);
 favouriteRouter.put("/:id", updateFavourite);
-favouriteRouter.delete("/:id", deleteFavourite);
+favouriteRouter.delete("/:id", deleteFavourite)
 
 export default favouriteRouter;
