@@ -1,21 +1,25 @@
-// import sgMail from "@sendgrid/mail";
+import sgMail from "@sendgrid/mail";
+import dotenv from "dotenv";
 
-// sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+dotenv.config();
 
-// const sendMagicLinkEmail = async (email:string, magicLink:string) => {
-//   const msg = {
-//     to: email,
-//     from: process.env.EMAIL_FROM!,
-//     subject: "Your Login Link",
-//     html: `
-//       <h2>Login to your account</h2>
-//       <p>Click the link below to login:</p>
-//       <a href="${magicLink}">${magicLink}</a>
-//       <p>This link expires in 15 minutes.</p>
-//     `,
-//   };
+sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
-//   await sgMail.send(msg);
-// };
+const sendMagicLinkEmail = async (email: string, magicLink: string) => {
+  const msg = {
+    to: email,
+    from: process.env.EMAIL_FROM!,
+    templateId: String(process.env.MAGIC_LINK_TEMPLATE_ID),
+    dynamicTemplateData: {
+      user_name: email.split("@")[0],
+      app_name: process.env.APP_NAME,
+      login_url: magicLink,
+      expiry_minutes: process.env.MAGIC_LINK_EXPIRY_LIMIT,
+      support_email: process.env.EMAIL_FROM,
+    },
+  };
 
-// export default sendMagicLinkEmail
+  await sgMail.send(msg);
+};
+
+export default sendMagicLinkEmail;

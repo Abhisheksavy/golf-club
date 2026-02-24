@@ -47,8 +47,12 @@ const createReservation = async (req, res) => {
 exports.createReservation = createReservation;
 const getReservations = async (req, res) => {
     try {
-        const reservations = await reservation_1.Reservation.find({ user: req.userId }).sort({ date: -1 });
-        const allClubIds = [...new Set(reservations.flatMap((r) => r.clubs))];
+        const reservations = await reservation_1.Reservation.find({ user: req.userId }).sort({
+            date: -1,
+        });
+        const allClubIds = [
+            ...new Set(reservations.flatMap((r) => r.clubs)),
+        ];
         const clubMap = new Map((await (0, clubController_1.fetchProductsByIds)(allClubIds)).map((c) => [c._id, c]));
         const enriched = reservations.map((r) => (Object.assign(Object.assign({}, r.toObject()), { clubs: r.clubs.map((id) => { var _a; return (_a = clubMap.get(id)) !== null && _a !== void 0 ? _a : id; }) })));
         res

@@ -7,7 +7,6 @@ import ConfirmModal from "../components/ui/ConfirmModal";
 
 const FavouriteSets = () => {
   const { sets, isLoading, deleteSet } = useFavouriteSets();
-  console.log("sets", sets);
   
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 

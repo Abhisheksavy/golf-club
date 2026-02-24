@@ -8,7 +8,11 @@ import type { Club, AvailableClub } from "../../types";
 
 const CATEGORIES = [
   { key: "driver", label: "Driver", optional: true },
-  { key: "fairway-woods-hybrids", label: "Fairway Woods & Hybrids", optional: true },
+  {
+    key: "fairway-woods-hybrids",
+    label: "Fairway Woods & Hybrids",
+    optional: true,
+  },
   { key: "irons", label: "Irons", optional: false },
   { key: "wedges", label: "Wedges", optional: true },
   { key: "putter", label: "Putter", optional: false },
@@ -32,8 +36,16 @@ const IRON_OPTIONS = [
 
 function assignCategory(club: Club): CategoryKey {
   if (!club.category) return "other";
-  const known: CategoryKey[] = ["driver", "fairway-woods-hybrids", "irons", "wedges", "putter"];
-  return known.includes(club.category as CategoryKey) ? (club.category as CategoryKey) : "other";
+  const known: CategoryKey[] = [
+    "driver",
+    "fairway-woods-hybrids",
+    "irons",
+    "wedges",
+    "putter",
+  ];
+  return known.includes(club.category as CategoryKey)
+    ? (club.category as CategoryKey)
+    : "other";
 }
 
 const SelectClubs = () => {
@@ -50,7 +62,9 @@ const SelectClubs = () => {
   } = useRental();
 
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
-  const [categorySearch, setCategorySearch] = useState<Record<string, string>>({});
+  const [categorySearch, setCategorySearch] = useState<Record<string, string>>(
+    {}
+  );
   const [loadBagMode, setLoadBagMode] = useState(false);
   const autoSelectedRef = useRef(false);
 
@@ -70,11 +84,12 @@ const SelectClubs = () => {
   const hasCourseAndDate = !!(selectedCourse && selectedDate);
   const hasCourseOnly = !!(selectedCourse && !selectedDate);
 
-  const { data: availableClubsData = [], isLoading: availableLoading } = useQuery({
-    queryKey: ["availableClubs", selectedCourse?.name, selectedDate],
-    queryFn: () => getAvailableClubs(selectedCourse!.name, selectedDate!),
-    enabled: hasCourseAndDate,
-  });
+  const { data: availableClubsData = [], isLoading: availableLoading } =
+    useQuery({
+      queryKey: ["availableClubs", selectedCourse?.name, selectedDate],
+      queryFn: () => getAvailableClubs(selectedCourse!.name, selectedDate!),
+      enabled: hasCourseAndDate,
+    });
 
   const { data: courseClubsData = [], isLoading: courseLoading } = useQuery({
     queryKey: ["courseClubs", selectedCourse?.name],
@@ -88,7 +103,11 @@ const SelectClubs = () => {
     enabled: !hasCourseAndDate && !hasCourseOnly,
   });
 
-  const isLoading = hasCourseAndDate ? availableLoading : hasCourseOnly ? courseLoading : allLoading;
+  const isLoading = hasCourseAndDate
+    ? availableLoading
+    : hasCourseOnly
+    ? courseLoading
+    : allLoading;
 
   const allClubs: AvailableClub[] = hasCourseAndDate
     ? availableClubsData
@@ -165,7 +184,9 @@ const SelectClubs = () => {
   const showAvailability = hasCourseAndDate || hasCourseOnly;
 
   const subtitle = hasCourseAndDate
-    ? `Showing availability at ${selectedCourse!.name} on ${new Date(selectedDate!).toLocaleDateString()}`
+    ? `Showing availability at ${selectedCourse!.name} on ${new Date(
+        selectedDate!
+      ).toLocaleDateString()}`
     : hasCourseOnly
     ? `Showing availability at ${selectedCourse!.name}`
     : "Build your bag by selecting clubs from each category";
@@ -174,14 +195,18 @@ const SelectClubs = () => {
     <div>
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">Select Your Clubs</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-1">
+          Select Your Clubs
+        </h1>
         <p className="text-gray-500 text-sm">{subtitle}</p>
       </div>
 
       {/* Global shaft filter */}
       <div className="flex flex-wrap gap-4 mb-4 pb-4 border-b border-gray-200">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Shaft:</span>
+          <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            Shaft:
+          </span>
           <div className="flex gap-1">
             {SHAFT_OPTIONS.map(({ key, label }) => (
               <button
@@ -224,7 +249,9 @@ const SelectClubs = () => {
       {/* Load bag picker */}
       {loadBagMode && (
         <div className="bg-white rounded-lg border border-gray-200 p-4 mb-4">
-          <h3 className="text-sm font-medium text-gray-700 mb-3">Select a bag to load:</h3>
+          <h3 className="text-sm font-medium text-gray-700 mb-3">
+            Select a bag to load:
+          </h3>
           <div className="space-y-2">
             {bags.map((bag) => (
               <button
@@ -247,16 +274,25 @@ const SelectClubs = () => {
         {/* Left: Category accordion sections */}
         <div className="flex-1 min-w-0 space-y-3">
           {isLoading ? (
-            <div className="text-center py-16 text-gray-400">Loading clubs...</div>
+            <div className="text-center py-16 text-gray-400">
+              Loading clubs...
+            </div>
           ) : (
             CATEGORIES.map(({ key, label, optional }) => {
               const categoryClubs = getClubsForCategory(key);
-              const allCategoryClubs = allClubs.filter((c) => assignCategory(c) === key);
+              const allCategoryClubs = allClubs.filter(
+                (c) => assignCategory(c) === key
+              );
               const isCollapsed = collapsed[key] ?? false;
-              const selectedInCategory = allCategoryClubs.filter((c) => selectedIds.has(c._id));
+              const selectedInCategory = allCategoryClubs.filter((c) =>
+                selectedIds.has(c._id)
+              );
 
               return (
-                <div key={key} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                <div
+                  key={key}
+                  className="bg-white rounded-lg border border-gray-200 overflow-hidden"
+                >
                   {/* Section header */}
                   <button
                     type="button"
@@ -264,9 +300,13 @@ const SelectClubs = () => {
                     className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
                   >
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-gray-800 text-sm">{label}</span>
+                      <span className="font-semibold text-gray-800 text-sm">
+                        {label}
+                      </span>
                       {optional && (
-                        <span className="text-xs text-gray-400 font-normal">(Optional)</span>
+                        <span className="text-xs text-gray-400 font-normal">
+                          (Optional)
+                        </span>
                       )}
                       {selectedInCategory.length > 0 && (
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-golf-100 text-golf-700">
@@ -275,12 +315,23 @@ const SelectClubs = () => {
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-400">{allCategoryClubs.length} clubs</span>
+                      <span className="text-xs text-gray-400">
+                        {allCategoryClubs.length} clubs
+                      </span>
                       <svg
-                        className={`w-4 h-4 text-gray-400 transition-transform ${isCollapsed ? "-rotate-90" : ""}`}
-                        fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                        className={`w-4 h-4 text-gray-400 transition-transform ${
+                          isCollapsed ? "-rotate-90" : ""
+                        }`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19 9l-7 7-7-7"
+                        />
                       </svg>
                     </div>
                   </button>
@@ -290,8 +341,18 @@ const SelectClubs = () => {
                     <div className="p-3">
                       {/* Search */}
                       <div className="relative mb-2">
-                        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        <svg
+                          className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                          />
                         </svg>
                         <input
                           type="text"
@@ -328,7 +389,9 @@ const SelectClubs = () => {
                       {/* Club list */}
                       {categoryClubs.length === 0 ? (
                         <p className="text-xs text-gray-400 py-3 text-center">
-                          {getSearch(key) ? "No clubs match your search." : "No clubs in this category."}
+                          {getSearch(key)
+                            ? "No clubs match your search."
+                            : "No clubs in this category."}
                         </p>
                       ) : (
                         <div className="divide-y divide-gray-50">
@@ -356,22 +419,43 @@ const SelectClubs = () => {
                                 />
                                 {club.image && (
                                   <div className="w-8 h-7 rounded bg-gray-100 overflow-hidden flex-shrink-0">
-                                    <img src={club.image} alt={club.name} className="w-full h-full object-cover" />
+                                    <img
+                                      src={club.image}
+                                      alt={club.name}
+                                      className="w-full h-full object-cover"
+                                    />
                                   </div>
                                 )}
-                                <span className={`text-sm flex-1 min-w-0 truncate ${isSelected ? "font-medium text-gray-900" : "text-gray-700"}`}>
+                                <span
+                                  className={`text-sm flex-1 min-w-0 truncate ${
+                                    isSelected
+                                      ? "font-medium text-gray-900"
+                                      : "text-gray-700"
+                                  }`}
+                                >
                                   {club.name}
                                 </span>
                                 {showAvailability && unavailable && (
                                   <span className="text-xs text-red-400 flex-shrink-0">
-                                    {club.unavailabilityReason === "at-this-course"
+                                    {club.unavailabilityReason ===
+                                    "at-this-course"
                                       ? "Not at course"
                                       : "Not available"}
                                   </span>
                                 )}
                                 {isSelected && !unavailable && (
-                                  <svg className="w-4 h-4 text-golf-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                  <svg
+                                    className="w-4 h-4 text-golf-600 flex-shrink-0"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    strokeWidth={2.5}
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      d="M5 13l4 4L19 7"
+                                    />
                                   </svg>
                                 )}
                               </label>
@@ -401,17 +485,32 @@ const SelectClubs = () => {
 
             {selectedClubs.length === 0 ? (
               <div className="px-4 py-6 text-center">
-                <svg className="w-8 h-8 text-gray-200 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                <svg
+                  className="w-8 h-8 text-gray-200 mx-auto mb-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                  />
                 </svg>
                 <p className="text-xs text-gray-400">No clubs selected yet</p>
               </div>
             ) : (
               <div className="divide-y divide-gray-50 max-h-80 overflow-y-auto">
                 {selectedClubs.map((club) => (
-                  <div key={club._id} className="flex items-center gap-2 px-3 py-2">
+                  <div
+                    key={club._id}
+                    className="flex items-center gap-2 px-3 py-2"
+                  >
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium text-gray-800 truncate">{club.name}</p>
+                      <p className="text-xs font-medium text-gray-800 truncate">
+                        {club.name}
+                      </p>
                       {club.category && (
                         <p className="text-xs text-gray-400 capitalize truncate">
                           {club.category.replace(/-/g, " ")}
@@ -424,8 +523,18 @@ const SelectClubs = () => {
                       className="flex-shrink-0 text-gray-300 hover:text-red-400 transition-colors"
                       title="Remove"
                     >
-                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      <svg
+                        className="w-3.5 h-3.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 18L18 6M6 6l12 12"
+                        />
                       </svg>
                     </button>
                   </div>

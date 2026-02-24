@@ -31,9 +31,41 @@ export const createFavourite = async (
       return;
     }
 
+    const trimmedName = setName.trim();
+    if (trimmedName.length < 1 || trimmedName.length > 50) {
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(
+          Response.failure(
+            "Set name must be between 1 and 50 characters",
+            null,
+            StatusCodes.BAD_REQUEST
+          )
+        );
+      return;
+    }
+
+    const existing = await Favourite.findOne({
+      user: req.userId,
+      setName: trimmedName,
+      isDeleted: { $ne: true },
+    });
+    if (existing) {
+      res
+        .status(StatusCodes.CONFLICT)
+        .json(
+          Response.failure(
+            "A bag with this name already exists",
+            null,
+            StatusCodes.CONFLICT
+          )
+        );
+      return;
+    }
+
     const favourite = await Favourite.create({
       user: req.userId,
-      setName,
+      setName: trimmedName,
       clubs: clubs || [],
     });
 
@@ -65,7 +97,6 @@ export const getFavourites = async (
   res: ExpressResponse
 ): Promise<void> => {
   try {
-    console.log("req", req.userId);
     
     const favourites = await Favourite.find({
       user: req.userId,
@@ -159,7 +190,40 @@ export const updateFavourite = async (
     const { setName, clubs } = req.body;
     const update: Record<string, unknown> = {};
 
-    if (setName !== undefined) update.setName = setName;
+    if (setName !== undefined) {
+      const trimmedName = setName.trim();
+      if (trimmedName.length < 1 || trimmedName.length > 50) {
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .json(
+            Response.failure(
+              "Set name must be between 1 and 50 characters",
+              null,
+              StatusCodes.BAD_REQUEST
+            )
+          );
+        return;
+      }
+      const existing = await Favourite.findOne({
+        user: req.userId,
+        setName: trimmedName,
+        isDeleted: { $ne: true },
+        _id: { $ne: req.params.id },
+      });
+      if (existing) {
+        res
+          .status(StatusCodes.CONFLICT)
+          .json(
+            Response.failure(
+              "A bag with this name already exists",
+              null,
+              StatusCodes.CONFLICT
+            )
+          );
+        return;
+      }
+      update.setName = trimmedName;
+    }
     if (clubs !== undefined) update.clubs = clubs;
 
     const favourite = await Favourite.findOneAndUpdate(

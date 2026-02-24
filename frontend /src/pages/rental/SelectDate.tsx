@@ -17,14 +17,23 @@ const SelectDate = () => {
   const { selectedCourse, selectedDate, setDate } = useRental();
 
   const now = new Date();
-  const todayStr = toDateStr(now.getFullYear(), now.getMonth() + 1, now.getDate());
+  const todayStr = toDateStr(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    now.getDate()
+  );
 
   const [displayYear, setDisplayYear] = useState(now.getFullYear());
   const [displayMonth, setDisplayMonth] = useState(now.getMonth() + 1); // 1-indexed
 
-  const { data: availableDates, isLoading, isError } = useQuery({
+  const {
+    data: availableDates,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["availableDates", selectedCourse?.id, displayYear, displayMonth],
-    queryFn: () => getAvailableDates(selectedCourse!.id, displayYear, displayMonth),
+    queryFn: () =>
+      getAvailableDates(selectedCourse!.id, displayYear, displayMonth),
     enabled: !!selectedCourse,
   });
 
@@ -92,8 +101,10 @@ const SelectDate = () => {
         {selectedCourse ? (
           <>
             Choose your rental date at{" "}
-            <span className="font-medium text-gray-700">{selectedCourse.name}</span>, or
-            skip.
+            <span className="font-medium text-gray-700">
+              {selectedCourse.name}
+            </span>
+            , or skip.
           </>
         ) : (
           "Choose a rental date, or skip if you're not sure yet."
@@ -110,8 +121,18 @@ const SelectDate = () => {
             className="p-1 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             aria-label="Previous month"
           >
-            <svg className="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <svg
+              className="w-5 h-5 text-gray-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
 
@@ -125,8 +146,18 @@ const SelectDate = () => {
             className="p-1 rounded hover:bg-gray-100 transition-colors"
             aria-label="Next month"
           >
-            <svg className="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            <svg
+              className="w-5 h-5 text-gray-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </button>
         </div>
@@ -134,7 +165,10 @@ const SelectDate = () => {
         {/* Day-of-week labels */}
         <div className="grid grid-cols-7 mb-1">
           {DAY_LABELS.map((label) => (
-            <div key={label} className="text-center text-xs font-medium text-gray-400 py-1">
+            <div
+              key={label}
+              className="text-center text-xs font-medium text-gray-400 py-1"
+            >
               {label}
             </div>
           ))}
@@ -153,8 +187,17 @@ const SelectDate = () => {
               const isToday = dateStr === todayStr;
               const isSelected = dateStr === selectedDate;
               // If the API errored or data isn't loaded yet, don't restrict dates
-              const isAvailable = !selectedCourse || isError || !availableDates || availableDates.includes(dateStr);
-              const isUnavailable = !!selectedCourse && !isError && !!availableDates && !isAvailable && !isPast;
+              const isAvailable =
+                !selectedCourse ||
+                isError ||
+                !availableDates ||
+                availableDates.includes(dateStr);
+              const isUnavailable =
+                !!selectedCourse &&
+                !isError &&
+                !!availableDates &&
+                !isAvailable &&
+                !isPast;
 
               let cellClass =
                 "w-8 h-8 mx-auto flex items-center justify-center text-sm rounded-full transition-colors ";
@@ -171,7 +214,10 @@ const SelectDate = () => {
               }
 
               return (
-                <div key={dateStr} className="flex items-center justify-center py-0.5">
+                <div
+                  key={dateStr}
+                  className="flex items-center justify-center py-0.5"
+                >
                   <button
                     type="button"
                     onClick={() => handleDayClick(day)}
@@ -218,18 +264,24 @@ const SelectDate = () => {
         {selectedDate && (
           <p className="mt-4 text-center text-sm text-golf-700 font-medium">
             Selected:{" "}
-            {new Date(selectedDate + "T00:00:00").toLocaleDateString("default", {
-              weekday: "long",
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })}
+            {new Date(selectedDate + "T00:00:00").toLocaleDateString(
+              "default",
+              {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              }
+            )}
           </p>
         )}
       </div>
 
       <div className="flex justify-between mt-8">
-        <button onClick={() => navigate("/reserve/course")} className="btn-secondary">
+        <button
+          onClick={() => navigate("/reserve/course")}
+          className="btn-secondary"
+        >
           Back
         </button>
         <div className="flex gap-3">

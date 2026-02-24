@@ -19,9 +19,27 @@ const createFavourite = async (req, res) => {
                 .json(response_1.Response.failure("Bag name is required", null, http_status_codes_1.StatusCodes.BAD_REQUEST));
             return;
         }
+        const trimmedName = setName.trim();
+        if (trimmedName.length < 1 || trimmedName.length > 50) {
+            res
+                .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                .json(response_1.Response.failure("Set name must be between 1 and 50 characters", null, http_status_codes_1.StatusCodes.BAD_REQUEST));
+            return;
+        }
+        const existing = await favouriteSets_1.Favourite.findOne({
+            user: req.userId,
+            setName: trimmedName,
+            isDeleted: { $ne: true },
+        });
+        if (existing) {
+            res
+                .status(http_status_codes_1.StatusCodes.CONFLICT)
+                .json(response_1.Response.failure("A bag with this name already exists", null, http_status_codes_1.StatusCodes.CONFLICT));
+            return;
+        }
         const favourite = await favouriteSets_1.Favourite.create({
             user: req.userId,
-            setName,
+            setName: trimmedName,
             clubs: clubs || [],
         });
         res
@@ -38,7 +56,6 @@ const createFavourite = async (req, res) => {
 exports.createFavourite = createFavourite;
 const getFavourites = async (req, res) => {
     try {
-        console.log("req", req.userId);
         const favourites = await favouriteSets_1.Favourite.find({
             user: req.userId,
             isDeleted: { $ne: true },
@@ -89,8 +106,28 @@ const updateFavourite = async (req, res) => {
     try {
         const { setName, clubs } = req.body;
         const update = {};
-        if (setName !== undefined)
-            update.setName = setName;
+        if (setName !== undefined) {
+            const trimmedName = setName.trim();
+            if (trimmedName.length < 1 || trimmedName.length > 50) {
+                res
+                    .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                    .json(response_1.Response.failure("Set name must be between 1 and 50 characters", null, http_status_codes_1.StatusCodes.BAD_REQUEST));
+                return;
+            }
+            const existing = await favouriteSets_1.Favourite.findOne({
+                user: req.userId,
+                setName: trimmedName,
+                isDeleted: { $ne: true },
+                _id: { $ne: req.params.id },
+            });
+            if (existing) {
+                res
+                    .status(http_status_codes_1.StatusCodes.CONFLICT)
+                    .json(response_1.Response.failure("A bag with this name already exists", null, http_status_codes_1.StatusCodes.CONFLICT));
+                return;
+            }
+            update.setName = trimmedName;
+        }
         if (clubs !== undefined)
             update.clubs = clubs;
         const favourite = await favouriteSets_1.Favourite.findOneAndUpdate({ _id: req.params.id, user: req.userId, isDeleted: { $ne: true } }, update, { new: true });

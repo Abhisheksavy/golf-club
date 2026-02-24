@@ -159,7 +159,6 @@ async function seed() {
     );
   }
 
-  console.log(`Seeded ${clubs.length} clubs successfully`);
   await mongoose.disconnect();
 }
 

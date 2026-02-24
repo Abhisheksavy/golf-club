@@ -13,7 +13,7 @@ import type { Club } from "../types";
 const FavouriteSetDetail = () => {
   const { setId } = useParams<{ setId: string }>();
   const navigate = useNavigate();
-  const { renameSet, updateSetClubs, deleteSet } = useFavouriteSets();
+  const { renameSet, updateSetClubs, deleteSet, sets } = useFavouriteSets();
 
   const [showRenameModal, setShowRenameModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -276,6 +276,7 @@ const FavouriteSetDetail = () => {
         onSave={handleRename}
         initialName={set.setName}
         title="Rename Set"
+        existingNames={sets.filter((s) => s._id !== setId).map((s) => s.setName)}
       />
 
       <ConfirmModal

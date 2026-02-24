@@ -125,7 +125,6 @@ async function seed() {
     for (const club of clubs) {
         await clubs_1.CLUB.findOneAndUpdate({ booqableProductId: club.booqableProductId }, club, { upsert: true, new: true });
     }
-    console.log(`Seeded ${clubs.length} clubs successfully`);
     await mongoose_1.default.disconnect();
 }
 seed().catch((err) => {

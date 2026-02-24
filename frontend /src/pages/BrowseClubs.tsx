@@ -260,7 +260,7 @@ const BrowseClubs = () => {
   const [view, setView] = useState<"grid" | "table">("grid");
 
   const { selectedCount, selectedClubs, toggle, clear, isSelected } = useClubSelection();
-  const { createSet } = useFavouriteSets();
+  const { createSet, sets } = useFavouriteSets();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -518,7 +518,7 @@ const BrowseClubs = () => {
       </div>
 
       <SelectionBar count={selectedCount} onSave={() => setShowSaveModal(true)} onClear={clear} />
-      <SaveSetModal isOpen={showSaveModal} onClose={() => setShowSaveModal(false)} onSave={handleSaveSet} />
+      <SaveSetModal isOpen={showSaveModal} onClose={() => setShowSaveModal(false)} onSave={handleSaveSet} existingNames={sets.map((s) => s.setName)} />
       {selectedCount > 0 && <div className="h-16" />}
     </>
   );

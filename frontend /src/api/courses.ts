@@ -11,8 +11,11 @@ export const getAvailableDates = async (
   year: number,
   month: number
 ): Promise<string[]> => {
-  const { data } = await apiClient.get(`/courses/${locationId}/available-dates`, {
-    params: { year, month },
-  });
+  const { data } = await apiClient.get(
+    `/courses/${locationId}/available-dates`,
+    {
+      params: { year, month },
+    }
+  );
   return data.data.dates;
 };

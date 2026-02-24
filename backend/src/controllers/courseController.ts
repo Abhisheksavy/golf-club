@@ -102,7 +102,6 @@ export const getAvailableDates = async (
           null,
           StatusCodes.BAD_REQUEST
         )
-        
       );
     return;
   }

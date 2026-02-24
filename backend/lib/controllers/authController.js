@@ -8,10 +8,12 @@ const crypto_1 = __importDefault(require("crypto"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const users_1 = require("../models/users");
 const loginToken_1 = require("../models/loginToken");
-// import sendMagicLinkEmail from "../services/emailService";
+const emailService_1 = __importDefault(require("../services/emailService"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const http_status_codes_1 = require("http-status-codes");
 const response_1 = require("../utils/response");
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 const loginWithPassword = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -19,6 +21,16 @@ const loginWithPassword = async (req, res) => {
             return res
                 .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
                 .json(response_1.Response.failure("Email and password are required", null, http_status_codes_1.StatusCodes.BAD_REQUEST));
+        }
+        if (!EMAIL_REGEX.test(email)) {
+            return res
+                .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                .json(response_1.Response.failure("Please enter a valid email address", null, http_status_codes_1.StatusCodes.BAD_REQUEST));
+        }
+        if (!PASSWORD_REGEX.test(password)) {
+            return res
+                .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                .json(response_1.Response.failure("Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character", null, http_status_codes_1.StatusCodes.BAD_REQUEST));
         }
         let user = await users_1.USER.findOne({ email });
         if (user && user.password) {
@@ -62,8 +74,13 @@ const requestMagicLink = async (req, res) => {
         const { email } = req.body;
         if (!email) {
             return res
-                .Status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
                 .json(response_1.Response.failure("Email is required", null, http_status_codes_1.StatusCodes.BAD_REQUEST));
+        }
+        if (!EMAIL_REGEX.test(email.trim())) {
+            return res
+                .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                .json(response_1.Response.failure("Please enter a valid email address", null, http_status_codes_1.StatusCodes.BAD_REQUEST));
         }
         let user = await users_1.USER.findOne({ email });
         if (!user) {
@@ -73,14 +90,13 @@ const requestMagicLink = async (req, res) => {
         const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
         await loginToken_1.LoginToken.findOneAndUpdate({ email }, { token, expiresAt }, { upsert: true });
         const magicLink = `${process.env.CLIENT_URL}/verify?token=${token}`;
-        console.log("magicLink", magicLink);
-        // await sendMagicLinkEmail(email, magicLink);
+        await (0, emailService_1.default)(email, magicLink);
         res
             .status(http_status_codes_1.StatusCodes.OK)
             .json(response_1.Response.success("Magic link sent successfully", magicLink, http_status_codes_1.StatusCodes.OK));
     }
     catch (error) {
-        console.error(error);
+        console.log("error", error);
         res
             .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)
             .json(response_1.Response.failure("Server error", null, http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR));
@@ -91,7 +107,6 @@ const verifyMagicLink = async (req, res) => {
     try {
         const { token } = req.query;
         const storedToken = await loginToken_1.LoginToken.findOne({ token });
-        console.log("storedToken", storedToken);
         if (!storedToken) {
             return res
                 .status(http_status_codes_1.StatusCodes.BAD_REQUEST)

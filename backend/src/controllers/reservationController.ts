@@ -46,7 +46,9 @@ export const createReservation = async (
       savedAsBag,
     });
 
-    const enrichedClubs = await fetchProductsByIds(reservation.clubs as string[]);
+    const enrichedClubs = await fetchProductsByIds(
+      reservation.clubs as string[]
+    );
     const result = { ...reservation.toObject(), clubs: enrichedClubs };
 
     res
@@ -77,9 +79,13 @@ export const getReservations = async (
   res: ExpressResponse
 ): Promise<void> => {
   try {
-    const reservations = await Reservation.find({ user: req.userId }).sort({ date: -1 });
+    const reservations = await Reservation.find({ user: req.userId }).sort({
+      date: -1,
+    });
 
-    const allClubIds = [...new Set(reservations.flatMap((r) => r.clubs as string[]))];
+    const allClubIds = [
+      ...new Set(reservations.flatMap((r) => r.clubs as string[])),
+    ];
     const clubMap = new Map(
       (await fetchProductsByIds(allClubIds)).map((c) => [c._id, c])
     );

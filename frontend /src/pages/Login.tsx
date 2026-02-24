@@ -3,10 +3,14 @@ import { useRequestMagicLink, usePasswordLogin } from "../hooks/useAuth";
 
 type Tab = "link" | "password";
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const Login = () => {
   const [tab, setTab] = useState<Tab>("link");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [pwErrors, setPwErrors] = useState<string[]>([]);
+  const [emailError, setEmailError] = useState("");
 
   const {
     mutate: sendMagicLink,
@@ -16,11 +20,28 @@ const Login = () => {
 
   const { mutate: loginPassword, isPending: isLoggingIn } = usePasswordLogin();
 
+  const validatePassword = (pw: string) => {
+    const errors: string[] = [];
+    if (pw.length < 8) errors.push("At least 8 characters");
+    if (!/[A-Z]/.test(pw)) errors.push("One uppercase letter");
+    if (!/[a-z]/.test(pw)) errors.push("One lowercase letter");
+    if (!/\d/.test(pw)) errors.push("One number");
+    if (!/[\W_]/.test(pw)) errors.push("One special character");
+    setPwErrors(errors);
+  };
+
+  const validateEmail = (v: string) => {
+    setEmailError(
+      EMAIL_REGEX.test(v) ? "" : "Enter a valid email address"
+    );
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (tab === "link") {
       if (email.trim()) sendMagicLink(email);
     } else {
+      if (pwErrors.length > 0) return;
       if (email.trim() && password) loginPassword({ email, password });
     }
   };
@@ -81,10 +102,14 @@ const Login = () => {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
+                      onBlur={(e) => validateEmail(e.target.value)}
                       placeholder="you@example.com"
                       required
                       className="input-field"
                     />
+                    {emailError && (
+                      <p className="text-red-500 text-xs mt-1">{emailError}</p>
+                    )}
                   </div>
                   <button type="submit" disabled={isSendingLink} className="w-full btn-primary">
                     {isSendingLink ? "Sending..." : "Send Magic Link"}
@@ -107,10 +132,14 @@ const Login = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onBlur={(e) => validateEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
                 className="input-field"
               />
+              {emailError && (
+                <p className="text-red-500 text-xs mt-1">{emailError}</p>
+              )}
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
@@ -120,11 +149,21 @@ const Login = () => {
                 id="password"
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  validatePassword(e.target.value);
+                }}
                 placeholder="••••••••"
                 required
                 className="input-field"
               />
+              {tab === "password" && password && pwErrors.length > 0 && (
+                <ul className="text-xs text-red-500 mt-1 space-y-0.5 list-disc list-inside">
+                  {pwErrors.map((e) => (
+                    <li key={e}>{e}</li>
+                  ))}
+                </ul>
+              )}
             </div>
             <button type="submit" disabled={isLoggingIn} className="w-full btn-primary">
               {isLoggingIn ? "Signing in..." : "Continue"}

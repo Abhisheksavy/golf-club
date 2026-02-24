@@ -2,10 +2,13 @@ import crypto from "crypto";
 import bcrypt from "bcrypt";
 import { USER } from "../models/users";
 import { LoginToken } from "../models/loginToken";
-// import sendMagicLinkEmail from "../services/emailService";
+import sendMagicLinkEmail from "../services/emailService";
 import jwt from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
 import { Response } from "../utils/response";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
 export const loginWithPassword = async (req: any, res: any) => {
   try {
@@ -15,7 +18,35 @@ export const loginWithPassword = async (req: any, res: any) => {
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json(
-          Response.failure("Email and password are required", null, StatusCodes.BAD_REQUEST)
+          Response.failure(
+            "Email and password are required",
+            null,
+            StatusCodes.BAD_REQUEST
+          )
+        );
+    }
+
+    if (!EMAIL_REGEX.test(email)) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(
+          Response.failure(
+            "Please enter a valid email address",
+            null,
+            StatusCodes.BAD_REQUEST
+          )
+        );
+    }
+
+    if (!PASSWORD_REGEX.test(password)) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(
+          Response.failure(
+            "Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character",
+            null,
+            StatusCodes.BAD_REQUEST
+          )
         );
     }
 
@@ -27,7 +58,13 @@ export const loginWithPassword = async (req: any, res: any) => {
       if (!match) {
         return res
           .status(StatusCodes.UNAUTHORIZED)
-          .json(Response.failure("Incorrect password", null, StatusCodes.UNAUTHORIZED));
+          .json(
+            Response.failure(
+              "Incorrect password",
+              null,
+              StatusCodes.UNAUTHORIZED
+            )
+          );
       }
     } else if (user && !user.password) {
       // Account exists but was created via magic link — reject
@@ -65,7 +102,11 @@ export const loginWithPassword = async (req: any, res: any) => {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json(
-        Response.failure("Server error", null, StatusCodes.INTERNAL_SERVER_ERROR)
+        Response.failure(
+          "Server error",
+          null,
+          StatusCodes.INTERNAL_SERVER_ERROR
+        )
       );
   }
 };
@@ -76,10 +117,21 @@ export const requestMagicLink = async (req: any, res: any) => {
 
     if (!email) {
       return res
-        .Status(StatusCodes.BAD_REQUEST)
-
+        .status(StatusCodes.BAD_REQUEST)
         .json(
           Response.failure("Email is required", null, StatusCodes.BAD_REQUEST)
+        );
+    }
+
+    if (!EMAIL_REGEX.test(email.trim())) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(
+          Response.failure(
+            "Please enter a valid email address",
+            null,
+            StatusCodes.BAD_REQUEST
+          )
         );
     }
 
@@ -100,8 +152,7 @@ export const requestMagicLink = async (req: any, res: any) => {
     );
 
     const magicLink = `${process.env.CLIENT_URL}/verify?token=${token}`;
-    console.log("magicLink", magicLink);
-    // await sendMagicLinkEmail(email, magicLink);
+    await sendMagicLinkEmail(email, magicLink);
     res
       .status(StatusCodes.OK)
       .json(
@@ -112,7 +163,7 @@ export const requestMagicLink = async (req: any, res: any) => {
         )
       );
   } catch (error) {
-    console.error(error);
+    console.log("error", error);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json(
@@ -128,10 +179,8 @@ export const requestMagicLink = async (req: any, res: any) => {
 export const verifyMagicLink = async (req: any, res: any) => {
   try {
     const { token } = req.query;
-    
 
     const storedToken = await LoginToken.findOne({ token });
-    console.log("storedToken", storedToken);
 
     if (!storedToken) {
       return res
