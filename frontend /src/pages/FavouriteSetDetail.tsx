@@ -3,7 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { getClubs } from "../api/clubs";
-import { useFavouriteSets, useFavouriteSetDetail } from "../hooks/useFavouriteSets";
+import {
+  useFavouriteSets,
+  useFavouriteSetDetail,
+} from "../hooks/useFavouriteSets";
 import ClubCard from "../components/ui/ClubCard";
 import SaveSetModal from "../components/ui/SaveSetModal";
 import ConfirmModal from "../components/ui/ConfirmModal";
@@ -54,6 +57,8 @@ const FavouriteSetDetail = () => {
   const setClubs = set.clubs as Club[];
   const setClubIds = new Set(setClubs.map((c) => c._id));
   const availableClubs = allClubs.filter((c) => !setClubIds.has(c._id));
+
+  console.log("setClubs", setClubs);
 
   const handleRemoveClub = (clubId: string) => {
     const updated = setClubs.filter((c) => c._id !== clubId);
@@ -110,7 +115,7 @@ const FavouriteSetDetail = () => {
             d="M15 19l-7-7 7-7"
           />
         </svg>
-        Back to My Sets
+        Back to My Bags
       </button>
 
       {/* Set info card */}
@@ -145,7 +150,10 @@ const FavouriteSetDetail = () => {
           Clubs in this Bag
         </h2>
         <button
-          onClick={() => { setPendingClubs(new Set()); setShowAddClubsModal(true); }}
+          onClick={() => {
+            setPendingClubs(new Set());
+            setShowAddClubsModal(true);
+          }}
           className="btn-primary text-sm"
         >
           + Add Clubs
@@ -163,18 +171,19 @@ const FavouriteSetDetail = () => {
           </button>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {setClubs.map((club) => (
             <div
               key={club._id}
-              className="bg-white rounded-lg border border-gray-200 p-4 flex items-center gap-4"
+              className="group bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-4 flex items-center gap-5 border border-gray-100"
             >
-              <div className="w-16 h-12 rounded bg-gray-100 overflow-hidden flex-shrink-0">
+              {/* Image */}
+              <div className="w-20 h-16 rounded-xl bg-gray-50 overflow-hidden flex-shrink-0 ring-1 ring-gray-100">
                 {club.image ? (
                   <img
                     src={club.image}
                     alt={club.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-300">
@@ -188,29 +197,44 @@ const FavouriteSetDetail = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={1.5}
-                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14"
                       />
                     </svg>
                   </div>
                 )}
               </div>
+
+              {/* Info */}
               <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-gray-900 text-sm truncate">
+                <h3 className="font-semibold text-gray-900 text-base truncate">
                   {club.name}
                 </h3>
-                {club.description && (
-                  <p className="text-xs text-gray-500 truncate">
-                    {club.description}
-                  </p>
-                )}
+
+                {/* Modern Badge */}
+                <span
+                  className={`inline-flex items-center gap-1 mt-1 px-2.5 py-1 rounded-full text-xs font-semibold ${
+                    club.isActive
+                      ? "bg-emerald-50 text-emerald-600"
+                      : "bg-red-50 text-red-600"
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      club.isActive ? "bg-emerald-500" : "bg-red-500"
+                    }`}
+                  />
+                  {club.isActive ? "Active" : "Inactive"}
+                </span>
               </div>
+
+              {/* Delete Button */}
               <button
                 onClick={() => handleRemoveClub(club._id)}
-                className="flex-shrink-0 text-red-500 hover:text-red-700 p-1"
+                className="opacity-0 group-hover:opacity-100 transition-all duration-200 bg-red-50 hover:bg-red-100 text-red-600 p-2 rounded-lg"
                 title="Remove club"
               >
                 <svg
-                  className="w-5 h-5"
+                  className="w-4 h-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -219,7 +243,7 @@ const FavouriteSetDetail = () => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7"
                   />
                 </svg>
               </button>
@@ -231,7 +255,10 @@ const FavouriteSetDetail = () => {
       {/* Add Clubs Modal */}
       <Modal
         isOpen={showAddClubsModal}
-        onClose={() => { setPendingClubs(new Set()); setShowAddClubsModal(false); }}
+        onClose={() => {
+          setPendingClubs(new Set());
+          setShowAddClubsModal(false);
+        }}
         title="Add Clubs"
       >
         {availableClubs.length === 0 ? (
@@ -276,7 +303,9 @@ const FavouriteSetDetail = () => {
         onSave={handleRename}
         initialName={set.setName}
         title="Rename Set"
-        existingNames={sets.filter((s) => s._id !== setId).map((s) => s.setName)}
+        existingNames={sets
+          .filter((s) => s._id !== setId)
+          .map((s) => s.setName)}
       />
 
       <ConfirmModal

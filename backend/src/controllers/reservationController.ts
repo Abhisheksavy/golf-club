@@ -79,9 +79,16 @@ export const getReservations = async (
   res: ExpressResponse
 ): Promise<void> => {
   try {
-    const reservations = await Reservation.find({ user: req.userId }).sort({
-      date: -1,
-    });
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.max(1, parseInt(req.query.limit as string) || 10);
+    const skip = (page - 1) * limit;
+
+    const total = await Reservation.countDocuments({ user: req.userId });
+
+    const reservations = await Reservation.find({ user: req.userId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
     const allClubIds = [
       ...new Set(reservations.flatMap((r) => r.clubs as string[])),
@@ -95,12 +102,14 @@ export const getReservations = async (
       clubs: (r.clubs as string[]).map((id) => clubMap.get(id) ?? id),
     }));
 
+    const totalPages = Math.ceil(total / limit);
+
     res
       .status(StatusCodes.OK)
       .json(
         Response.success(
           "Reservation get successfully",
-          enriched,
+          { reservations: enriched, total, totalPages, page, limit },
           StatusCodes.OK
         )
       );

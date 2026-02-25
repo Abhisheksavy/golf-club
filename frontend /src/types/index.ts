@@ -55,6 +55,14 @@ export interface FavouriteSet {
   updatedAt: string;
 }
 
+export interface PaginatedFavourites {
+  favourites: FavouriteSet[];
+  total: number;
+  totalPages: number;
+  page: number;
+  limit: number;
+}
+
 // Course types
 export interface Course {
   id: string;
@@ -74,6 +82,14 @@ export interface Reservation {
   savedAsBag?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface PaginatedReservations {
+  reservations: Reservation[];
+  total: number;
+  totalPages: number;
+  page: number;
+  limit: number;
 }
 
 // API Error

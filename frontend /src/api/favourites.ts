@@ -1,8 +1,13 @@
 import apiClient from "../lib/axios";
-import type { FavouriteSet } from "../types";
+import type { FavouriteSet, PaginatedFavourites } from "../types";
 
-export const getFavourites = async (): Promise<FavouriteSet[]> => {
-  const { data } = await apiClient.get("/favourites");
+export const getFavourites = async (
+  page = 1,
+  limit = 10
+): Promise<PaginatedFavourites> => {
+  const { data } = await apiClient.get("/favourites", {
+    params: { page, limit },
+  });
   return data.data;
 };
 

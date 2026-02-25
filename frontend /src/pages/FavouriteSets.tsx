@@ -5,9 +5,12 @@ import { useFavouriteSets } from "../hooks/useFavouriteSets";
 import FavouriteSetCard from "../components/ui/FavouriteSetCard";
 import ConfirmModal from "../components/ui/ConfirmModal";
 
+const PAGE_SIZE = 10;
+
 const FavouriteSets = () => {
-  const { sets, isLoading, deleteSet } = useFavouriteSets();
-  
+  const [page, setPage] = useState(1);
+  const { sets, total, totalPages, isLoading, deleteSet } = useFavouriteSets(page, PAGE_SIZE);
+
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const handleDelete = () => {
@@ -40,8 +43,8 @@ const FavouriteSets = () => {
               My Bags
             </h1>
             <p className="text-slate-500 text-sm mt-1">
-              {sets.length > 0
-                ? `${sets.length} saved bag${sets.length !== 1 ? "s" : ""}`
+              {total > 0
+                ? `${total} saved bag${total !== 1 ? "s" : ""}`
                 : "Save your favourite club combinations"}
             </p>
           </div>
@@ -98,16 +101,71 @@ const FavouriteSets = () => {
             </Link>
           </div>
         ) : (
-          /* ── Grid ── */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {sets?.map((set) => (
-              <FavouriteSetCard
-                key={set._id}
-                set={set}
-                onDelete={(id) => setDeleteTarget(id)}
-              />
-            ))}
-          </div>
+          <>
+            {/* ── Grid ── */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {sets.map((set) => (
+                <FavouriteSetCard
+                  key={set._id}
+                  set={set}
+                  onDelete={(id) => setDeleteTarget(id)}
+                />
+              ))}
+            </div>
+
+            {/* ── Pagination ── */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between mt-8">
+                <p className="text-sm text-slate-500">
+                  Showing{" "}
+                  <span className="font-medium text-slate-700">
+                    {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, total)}
+                  </span>{" "}
+                  of <span className="font-medium text-slate-700">{total}</span> bags
+                </p>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setPage((p) => p - 1)}
+                    disabled={page === 1}
+                    className="w-8 h-8 flex items-center justify-center rounded-xl border border-slate-200 text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 hover:border-slate-300 transition-all"
+                  >
+                    ‹
+                  </button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+                    .reduce<(number | "...")[]>((acc, p, idx, arr) => {
+                      if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push("...");
+                      acc.push(p);
+                      return acc;
+                    }, [])
+                    .map((item, idx) =>
+                      item === "..." ? (
+                        <span key={`ellipsis-${idx}`} className="w-8 flex items-center justify-center text-slate-400 text-sm">…</span>
+                      ) : (
+                        <button
+                          key={item}
+                          onClick={() => setPage(item as number)}
+                          className={`w-8 h-8 rounded-xl border text-sm font-medium transition-all ${
+                            page === item
+                              ? "bg-emerald-500 text-white border-emerald-500 shadow-sm"
+                              : "border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300"
+                          }`}
+                        >
+                          {item}
+                        </button>
+                      )
+                    )}
+                  <button
+                    onClick={() => setPage((p) => p + 1)}
+                    disabled={page === totalPages}
+                    className="w-8 h-8 flex items-center justify-center rounded-xl border border-slate-200 text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 hover:border-slate-300 transition-all"
+                  >
+                    ›
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 

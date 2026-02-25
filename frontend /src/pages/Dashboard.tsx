@@ -4,10 +4,11 @@ import { getFavourites } from "../api/favourites";
 import type { Club } from "../types";
 
 const Dashboard = () => {
-  const { data: bags = [] } = useQuery({
-    queryKey: ["favourites"],
-    queryFn: getFavourites,
+  const { data } = useQuery({
+    queryKey: ["favourites", "dashboard"],
+    queryFn: () => getFavourites(1, 3),
   });
+  const bags = data?.favourites ?? [];
 
   return (
     <div className="min-h-screen bg-slate-50">

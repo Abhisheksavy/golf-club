@@ -7,7 +7,8 @@ import { Response } from "../utils/response";
 import { fetchProductsByIds } from "./clubController";
 
 async function enrichFavourite(fav: InstanceType<typeof Favourite>) {
-  const clubs = await fetchProductsByIds(fav.clubs as string[]);
+  const reversedIds = [...(fav.clubs as string[])].reverse();
+  const clubs = await fetchProductsByIds(reversedIds);
   return { ...fav.toObject(), clubs };
 }
 
@@ -97,11 +98,22 @@ export const getFavourites = async (
   res: ExpressResponse
 ): Promise<void> => {
   try {
-    
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.max(1, parseInt(req.query.limit as string) || 10);
+    const skip = (page - 1) * limit;
+
+    const total = await Favourite.countDocuments({
+      user: req.userId,
+      isDeleted: { $ne: true },
+    });
+
     const favourites = await Favourite.find({
       user: req.userId,
       isDeleted: { $ne: true },
-    }).sort({ updatedAt: -1 });
+    })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
     const allClubIds = [
       ...new Set(favourites.flatMap((f) => f.clubs as string[])),
@@ -112,15 +124,19 @@ export const getFavourites = async (
 
     const enriched = favourites.map((f) => ({
       ...f.toObject(),
-      clubs: (f.clubs as string[]).map((id) => clubMap.get(id) ?? id),
+      clubs: [...(f.clubs as string[])]
+        .reverse()
+        .map((id) => clubMap.get(id) ?? id),
     }));
+
+    const totalPages = Math.ceil(total / limit);
 
     res
       .status(StatusCodes.OK)
       .json(
         Response.success(
           "Favourite fetched successfully",
-          enriched,
+          { favourites: enriched, total, totalPages, page, limit },
           StatusCodes.OK
         )
       );
@@ -147,7 +163,7 @@ export const getFavouriteById = async (
       _id: req.params.id,
       user: req.userId,
       isDeleted: { $ne: true },
-    });
+    }).sort({ createdAt: -1 });
 
     if (!favourite) {
       res
@@ -230,7 +246,7 @@ export const updateFavourite = async (
       { _id: req.params.id, user: req.userId, isDeleted: { $ne: true } },
       update,
       { new: true }
-    );
+    ).sort({ createdAt: -1 });
 
     if (!favourite) {
       res

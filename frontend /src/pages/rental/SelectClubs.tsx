@@ -122,10 +122,11 @@ const SelectClubs = () => {
     }
   }, [allClubs.length]);
 
-  const { data: bags = [] } = useQuery({
-    queryKey: ["favourites"],
-    queryFn: getFavourites,
+  const { data: bagsData } = useQuery({
+    queryKey: ["favourites", "all"],
+    queryFn: () => getFavourites(1, 100),
   });
+  const bags = bagsData?.favourites ?? [];
 
   const selectedIds = new Set(selectedClubs.map((c) => c._id));
 

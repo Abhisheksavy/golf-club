@@ -19,7 +19,8 @@ interface BooqableProduct {
 
 function getClubCategory(tags: string[]): string | undefined {
   if (tags.includes("driver")) return "driver";
-  if (tags.includes("fairway-wood") || tags.includes("hybrid")) return "fairway-woods-hybrids";
+  if (tags.includes("fairway-wood") || tags.includes("hybrid"))
+    return "fairway-woods-hybrids";
   if (tags.includes("iron")) return "irons";
   if (tags.includes("wedge")) return "wedges";
   if (tags.includes("putter")) return "putter";
@@ -95,7 +96,22 @@ export async function fetchProductsByIds(
   ids: string[]
 ): Promise<ReturnType<typeof transformProduct>[]> {
   const all = await fetchAllBooqableProducts();
-  return all.filter((p) => ids.includes(p.id)).map(transformProduct);
+  const filtered = all.filter((p) => ids.includes(p.id));
+  console.log(
+    "[DEBUG fetchProductsByIds] created_at values:",
+    filtered.map((p) => ({
+      name: p.attributes.name,
+      created_at: p.attributes.created_at,
+      updated_at: p.attributes.updated_at,
+    }))
+  );
+  return filtered
+    .sort(
+      (a, b) =>
+        new Date((b.attributes.created_at as string) ?? "").getTime() -
+        new Date((a.attributes.created_at as string) ?? "").getTime()
+    )
+    .map(transformProduct);
 }
 
 export const getClubs = async (
@@ -138,6 +154,17 @@ export const getClubs = async (
     if (category) {
       filtered = filtered.filter((p) => p.attributes.category === category);
     }
+    filtered = filtered.sort((a, b) => {
+      const dateA = new Date(
+        (a.attributes.created_at ?? "") as string
+      ).getTime();
+
+      const dateB = new Date(
+        (b.attributes.created_at ?? "") as string
+      ).getTime();
+
+      return dateB - dateA;
+    });
 
     const total = filtered.length;
     const totalPages = Math.ceil(total / limit);
@@ -226,7 +253,6 @@ async function fetchLocations(): Promise<BooqableLocation[]> {
   return json.data;
 }
 
-
 async function checkProductAvailableOnDate(
   productId: string,
   locationId: string,
@@ -248,7 +274,9 @@ async function checkProductAvailableOnDate(
     });
     if (!res.ok) return true; // graceful degradation on error
 
-    const json = (await res.json()) as { data: Array<{ attributes: { available: boolean } }> };
+    const json = (await res.json()) as {
+      data: Array<{ attributes: { available: boolean } }>;
+    };
     if (!json.data || json.data.length === 0) return true;
     return json.data[0].attributes.available;
   } catch {
@@ -270,12 +298,22 @@ export const getAvailableClubs = async (
     // Booqable products are bulk/non-trackable so there are no per-location
     // stock item records — all clubs are considered present at the course.
     if (!date) {
-      const result = active.map((p) => ({
-        ...transformProduct(p),
-        available: true,
-        unavailabilityReason: null,
-      }));
-      res.status(StatusCodes.OK).json(Response.success("Available clubs fetched", result, StatusCodes.OK));
+      const result = active
+        .sort(
+          (a, b) =>
+            new Date((b.attributes.created_at as string) ?? "").getTime() -
+            new Date((a.attributes.created_at as string) ?? "").getTime()
+        )
+        .map((p) => ({
+          ...transformProduct(p),
+          available: true,
+          unavailabilityReason: null,
+        }));
+      res
+        .status(StatusCodes.OK)
+        .json(
+          Response.success("Available clubs fetched", result, StatusCodes.OK)
+        );
       return;
     }
 
@@ -290,33 +328,68 @@ export const getAvailableClubs = async (
     }
 
     const parts = date.split("-");
-    const parsedDate = parts.length === 3
-      ? { year: parseInt(parts[0], 10), month: parseInt(parts[1], 10), day: parseInt(parts[2], 10) }
-      : null;
+    const parsedDate =
+      parts.length === 3
+        ? {
+            year: parseInt(parts[0], 10),
+            month: parseInt(parts[1], 10),
+            day: parseInt(parts[2], 10),
+          }
+        : null;
 
     if (!parsedDate) {
-      res.status(StatusCodes.BAD_REQUEST).json(Response.failure("Invalid date format", null, StatusCodes.BAD_REQUEST));
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(
+          Response.failure("Invalid date format", null, StatusCodes.BAD_REQUEST)
+        );
       return;
     }
 
-    const available = await Promise.all(
-      active.map(async (p) => {
-        const isAvailable = locationId
-          ? await checkProductAvailableOnDate(p.id, locationId, parsedDate.year, parsedDate.month, parsedDate.day)
-          : true;
-        return {
-          ...transformProduct(p),
-          available: isAvailable,
-          unavailabilityReason: isAvailable ? null : ("on-this-date" as const),
-        };
-      })
-    );
+    const available = (
+      await Promise.all(
+        active.map(async (p) => {
+          const isAvailable = locationId
+            ? await checkProductAvailableOnDate(
+                p.id,
+                locationId,
+                parsedDate.year,
+                parsedDate.month,
+                parsedDate.day
+              )
+            : true;
+          return {
+            ...transformProduct(p),
+            available: isAvailable,
+            unavailabilityReason: isAvailable
+              ? null
+              : ("on-this-date" as const),
+            _createdAt: (p.attributes.created_at as string) ?? "",
+          };
+        })
+      )
+    )
+      .sort(
+        (a, b) =>
+          new Date(b._createdAt).getTime() - new Date(a._createdAt).getTime()
+      )
+      .map(({ _createdAt: _, ...rest }) => rest);
 
-    res.status(StatusCodes.OK).json(Response.success("Available clubs fetched", available, StatusCodes.OK));
+    res
+      .status(StatusCodes.OK)
+      .json(
+        Response.success("Available clubs fetched", available, StatusCodes.OK)
+      );
   } catch (error) {
     console.error("getAvailableClubs error:", error);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json(Response.failure("Server error", null, StatusCodes.INTERNAL_SERVER_ERROR));
+      .json(
+        Response.failure(
+          "Server error",
+          null,
+          StatusCodes.INTERNAL_SERVER_ERROR
+        )
+      );
   }
 };

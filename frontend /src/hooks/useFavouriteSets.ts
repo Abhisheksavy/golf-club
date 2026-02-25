@@ -10,14 +10,18 @@ import type { Club } from "../types";
 
 const QUERY_KEY = "favourites";
 
-export const useFavouriteSets = () => {
+export const useFavouriteSets = (page = 1, limit = 10) => {
   const queryClient = useQueryClient();
 
-  const { data: sets = [], isLoading } = useQuery({
-    queryKey: [QUERY_KEY],
-    queryFn: getFavourites,
+  const { data, isLoading } = useQuery({
+    queryKey: [QUERY_KEY, page, limit],
+    queryFn: () => getFavourites(page, limit),
     refetchOnMount: "always",
   });
+
+  const sets = data?.favourites ?? [];
+  const total = data?.total ?? 0;
+  const totalPages = data?.totalPages ?? 1;
 
   const createMutation = useMutation({
     mutationFn: ({ name, clubs }: { name: string; clubs: Club[] }) =>
@@ -59,6 +63,8 @@ export const useFavouriteSets = () => {
 
   return {
     sets,
+    total,
+    totalPages,
     isLoading,
     createSet,
     deleteSet,

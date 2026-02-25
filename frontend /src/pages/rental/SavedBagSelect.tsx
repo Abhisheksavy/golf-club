@@ -11,11 +11,12 @@ const SavedBagSelect = () => {
 
   const authed = isAuthenticated();
 
-  const { data: bags = [], isLoading: bagsLoading } = useQuery({
-    queryKey: ["favourites"],
-    queryFn: getFavourites,
+  const { data, isLoading: bagsLoading } = useQuery({
+    queryKey: ["favourites", "all"],
+    queryFn: () => getFavourites(1, 100),
     enabled: authed,
   });
+  const bags = data?.favourites ?? [];
 
   if (!authed) {
     navigate("/reserve/auth", { replace: true });
@@ -62,38 +63,43 @@ const SavedBagSelect = () => {
           <p className="text-gray-500 text-sm">No saved bags yet.</p>
         </div>
       ) : (
-        <div className="grid gap-3 mb-6">
-          {bags.map((bag) => {
-            return (
-              <button
-                key={bag._id}
-                type="button"
-                onClick={() => handleUseBag(bag.clubs as (Club | string)[])}
-                className="flex items-center justify-between p-5 rounded-xl border-2 border-gray-200 bg-white hover:border-golf-400 hover:bg-golf-50 transition-all text-left"
-              >
-                <div>
-                  <p className="font-semibold text-gray-900">{bag.setName}</p>
-                  <p className="text-sm text-gray-500 mt-0.5">
-                    {Array.isArray(bag.clubs) ? bag.clubs.length : 0} club
-                    {bag.clubs.length !== 1 ? "s" : ""}
-                  </p>
-                </div>
-                <svg
-                  className="w-5 h-5 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
+        <div className="relative mb-6">
+          <div className="max-h-72 overflow-y-auto pr-1 grid gap-3">
+            {bags.map((bag) => {
+              return (
+                <button
+                  key={bag._id}
+                  type="button"
+                  onClick={() => handleUseBag(bag.clubs as (Club | string)[])}
+                  className="flex items-center justify-between p-5 rounded-xl border-2 border-gray-200 bg-white hover:border-golf-400 hover:bg-golf-50 transition-all text-left"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M8.25 4.5l7.5 7.5-7.5 7.5"
-                  />
-                </svg>
-              </button>
-            );
-          })}
+                  <div>
+                    <p className="font-semibold text-gray-900">{bag.setName}</p>
+                    <p className="text-sm text-gray-500 mt-0.5">
+                      {Array.isArray(bag.clubs) ? bag.clubs.length : 0} club
+                      {bag.clubs.length !== 1 ? "s" : ""}
+                    </p>
+                  </div>
+                  <svg
+                    className="w-5 h-5 text-gray-400 flex-shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                    />
+                  </svg>
+                </button>
+              );
+            })}
+          </div>
+          {bags.length > 3 && (
+            <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white to-transparent rounded-b-xl" />
+          )}
         </div>
       )}
 

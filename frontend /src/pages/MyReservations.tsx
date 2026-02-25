@@ -1,8 +1,11 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { getReservations } from "../api/reservations";
 import { isAuthenticated } from "../hooks/useAuth";
 import type { Club } from "../types";
+
+const PAGE_SIZE = 10;
 
 const STATUS_STYLES = {
   confirmed: "bg-green-100 text-green-700",
@@ -11,14 +14,19 @@ const STATUS_STYLES = {
 };
 
 const MyReservations = () => {
+  const [page, setPage] = useState(1);
   const navigate = useNavigate();
   const loggedIn = isAuthenticated();
 
-  const { data: reservations = [], isLoading } = useQuery({
-    queryKey: ["reservations"],
-    queryFn: getReservations,
+  const { data, isLoading } = useQuery({
+    queryKey: ["reservations", page],
+    queryFn: () => getReservations(page, PAGE_SIZE),
     enabled: loggedIn,
   });
+
+  const reservations = data?.reservations ?? [];
+  const total = data?.total ?? 0;
+  const totalPages = data?.totalPages ?? 1;
 
   if (!loggedIn) {
     return (
@@ -51,7 +59,7 @@ const MyReservations = () => {
 
       {isLoading ? (
         <div className="text-center py-16 text-gray-400">Loading reservations...</div>
-      ) : reservations.length === 0 ? (
+      ) : !data || reservations.length === 0 ? (
         <div className="text-center py-16">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
             <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -65,6 +73,7 @@ const MyReservations = () => {
           </button>
         </div>
       ) : (
+        <>
         <div className="space-y-4">
           {reservations.map((reservation) => {
             const clubs = reservation.clubs as Club[];
@@ -130,6 +139,60 @@ const MyReservations = () => {
             );
           })}
         </div>
+
+        {/* ── Pagination ── */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-6">
+            <p className="text-sm text-gray-500">
+              Showing{" "}
+              <span className="font-medium text-gray-700">
+                {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, total)}
+              </span>{" "}
+              of <span className="font-medium text-gray-700">{total}</span> reservations
+            </p>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setPage((p) => p - 1)}
+                disabled={page === 1}
+                className="w-8 h-8 flex items-center justify-center rounded-xl border border-gray-200 text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-50 transition-all"
+              >
+                ‹
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+                .reduce<(number | "...")[]>((acc, p, idx, arr) => {
+                  if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push("...");
+                  acc.push(p);
+                  return acc;
+                }, [])
+                .map((item, idx) =>
+                  item === "..." ? (
+                    <span key={`ellipsis-${idx}`} className="w-8 flex items-center justify-center text-gray-400 text-sm">…</span>
+                  ) : (
+                    <button
+                      key={item}
+                      onClick={() => setPage(item as number)}
+                      className={`w-8 h-8 rounded-xl border text-sm font-medium transition-all ${
+                        page === item
+                          ? "bg-emerald-500 text-white border-emerald-500"
+                          : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                      }`}
+                    >
+                      {item}
+                    </button>
+                  )
+                )}
+              <button
+                onClick={() => setPage((p) => p + 1)}
+                disabled={page === totalPages}
+                className="w-8 h-8 flex items-center justify-center rounded-xl border border-gray-200 text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-50 transition-all"
+              >
+                ›
+              </button>
+            </div>
+          </div>
+        )}
+        </>
       )}
     </div>
   );
