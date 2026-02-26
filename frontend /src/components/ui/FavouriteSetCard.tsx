@@ -8,7 +8,7 @@ interface FavouriteSetCardProps {
 
 const FavouriteSetCard = ({ set, onDelete }: FavouriteSetCardProps) => {
   const clubs = set.clubs as Club[];
-  const thumbnails = clubs.slice(0, 3);
+  const thumbnails = clubs.slice(0, 2);
   const remaining = clubs.length - thumbnails.length;
 
   return (

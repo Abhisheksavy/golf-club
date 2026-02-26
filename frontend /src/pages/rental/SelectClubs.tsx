@@ -271,7 +271,7 @@ const SelectClubs = () => {
       )}
 
       {/* Two-column layout */}
-      <div className="flex gap-6 items-start">
+      <div className="flex flex-col gap-4 lg:flex-row lg:gap-6 lg:items-start">
         {/* Left: Category accordion sections */}
         <div className="flex-1 min-w-0 space-y-3">
           {isLoading ? (
@@ -473,7 +473,7 @@ const SelectClubs = () => {
         </div>
 
         {/* Right: Your Bag panel */}
-        <div className="w-56 flex-shrink-0 sticky top-4">
+        <div className="w-full lg:w-56 lg:flex-shrink-0 lg:sticky lg:top-4">
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
             <div className="px-4 py-3 bg-golf-600 flex items-center justify-between">
               <h2 className="text-sm font-semibold text-white">Your Bag</h2>
@@ -485,9 +485,9 @@ const SelectClubs = () => {
             </div>
 
             {selectedClubs.length === 0 ? (
-              <div className="px-4 py-6 text-center">
+              <div className="px-4 py-4 lg:py-6 flex items-center gap-3 lg:flex-col lg:text-center">
                 <svg
-                  className="w-8 h-8 text-gray-200 mx-auto mb-2"
+                  className="w-7 h-7 lg:w-8 lg:h-8 text-gray-200 lg:mx-auto lg:mb-2 flex-shrink-0"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -502,7 +502,7 @@ const SelectClubs = () => {
                 <p className="text-xs text-gray-400">No clubs selected yet</p>
               </div>
             ) : (
-              <div className="divide-y divide-gray-50 max-h-80 overflow-y-auto">
+              <div className="divide-y divide-gray-50 max-h-48 lg:max-h-80 overflow-y-auto">
                 {selectedClubs.map((club) => (
                   <div
                     key={club._id}

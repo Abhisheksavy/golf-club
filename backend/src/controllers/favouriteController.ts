@@ -5,12 +5,8 @@ import { DeletionLog } from "../models/deletionLog";
 import { StatusCodes } from "http-status-codes";
 import { Response } from "../utils/response";
 import { fetchProductsByIds } from "./clubController";
+import { enrichFavourite } from "../utils/helper";
 
-async function enrichFavourite(fav: InstanceType<typeof Favourite>) {
-  const reversedIds = [...(fav.clubs as string[])].reverse();
-  const clubs = await fetchProductsByIds(reversedIds);
-  return { ...fav.toObject(), clubs };
-}
 
 export const createFavourite = async (
   req: AuthRequest,

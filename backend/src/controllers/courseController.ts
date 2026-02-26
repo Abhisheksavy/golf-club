@@ -1,28 +1,7 @@
 import type { Request, Response as ExpressResponse } from "express";
 import { StatusCodes } from "http-status-codes";
 import { Response } from "../utils/response";
-
-interface BooqableAvailability {
-  id: string;
-  type: string;
-  attributes: {
-    date: string;
-    available: boolean;
-    [key: string]: unknown;
-  };
-}
-
-interface BooqableLocation {
-  id: string;
-  type: string;
-  attributes: {
-    name: string;
-    address_line_1: string | null;
-    city: string | null;
-    country: string | null;
-    [key: string]: unknown;
-  };
-}
+import { BooqableAvailability, BooqableLocation } from "../types/booqable.type";
 
 export const getCourses = async (
   _req: Request,

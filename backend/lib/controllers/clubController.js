@@ -1,79 +1,41 @@
 "use strict";
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAvailableClubs = exports.getClubById = exports.getClubs = void 0;
 exports.fetchAllBooqableProducts = fetchAllBooqableProducts;
 exports.fetchProductsByIds = fetchProductsByIds;
 const http_status_codes_1 = require("http-status-codes");
 const response_1 = require("../utils/response");
-function getClubCategory(tags) {
-    if (tags.includes("driver"))
-        return "driver";
-    if (tags.includes("fairway-wood") || tags.includes("hybrid"))
-        return "fairway-woods-hybrids";
-    if (tags.includes("iron"))
-        return "irons";
-    if (tags.includes("wedge"))
-        return "wedges";
-    if (tags.includes("putter"))
-        return "putter";
-    return undefined;
-}
-function getShaftType(tags) {
-    if (tags.includes("flexible"))
-        return "flexible";
-    if (tags.includes("stiff"))
-        return "stiff";
-    return undefined;
-}
-function getIronType(tags) {
-    if (tags.includes("blades"))
-        return "blades";
-    if (tags.includes("cavity-back"))
-        return "cavity-back";
-    if (tags.includes("muscle-back"))
-        return "muscle-back";
-    return undefined;
-}
-function transformProduct(p) {
-    var _a, _b, _c, _d;
-    const tags = (_a = p.attributes.tag_list) !== null && _a !== void 0 ? _a : [];
-    return {
-        _id: p.id,
-        booqableProductId: p.id,
-        name: p.attributes.name,
-        sku: (_b = p.attributes.sku) !== null && _b !== void 0 ? _b : undefined,
-        image: (_c = p.attributes.photo_url) !== null && _c !== void 0 ? _c : undefined,
-        description: (_d = p.attributes.description) !== null && _d !== void 0 ? _d : undefined,
-        metadata: p.attributes,
-        isActive: !p.attributes.archived,
-        category: getClubCategory(tags),
-        shaftType: getShaftType(tags),
-        ironType: getIronType(tags),
-    };
-}
-async function fetchPage(page, pageSize) {
-    const url = new URL("https://firestx.booqable.com/api/4/products");
-    url.searchParams.set("page[number]", String(page));
-    url.searchParams.set("page[size]", String(pageSize));
-    const res = await fetch(url.toString(), {
-        headers: { Authorization: `Bearer ${process.env.BOOQABLE_TOKEN}` },
-    });
-    if (!res.ok)
-        throw new Error(`Booqable API error: ${res.status}`);
-    return res.json();
-}
+const helper_1 = require("../utils/helper");
 async function fetchAllBooqableProducts() {
     const pageSize = 100;
-    const first = await fetchPage(1, pageSize);
+    const first = await (0, helper_1.fetchPage)(1, pageSize);
     const totalPages = Math.ceil(first.meta.total_count / pageSize);
     if (totalPages <= 1)
         return first.data;
-    const rest = await Promise.all(Array.from({ length: totalPages - 1 }, (_, i) => fetchPage(i + 2, pageSize)));
+    const rest = await Promise.all(Array.from({ length: totalPages - 1 }, (_, i) => (0, helper_1.fetchPage)(i + 2, pageSize)));
     return [first.data, ...rest.map((p) => p.data)].flat();
 }
 async function fetchProductsByIds(ids) {
     const all = await fetchAllBooqableProducts();
-    return all.filter((p) => ids.includes(p.id)).map(transformProduct);
+    const filtered = all.filter((p) => ids.includes(p.id));
+    return filtered
+        .sort((a, b) => {
+        var _a, _b;
+        return new Date((_a = b.attributes.created_at) !== null && _a !== void 0 ? _a : "").getTime() -
+            new Date((_b = a.attributes.created_at) !== null && _b !== void 0 ? _b : "").getTime();
+    })
+        .map(helper_1.transformProduct);
 }
 const getClubs = async (req, res) => {
     try {
@@ -97,11 +59,17 @@ const getClubs = async (req, res) => {
         if (category) {
             filtered = filtered.filter((p) => p.attributes.category === category);
         }
+        filtered = filtered.sort((a, b) => {
+            var _a, _b;
+            const dateA = new Date(((_a = a.attributes.created_at) !== null && _a !== void 0 ? _a : "")).getTime();
+            const dateB = new Date(((_b = b.attributes.created_at) !== null && _b !== void 0 ? _b : "")).getTime();
+            return dateB - dateA;
+        });
         const total = filtered.length;
         const totalPages = Math.ceil(total / limit);
         const clubs = filtered
             .slice((page - 1) * limit, page * limit)
-            .map(transformProduct);
+            .map(helper_1.transformProduct);
         res
             .status(http_status_codes_1.StatusCodes.OK)
             .json(response_1.Response.success("clubs fetched successfully", { clubs, total, totalPages, page, limit }, http_status_codes_1.StatusCodes.OK));
@@ -126,7 +94,7 @@ const getClubById = async (req, res) => {
         const { data } = (await apiRes.json());
         res
             .status(http_status_codes_1.StatusCodes.OK)
-            .json(response_1.Response.success("Club fetch by Id", transformProduct(data), http_status_codes_1.StatusCodes.OK));
+            .json(response_1.Response.success("Club fetch by Id", (0, helper_1.transformProduct)(data), http_status_codes_1.StatusCodes.OK));
     }
     catch (error) {
         console.error("getClubById error:", error);
@@ -178,8 +146,16 @@ const getAvailableClubs = async (req, res) => {
         // Booqable products are bulk/non-trackable so there are no per-location
         // stock item records — all clubs are considered present at the course.
         if (!date) {
-            const result = active.map((p) => (Object.assign(Object.assign({}, transformProduct(p)), { available: true, unavailabilityReason: null })));
-            res.status(http_status_codes_1.StatusCodes.OK).json(response_1.Response.success("Available clubs fetched", result, http_status_codes_1.StatusCodes.OK));
+            const result = active
+                .sort((a, b) => {
+                var _a, _b;
+                return new Date((_a = b.attributes.created_at) !== null && _a !== void 0 ? _a : "").getTime() -
+                    new Date((_b = a.attributes.created_at) !== null && _b !== void 0 ? _b : "").getTime();
+            })
+                .map((p) => (Object.assign(Object.assign({}, (0, helper_1.transformProduct)(p)), { available: true, unavailabilityReason: null })));
+            res
+                .status(http_status_codes_1.StatusCodes.OK)
+                .json(response_1.Response.success("Available clubs fetched", result, http_status_codes_1.StatusCodes.OK));
             return;
         }
         // Course + date mode: check availability per product on the requested date.
@@ -191,19 +167,35 @@ const getAvailableClubs = async (req, res) => {
         }
         const parts = date.split("-");
         const parsedDate = parts.length === 3
-            ? { year: parseInt(parts[0], 10), month: parseInt(parts[1], 10), day: parseInt(parts[2], 10) }
+            ? {
+                year: parseInt(parts[0], 10),
+                month: parseInt(parts[1], 10),
+                day: parseInt(parts[2], 10),
+            }
             : null;
         if (!parsedDate) {
-            res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json(response_1.Response.failure("Invalid date format", null, http_status_codes_1.StatusCodes.BAD_REQUEST));
+            res
+                .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                .json(response_1.Response.failure("Invalid date format", null, http_status_codes_1.StatusCodes.BAD_REQUEST));
             return;
         }
-        const available = await Promise.all(active.map(async (p) => {
+        const available = (await Promise.all(active.map(async (p) => {
+            var _a;
             const isAvailable = locationId
                 ? await checkProductAvailableOnDate(p.id, locationId, parsedDate.year, parsedDate.month, parsedDate.day)
                 : true;
-            return Object.assign(Object.assign({}, transformProduct(p)), { available: isAvailable, unavailabilityReason: isAvailable ? null : "on-this-date" });
-        }));
-        res.status(http_status_codes_1.StatusCodes.OK).json(response_1.Response.success("Available clubs fetched", available, http_status_codes_1.StatusCodes.OK));
+            return Object.assign(Object.assign({}, (0, helper_1.transformProduct)(p)), { available: isAvailable, unavailabilityReason: isAvailable
+                    ? null
+                    : "on-this-date", _createdAt: (_a = p.attributes.created_at) !== null && _a !== void 0 ? _a : "" });
+        })))
+            .sort((a, b) => new Date(b._createdAt).getTime() - new Date(a._createdAt).getTime())
+            .map((_a) => {
+            var { _createdAt: _ } = _a, rest = __rest(_a, ["_createdAt"]);
+            return rest;
+        });
+        res
+            .status(http_status_codes_1.StatusCodes.OK)
+            .json(response_1.Response.success("Available clubs fetched", available, http_status_codes_1.StatusCodes.OK));
     }
     catch (error) {
         console.error("getAvailableClubs error:", error);

@@ -31,15 +31,17 @@ export const router = createBrowserRouter([
     path: "/",
     element: (
       // <ProtectedRoute>
-        <AppLayout />
+      <AppLayout />
       // </ProtectedRoute>
     ),
     children: [
       {
         index: true,
-        element: isAuthenticated()
-          ? <Navigate to="/dashboard" replace />
-          : <Navigate to="/reserve/course" replace />,
+        element: isAuthenticated() ? (
+          <Navigate to="/dashboard" replace />
+        ) : (
+          <Navigate to="/reserve/course" replace />
+        ),
       },
       {
         path: "dashboard",

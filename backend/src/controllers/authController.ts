@@ -10,107 +10,6 @@ import { Response } from "../utils/response";
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
-export const loginWithPassword = async (req: any, res: any) => {
-  try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json(
-          Response.failure(
-            "Email and password are required",
-            null,
-            StatusCodes.BAD_REQUEST
-          )
-        );
-    }
-
-    if (!EMAIL_REGEX.test(email)) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json(
-          Response.failure(
-            "Please enter a valid email address",
-            null,
-            StatusCodes.BAD_REQUEST
-          )
-        );
-    }
-
-    if (!PASSWORD_REGEX.test(password)) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json(
-          Response.failure(
-            "Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character",
-            null,
-            StatusCodes.BAD_REQUEST
-          )
-        );
-    }
-
-    let user = await USER.findOne({ email });
-
-    if (user && user.password) {
-      // Existing password account — verify credentials
-      const match = await bcrypt.compare(password, user.password);
-      if (!match) {
-        return res
-          .status(StatusCodes.UNAUTHORIZED)
-          .json(
-            Response.failure(
-              "Incorrect password",
-              null,
-              StatusCodes.UNAUTHORIZED
-            )
-          );
-      }
-    } else if (user && !user.password) {
-      // Account exists but was created via magic link — reject
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json(
-          Response.failure(
-            "This email uses magic link login. Use the Email Link tab.",
-            null,
-            StatusCodes.BAD_REQUEST
-          )
-        );
-    } else {
-      // New user — auto-register with hashed password
-      const hash = await bcrypt.hash(password, 10);
-      user = await USER.create({ email, password: hash, isVerified: true });
-    }
-
-    const jwtToken = jwt.sign({ userId: user!._id }, process.env.JWT_SECRET!, {
-      expiresIn: "7d",
-    });
-
-    return res.status(StatusCodes.OK).json(
-      Response.success(
-        "Login successful",
-        {
-          token: jwtToken,
-          user: { id: user!._id, email: user!.email },
-        },
-        StatusCodes.OK
-      )
-    );
-  } catch (error) {
-    console.error(error);
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json(
-        Response.failure(
-          "Server error",
-          null,
-          StatusCodes.INTERNAL_SERVER_ERROR
-        )
-      );
-  }
-};
-
 export const requestMagicLink = async (req: any, res: any) => {
   try {
     const { email } = req.body;
@@ -164,6 +63,107 @@ export const requestMagicLink = async (req: any, res: any) => {
       );
   } catch (error) {
     console.log("error", error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(
+        Response.failure(
+          "Server error",
+          null,
+          StatusCodes.INTERNAL_SERVER_ERROR
+        )
+      );
+  }
+};
+
+export const loginWithPassword = async (req: any, res: any) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(
+          Response.failure(
+            "Email and password are required",
+            null,
+            StatusCodes.BAD_REQUEST
+          )
+        );
+    }
+
+    if (!EMAIL_REGEX.test(email)) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(
+          Response.failure(
+            "Please enter a valid email address",
+            null,
+            StatusCodes.BAD_REQUEST
+          )
+        );
+    }
+
+    if (!PASSWORD_REGEX.test(password)) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(
+          Response.failure(
+            "Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character",
+            null,
+            StatusCodes.BAD_REQUEST
+          )
+        );
+    }
+
+    let user = await USER.findOne({ email });
+
+    if (user && user?.password) {
+      // Existing password account — verify credentials
+      const match = await bcrypt.compare(password, user.password);
+      if (!match) {
+        return res
+          .status(StatusCodes.UNAUTHORIZED)
+          .json(
+            Response.failure(
+              "Incorrect password",
+              null,
+              StatusCodes.UNAUTHORIZED
+            )
+          );
+      }
+    } else if (user && !user.password) {
+      // Account exists but was created via magic link — reject
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(
+          Response.failure(
+            "This email uses magic link login. Use the Email Link tab.",
+            null,
+            StatusCodes.BAD_REQUEST
+          )
+        );
+    } else {
+      // New user — auto-register with hashed password
+      const hash = await bcrypt.hash(password, 10);
+      user = await USER.create({ email, password: hash, isVerified: true });
+    }
+
+    const jwtToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!, {
+      expiresIn: "7d",
+    });
+
+    return res.status(StatusCodes.OK).json(
+      Response.success(
+        "Login successful",
+        {
+          token: jwtToken,
+          user: { id: user!._id, email: user!.email },
+        },
+        StatusCodes.OK
+      )
+    );
+  } catch (error) {
+    console.error(error);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json(

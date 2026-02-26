@@ -6,10 +6,7 @@ const deletionLog_1 = require("../models/deletionLog");
 const http_status_codes_1 = require("http-status-codes");
 const response_1 = require("../utils/response");
 const clubController_1 = require("./clubController");
-async function enrichFavourite(fav) {
-    const clubs = await (0, clubController_1.fetchProductsByIds)(fav.clubs);
-    return Object.assign(Object.assign({}, fav.toObject()), { clubs });
-}
+const helper_1 = require("../utils/helper");
 const createFavourite = async (req, res) => {
     try {
         const { setName, clubs } = req.body;
@@ -44,7 +41,7 @@ const createFavourite = async (req, res) => {
         });
         res
             .status(http_status_codes_1.StatusCodes.CREATED)
-            .json(response_1.Response.success("Favorite Bag created!!", await enrichFavourite(favourite), http_status_codes_1.StatusCodes.CREATED));
+            .json(response_1.Response.success("Favorite Bag created!!", await (0, helper_1.enrichFavourite)(favourite), http_status_codes_1.StatusCodes.CREATED));
     }
     catch (error) {
         console.error("createFavourite error:", error);
@@ -56,18 +53,31 @@ const createFavourite = async (req, res) => {
 exports.createFavourite = createFavourite;
 const getFavourites = async (req, res) => {
     try {
+        const page = Math.max(1, parseInt(req.query.page) || 1);
+        const limit = Math.max(1, parseInt(req.query.limit) || 10);
+        const skip = (page - 1) * limit;
+        const total = await favouriteSets_1.Favourite.countDocuments({
+            user: req.userId,
+            isDeleted: { $ne: true },
+        });
         const favourites = await favouriteSets_1.Favourite.find({
             user: req.userId,
             isDeleted: { $ne: true },
-        }).sort({ updatedAt: -1 });
+        })
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
         const allClubIds = [
             ...new Set(favourites.flatMap((f) => f.clubs)),
         ];
         const clubMap = new Map((await (0, clubController_1.fetchProductsByIds)(allClubIds)).map((c) => [c._id, c]));
-        const enriched = favourites.map((f) => (Object.assign(Object.assign({}, f.toObject()), { clubs: f.clubs.map((id) => { var _a; return (_a = clubMap.get(id)) !== null && _a !== void 0 ? _a : id; }) })));
+        const enriched = favourites.map((f) => (Object.assign(Object.assign({}, f.toObject()), { clubs: [...f.clubs]
+                .reverse()
+                .map((id) => { var _a; return (_a = clubMap.get(id)) !== null && _a !== void 0 ? _a : id; }) })));
+        const totalPages = Math.ceil(total / limit);
         res
             .status(http_status_codes_1.StatusCodes.OK)
-            .json(response_1.Response.success("Favourite fetched successfully", enriched, http_status_codes_1.StatusCodes.OK));
+            .json(response_1.Response.success("Favourite fetched successfully", { favourites: enriched, total, totalPages, page, limit }, http_status_codes_1.StatusCodes.OK));
     }
     catch (error) {
         console.error("getFavourites error:", error);
@@ -83,7 +93,7 @@ const getFavouriteById = async (req, res) => {
             _id: req.params.id,
             user: req.userId,
             isDeleted: { $ne: true },
-        });
+        }).sort({ createdAt: -1 });
         if (!favourite) {
             res
                 .status(http_status_codes_1.StatusCodes.OK)
@@ -92,7 +102,7 @@ const getFavouriteById = async (req, res) => {
         }
         res
             .status(http_status_codes_1.StatusCodes.OK)
-            .json(response_1.Response.success("Favourite fetched successfully", await enrichFavourite(favourite), http_status_codes_1.StatusCodes.OK));
+            .json(response_1.Response.success("Favourite fetched successfully", await (0, helper_1.enrichFavourite)(favourite), http_status_codes_1.StatusCodes.OK));
     }
     catch (error) {
         console.error("getFavouriteById error:", error);
@@ -130,7 +140,7 @@ const updateFavourite = async (req, res) => {
         }
         if (clubs !== undefined)
             update.clubs = clubs;
-        const favourite = await favouriteSets_1.Favourite.findOneAndUpdate({ _id: req.params.id, user: req.userId, isDeleted: { $ne: true } }, update, { new: true });
+        const favourite = await favouriteSets_1.Favourite.findOneAndUpdate({ _id: req.params.id, user: req.userId, isDeleted: { $ne: true } }, update, { new: true }).sort({ createdAt: -1 });
         if (!favourite) {
             res
                 .status(http_status_codes_1.StatusCodes.OK)
@@ -139,7 +149,7 @@ const updateFavourite = async (req, res) => {
         }
         res
             .status(http_status_codes_1.StatusCodes.OK)
-            .json(response_1.Response.success("Favourite fetched successfully", await enrichFavourite(favourite), http_status_codes_1.StatusCodes.OK));
+            .json(response_1.Response.success("Favourite fetched successfully", await (0, helper_1.enrichFavourite)(favourite), http_status_codes_1.StatusCodes.OK));
     }
     catch (error) {
         console.error("updateFavourite error:", error);
