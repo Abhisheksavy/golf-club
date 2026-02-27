@@ -52,7 +52,7 @@ const AddClubsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-12 text-center text-white/60">
+      <div className="max-w-4xl mx-auto px-4 py-12 text-center text-golf-yellow">
         Loading...
       </div>
     );

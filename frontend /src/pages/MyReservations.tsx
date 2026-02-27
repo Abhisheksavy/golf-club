@@ -48,7 +48,7 @@ const MyReservations = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-golf-yellow">My Reservations</h1>
-          <p className="text-charcoal text-sm mt-1">All your reserved club sets</p>
+          <p className="text-white text-sm mt-1">All your reserved club sets</p>
         </div>
         <button onClick={() => navigate("/reserve/course")} className="btn-primary bg-golf-yellow text-charcoal hover:text-white/70 text-sm">
           New Reservation
@@ -56,7 +56,7 @@ const MyReservations = () => {
       </div>
 
       {isLoading ? (
-        <div className="text-center py-16 text-white/40">Loading reservations...</div>
+        <div className="text-center py-16 text-golf-yellow">Loading reservations...</div>
       ) : !data || reservations.length === 0 ? (
         <div className="text-center py-16">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/10 mb-4">

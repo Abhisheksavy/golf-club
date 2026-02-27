@@ -36,13 +36,15 @@ const SavedBagSelect = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-golf-yellow mb-2">Welcome back!</h1>
+      <h1 className="text-2xl font-bold text-golf-yellow mb-2">
+        Welcome back!
+      </h1>
       <p className="text-white/60 mb-8">
         Use a saved bag or start fresh with new club selections.
       </p>
 
       {bagsLoading ? (
-        <div className="text-center py-12 text-white/60">
+        <div className="text-center py-12 text-golf-yellow">
           Loading your bags...
         </div>
       ) : bags.length === 0 ? (

@@ -60,8 +60,8 @@ const ClubCard = ({
           <div
             className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
               isSelected
-                ? "bg-emerald-500 border-emerald-500"
-                : "border-slate-300 group-hover:border-emerald-400"
+                ? "bg-golf-dark border-white"
+                : "border-slate-300 group-hover:border-white"
             }`}
           >
             {isSelected && (
@@ -113,10 +113,10 @@ const ClubCard = ({
 
         {/* Name + SKU */}
         <td className="py-3 pr-4 min-w-0">
-          <p className="text-sm font-semibold text-white line-clamp-1">
+          <p className="text-sm font-semibold text-golf-yellow line-clamp-1">
             {club.name}
           </p>
-          <p className="text-[11px] text-white/40 font-mono mt-0.5 truncate">
+          <p className="text-[11px] text-golf-yellow font-mono mt-0.5 truncate">
             {club.sku}
           </p>
         </td>
@@ -138,8 +138,8 @@ const ClubCard = ({
         {/* Tracking */}
         <td className="py-3 pr-4 hidden md:table-cell">
           {typeof trackingType === "string" && (
-            <span className="text-xs text-white/50 capitalize">
-              {trackingType}
+            <span className="text-xs text-golf-yellow capitalize">
+              {trackingType || "-"}
             </span>
           )}
         </td>
@@ -148,9 +148,11 @@ const ClubCard = ({
         <td className="py-3 pr-4 text-right hidden sm:table-cell">
           {price && (
             <div>
-              <span className="text-sm font-bold text-white">{price}</span>
+              <span className="text-sm font-bold text-golf-yellow">
+                {price || 0}
+              </span>
               {typeof pricePeriod === "string" && (
-                <span className="text-[10px] text-white/40 ml-1">
+                <span className="text-[10px] text-golf-yellow ml-1">
                   /{pricePeriod}
                 </span>
               )}
@@ -297,9 +299,7 @@ const ClubCard = ({
         <div className="flex items-center justify-between pt-2 border-t border-white/10">
           {price ? (
             <div className="flex items-baseline gap-1">
-              <span className="text-base font-bold text-white">
-                {price}
-              </span>
+              <span className="text-base font-bold text-white">{price}</span>
               {typeof pricePeriod === "string" && (
                 <span className="text-[11px] text-white/40">
                   /{pricePeriod}

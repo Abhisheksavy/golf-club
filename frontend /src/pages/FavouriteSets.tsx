@@ -29,7 +29,7 @@ const FavouriteSets = () => {
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-[3px] border-[#FBE118] border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-charcoal">Loading your bags...</p>
+          <p className="text-sm text-golf-yellow">Loading your bags...</p>
         </div>
       </div>
     );
@@ -43,7 +43,7 @@ const FavouriteSets = () => {
           <h1 className="text-3xl font-bold text-golf-yellow tracking-tight">
             My Bags
           </h1>
-          <p className="text-charcoal text-sm mt-1">
+          <p className="text-white text-sm mt-1">
             {total > 0
               ? `${total} saved bag${total !== 1 ? "s" : ""}`
               : "Save your favourite club combinations"}

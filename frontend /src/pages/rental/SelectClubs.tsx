@@ -275,7 +275,7 @@ const SelectClubs = () => {
         {/* Left: Category accordion sections */}
         <div className="flex-1 min-w-0 space-y-3">
           {isLoading ? (
-            <div className="text-center py-16 text-white/40">
+            <div className="text-center py-16 text-golf-yellow">
               Loading clubs...
             </div>
           ) : (

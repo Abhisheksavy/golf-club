@@ -21,7 +21,7 @@ const FavouriteSetDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-12 text-center text-charcoal">
+      <div className="max-w-3xl mx-auto px-4 py-12 text-center text-golf-yellow">
         Loading...
       </div>
     );
@@ -92,7 +92,7 @@ const FavouriteSetDetail = () => {
             <h1 className="text-2xl font-bold text-golf-yellow">
               {set.setName}
             </h1>
-            <p className="text-sm text-charcoal mt-1">
+            <p className="text-sm text-white mt-1">
               {setClubs.length} {setClubs.length === 1 ? "club" : "clubs"}
             </p>
           </div>
@@ -172,7 +172,7 @@ const FavouriteSetDetail = () => {
 
               {/* Info */}
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-charcoal text-base truncate">
+                <h3 className="font-semibold text-white text-base truncate">
                   {club.name}
                 </h3>
 
@@ -180,13 +180,13 @@ const FavouriteSetDetail = () => {
                 <span
                   className={`inline-flex items-center gap-1 mt-1 px-2.5 py-1 rounded-full text-xs font-semibold ${
                     club.isActive
-                      ? "bg-dark-blue text-charcoal-600"
-                      : "bg-yellow-50 text-red-600"
+                       ? "bg-emerald-50 text-emerald-600"
+                      : "bg-red-50 text-red-600"
                   }`}
                 >
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${
-                      club.isActive ? "bg-charcoal" : "bg-red-500"
+                       club.isActive ? "bg-emerald-500" : "bg-red-500"
                     }`}
                   />
                   {club.isActive ? "Active" : "Inactive"}
@@ -196,7 +196,7 @@ const FavouriteSetDetail = () => {
               {/* Delete Button */}
               <button
                 onClick={() => handleRemoveClub(club._id)}
-                className="opacity-0 group-hover:opacity-100 transition-all duration-200 bg-red-50 hover:bg-charcoal text-red-600 p-2 rounded-lg"
+                className="opacity-0 group-hover:opacity-100 transition-all duration-200 bg-red-50 hover:bg-red-100 text-red-600 p-2 rounded-lg"
                 title="Remove club"
               >
                 <svg

@@ -12,15 +12,15 @@ const Navbar = () => {
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
       isActive
-        ? "bg-[#1c3e0c] text-golf-yellow"
-        : "text-charcoal hover:bg-golf-yellow"
+        ? "bg-dark-blue text-golf-yellow"
+        : "text-golf-yellow hover:bg-dark-blue"
     }`;
 
   const mobileLinkClass = ({ isActive }: { isActive: boolean }) =>
     `block px-4 py-3 text-sm font-medium transition-colors border-b border-[#FBE118]/20 ${
       isActive
-        ? "bg-[#1c3e0c] text-golf-yellow"
-        : "text-charcoal hover:bg-golf-yellow"
+        ? "bg-dark-blue text-golf-yellow"
+        : "text-golf-yellow hover:bg-golf-yellow"
     }`;
 
   return (
@@ -29,7 +29,7 @@ const Navbar = () => {
         {/* Logo */}
         <button
           onClick={() => navigate(authed ? "/dashboard" : "/reserve/course")}
-          className="text-lg font-bold tracking-tight hover:text-golf-yellow transition-colors whitespace-nowrap"
+          className="text-lg font-bold tracking-tight text-golf-yellow transition-colors whitespace-nowrap"
         >
           Golf Club
         </button>
@@ -61,7 +61,7 @@ const Navbar = () => {
               <span className="text-sm text-golf-yellow/70">{user?.email}</span>
               <button
                 onClick={logout}
-                className="px-3 py-1.5 text-sm border border-[#FBE118]/40 rounded-md hover:bg-golf-yellow transition-colors"
+                className="px-3 py-1.5 text-sm border border-[#FBE118]/40 rounded-md text-golf-yellow transition-colors"
               >
                 Logout
               </button>
@@ -69,7 +69,7 @@ const Navbar = () => {
           ) : (
             <button
               onClick={() => navigate("/login")}
-              className="px-3 py-1.5 text-sm border border-[#FBE118]/40 rounded-md hover:bg-golf-yellow transition-colors"
+              className="px-3 py-1.5 text-sm border border-[#FBE118]/40 rounded-md text-golf-yellow transition-colors"
             >
               Log In
             </button>
@@ -170,7 +170,7 @@ const Navbar = () => {
                   logout();
                   setMenuOpen(false);
                 }}
-                className="flex-shrink-0 px-3 py-1.5 text-sm border border-[#FBE118]/40 rounded-md hover:bg-golf-yellow transition-colors"
+                className="flex-shrink-0 px-3 py-1.5 text-sm border border-[#FBE118]/40 rounded-md text-golf-yellow transition-colors"
               >
                 Logout
               </button>
