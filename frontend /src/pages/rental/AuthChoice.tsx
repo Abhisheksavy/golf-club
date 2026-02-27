@@ -23,8 +23,8 @@ const AuthChoice = () => {
 
   return (
     <div className="max-w-md mx-auto text-center">
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">How would you like to continue?</h1>
-      <p className="text-gray-500 mb-8">Log in to use your saved bags or continue as a guest to pick clubs now.</p>
+      <h1 className="text-2xl font-bold text-golf-yellow mb-2">How would you like to continue?</h1>
+      <p className="text-white/60 mb-8">Log in to use your saved bags or continue as a guest to pick clubs now.</p>
 
       <div className="space-y-4">
         <button
@@ -42,7 +42,7 @@ const AuthChoice = () => {
         </button>
       </div>
 
-      <p className="text-xs text-gray-400 mt-6">
+      <p className="text-xs text-white/40 mt-6">
         Guests can select clubs now and log in later to save their bag.
       </p>
     </div>

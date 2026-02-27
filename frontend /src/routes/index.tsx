@@ -23,6 +23,7 @@ import SwingStrength from "../pages/rental/SwingStrength";
 import SavedBagSelect from "../pages/rental/SavedBagSelect";
 import SavedBagReview from "../pages/rental/SavedBagReview";
 import NotFound from "../pages/NotFound";
+import AddClubsPage from "../pages/AddClubsPage";
 // import ProtectedRoute from "../components/ProtectedRoute";
 import AppLayout from "../components/layout/AppLayout";
 
@@ -58,6 +59,10 @@ export const router = createBrowserRouter([
       {
         path: "my-bags/:setId",
         element: <FavouriteSetDetail />,
+      },
+      {
+        path: "my-bags/:setId/add-clubs",
+        element: <AddClubsPage />,
       },
       {
         path: "my-reservations",

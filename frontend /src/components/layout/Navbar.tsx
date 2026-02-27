@@ -11,21 +11,25 @@ const Navbar = () => {
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-      isActive ? "bg-golf-800 text-white" : "text-golf-100 hover:bg-golf-600"
+      isActive
+        ? "bg-[#1c3e0c] text-golf-yellow"
+        : "text-charcoal hover:bg-golf-yellow"
     }`;
 
   const mobileLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `block px-4 py-3 text-sm font-medium transition-colors border-b border-golf-600 ${
-      isActive ? "bg-golf-800 text-white" : "text-golf-100 hover:bg-golf-600"
+    `block px-4 py-3 text-sm font-medium transition-colors border-b border-[#FBE118]/20 ${
+      isActive
+        ? "bg-[#1c3e0c] text-golf-yellow"
+        : "text-charcoal hover:bg-golf-yellow"
     }`;
 
   return (
-    <nav className="bg-golf-700 text-white shadow-md">
+    <nav className="bg-golf-dark text-charcoal shadow-md">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
         <button
           onClick={() => navigate(authed ? "/dashboard" : "/reserve/course")}
-          className="text-lg font-bold tracking-tight hover:text-golf-200 transition-colors whitespace-nowrap"
+          className="text-lg font-bold tracking-tight hover:text-golf-yellow transition-colors whitespace-nowrap"
         >
           Golf Club
         </button>
@@ -54,10 +58,10 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-4">
           {authed ? (
             <>
-              <span className="text-sm text-golf-200">{user?.email}</span>
+              <span className="text-sm text-golf-yellow/70">{user?.email}</span>
               <button
                 onClick={logout}
-                className="px-3 py-1.5 text-sm border border-golf-500 rounded-md hover:bg-golf-600 transition-colors"
+                className="px-3 py-1.5 text-sm border border-[#FBE118]/40 rounded-md hover:bg-golf-yellow transition-colors"
               >
                 Logout
               </button>
@@ -65,7 +69,7 @@ const Navbar = () => {
           ) : (
             <button
               onClick={() => navigate("/login")}
-              className="px-3 py-1.5 text-sm border border-golf-500 rounded-md hover:bg-golf-600 transition-colors"
+              className="px-3 py-1.5 text-sm border border-[#FBE118]/40 rounded-md hover:bg-golf-yellow transition-colors"
             >
               Log In
             </button>
@@ -77,14 +81,14 @@ const Navbar = () => {
           {!authed && (
             <button
               onClick={() => navigate("/login")}
-              className="px-3 py-1.5 text-sm border border-golf-500 rounded-md hover:bg-golf-600 transition-colors"
+              className="px-3 py-1.5 text-sm border border-[#FBE118]/40 rounded-md hover:bg-[#1c3e0c] transition-colors"
             >
               Log In
             </button>
           )}
           {/* Hamburger button */}
           <button
-            className="p-2 rounded-md hover:bg-golf-600 transition-colors"
+            className="p-2 rounded-md hover:bg-[#1c3e0c] transition-colors"
             onClick={() => setMenuOpen((o) => !o)}
             aria-label="Toggle menu"
           >
@@ -123,7 +127,7 @@ const Navbar = () => {
 
       {/* Mobile dropdown menu (<768px) */}
       {menuOpen && (
-        <div className="md:hidden bg-golf-700 border-t border-golf-600">
+        <div className="md:hidden bg-golf-dark border-t border-[#FBE118]/20">
           {authed && (
             <>
               <NavLink
@@ -158,7 +162,7 @@ const Navbar = () => {
           </NavLink>
           {authed && (
             <div className="px-4 py-3 flex items-center justify-between">
-              <span className="text-sm text-golf-200 truncate mr-3">
+              <span className="text-sm text-golf-yellow truncate mr-3">
                 {user?.email}
               </span>
               <button
@@ -166,7 +170,7 @@ const Navbar = () => {
                   logout();
                   setMenuOpen(false);
                 }}
-                className="flex-shrink-0 px-3 py-1.5 text-sm border border-golf-500 rounded-md hover:bg-golf-600 transition-colors"
+                className="flex-shrink-0 px-3 py-1.5 text-sm border border-[#FBE118]/40 rounded-md hover:bg-golf-yellow transition-colors"
               >
                 Logout
               </button>

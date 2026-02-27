@@ -103,41 +103,41 @@ const RentalSummary = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">
+      <h1 className="text-2xl font-bold text-golf-yellow mb-6">
         Review Your Selection
       </h1>
 
-      <div className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-100">
+      <div className="bg-white/10 rounded-lg border border-white/20 divide-y divide-white/10">
         {/* Guest preferences */}
         {isGuest &&
           (handedness || gender || height || playingLevel || swingStrength) && (
             <div className="p-4">
-              <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">
+              <p className="text-xs text-white/50 uppercase tracking-wide mb-2">
                 Your Preferences
               </p>
               <div className="flex flex-wrap gap-2">
                 {handedness && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/10 text-white/70">
                     {HANDEDNESS_LABEL[handedness]}
                   </span>
                 )}
                 {gender && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/10 text-white/70">
                     {GENDER_LABEL[gender]}
                   </span>
                 )}
                 {height && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/10 text-white/70">
                     {height}
                   </span>
                 )}
                 {playingLevel && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-golf-100 text-golf-700">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#FBE118]/20 text-golf-yellow">
                     {LEVEL_LABEL[playingLevel]}
                   </span>
                 )}
                 {swingStrength && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-golf-100 text-golf-700">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#FBE118]/20 text-golf-yellow">
                     {STRENGTH_LABEL[swingStrength]}
                   </span>
                 )}
@@ -148,12 +148,12 @@ const RentalSummary = () => {
         {/* Course */}
         {selectedCourse && (
           <div className="p-4">
-            <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+            <p className="text-xs text-white/50 uppercase tracking-wide mb-1">
               Course
             </p>
-            <p className="font-semibold text-gray-900">{selectedCourse.name}</p>
+            <p className="font-semibold text-white">{selectedCourse.name}</p>
             {(selectedCourse.address || selectedCourse.location) && (
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-white/60">
                 {selectedCourse.address ?? selectedCourse.location}
               </p>
             )}
@@ -163,10 +163,10 @@ const RentalSummary = () => {
         {/* Date */}
         {selectedDate && (
           <div className="p-4">
-            <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+            <p className="text-xs text-white/50 uppercase tracking-wide mb-1">
               Date
             </p>
-            <p className="font-semibold text-gray-900">
+            <p className="font-semibold text-white">
               {new Date(selectedDate).toLocaleDateString("en-US", {
                 weekday: "long",
                 year: "numeric",
@@ -179,13 +179,13 @@ const RentalSummary = () => {
 
         {/* Clubs */}
         <div className="p-4">
-          <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">
+          <p className="text-xs text-white/50 uppercase tracking-wide mb-3">
             Clubs ({selectedClubs.length})
           </p>
           <div className="space-y-2">
             {selectedClubs.map((club) => (
               <div key={club._id} className="flex items-center gap-3">
-                <div className="w-10 h-8 rounded bg-gray-100 overflow-hidden flex-shrink-0">
+                <div className="w-10 h-8 rounded bg-white/10 overflow-hidden flex-shrink-0">
                   {club.image && (
                     <img
                       src={club.image}
@@ -195,9 +195,9 @@ const RentalSummary = () => {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <span className="text-sm text-gray-900">{club.name}</span>
+                  <span className="text-sm text-white">{club.name}</span>
                   {club.category && (
-                    <span className="ml-2 text-xs text-gray-400 capitalize">
+                    <span className="ml-2 text-xs text-white/40 capitalize">
                       {club.category.replace(/-/g, " ")}
                     </span>
                   )}
@@ -209,7 +209,7 @@ const RentalSummary = () => {
 
         {saveToBag && (
           <div className="p-4">
-            <p className="text-sm text-golf-600">
+            <p className="text-sm text-golf-yellow">
               This selection will also be saved as a favourite bag.
             </p>
           </div>
@@ -249,10 +249,10 @@ const RentalSummary = () => {
       </div>
 
       {!loggedIn && (
-        <p className="text-xs text-gray-400 text-right mt-3">
+        <p className="text-xs text-white/40 text-right mt-3">
           <button
             onClick={() => navigate("/login")}
-            className="text-golf-600 hover:underline"
+            className="text-golf-yellow hover:underline"
           >
             Log in
           </button>{" "}

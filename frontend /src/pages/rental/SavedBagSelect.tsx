@@ -36,19 +36,19 @@ const SavedBagSelect = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome back!</h1>
-      <p className="text-gray-500 mb-8">
+      <h1 className="text-2xl font-bold text-golf-yellow mb-2">Welcome back!</h1>
+      <p className="text-white/60 mb-8">
         Use a saved bag or start fresh with new club selections.
       </p>
 
       {bagsLoading ? (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-white/60">
           Loading your bags...
         </div>
       ) : bags.length === 0 ? (
-        <div className="bg-gray-50 rounded-xl border border-gray-200 p-8 text-center mb-6">
+        <div className="bg-white/10 rounded-xl border border-white/20 p-8 text-center mb-6">
           <svg
-            className="w-12 h-12 text-gray-400 mx-auto mb-3"
+            className="w-12 h-12 text-white/30 mx-auto mb-3"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -60,7 +60,7 @@ const SavedBagSelect = () => {
               d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"
             />
           </svg>
-          <p className="text-gray-500 text-sm">No saved bags yet.</p>
+          <p className="text-white/60 text-sm">No saved bags yet.</p>
         </div>
       ) : (
         <div className="relative mb-6">
@@ -71,17 +71,17 @@ const SavedBagSelect = () => {
                   key={bag._id}
                   type="button"
                   onClick={() => handleUseBag(bag.clubs as (Club | string)[])}
-                  className="flex items-center justify-between p-5 rounded-xl border-2 border-gray-200 bg-white hover:border-golf-400 hover:bg-golf-50 transition-all text-left"
+                  className="flex items-center justify-between p-5 rounded-xl border-2 border-white/20 bg-white/10 hover:border-[#FBE118]/50 hover:bg-white/15 transition-all text-left"
                 >
                   <div>
-                    <p className="font-semibold text-gray-900">{bag.setName}</p>
-                    <p className="text-sm text-gray-500 mt-0.5">
+                    <p className="font-semibold text-white">{bag.setName}</p>
+                    <p className="text-sm text-white/60 mt-0.5">
                       {Array.isArray(bag.clubs) ? bag.clubs.length : 0} club
                       {bag.clubs.length !== 1 ? "s" : ""}
                     </p>
                   </div>
                   <svg
-                    className="w-5 h-5 text-gray-400 flex-shrink-0"
+                    className="w-5 h-5 text-white/30 flex-shrink-0"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -106,7 +106,7 @@ const SavedBagSelect = () => {
       <button
         type="button"
         onClick={handleNewClubs}
-        className="w-full flex items-center justify-center gap-3 p-6 rounded-xl border-2 border-dashed border-gray-300 bg-white hover:border-golf-400 hover:bg-golf-50 transition-all"
+        className="w-full flex items-center justify-center gap-3 p-6 rounded-xl border-2 border-dashed border-white/30 bg-white/10 hover:border-[#FBE118]/50 hover:bg-white/15 transition-all"
       >
         <svg
           className="w-6 h-6 text-golf-600"
@@ -121,7 +121,7 @@ const SavedBagSelect = () => {
             d="M12 4.5v15m7.5-7.5h-15"
           />
         </svg>
-        <span className="font-medium text-gray-700">Choose new clubs</span>
+        <span className="font-medium text-white">Choose new clubs</span>
       </button>
     </div>
   );

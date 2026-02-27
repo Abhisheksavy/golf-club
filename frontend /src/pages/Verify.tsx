@@ -18,12 +18,12 @@ const Verify = () => {
   }, [token, mutate, navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full p-8 bg-white rounded-lg shadow-md text-center">
+    <div className="min-h-screen flex items-center justify-center bg-golf-dark">
+      <div className="max-w-md w-full p-8 bg-white/10 rounded-lg border border-white/20 shadow-md text-center">
         {isPending && (
           <>
             <div className="animate-spin w-8 h-8 border-4 border-golf-600 border-t-transparent rounded-full mx-auto mb-4" />
-            <p className="text-gray-600">Verifying your login...</p>
+            <p className="text-white/60">Verifying your login...</p>
           </>
         )}
 

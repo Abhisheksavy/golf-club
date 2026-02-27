@@ -31,9 +31,7 @@ const Login = () => {
   };
 
   const validateEmail = (v: string) => {
-    setEmailError(
-      EMAIL_REGEX.test(v) ? "" : "Enter a valid email address"
-    );
+    setEmailError(EMAIL_REGEX.test(v) ? "" : "Enter a valid email address");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -47,19 +45,21 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full p-8 bg-white rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-center mb-6">Continue with Email</h1>
+    <div className="min-h-screen flex items-center justify-center bg-golf-dark">
+      <div className="max-w-md w-full p-8 bg-white/10 rounded-lg border border-white/20 shadow-md">
+        <h1 className="text-2xl text-golf-yellow font-bold text-center mb-6">
+          Continue with Email
+        </h1>
 
         {/* Tab toggle */}
-        <div className="flex rounded-full bg-gray-100 p-1 mb-6">
+        <div className="flex rounded-full bg-white/10 p-1 mb-6">
           <button
             type="button"
             onClick={() => setTab("link")}
             className={`flex-1 py-2 text-sm font-medium rounded-full transition-colors ${
               tab === "link"
-                ? "bg-white shadow text-gray-900"
-                : "text-gray-500 hover:text-gray-700"
+                ? "bg-[#FBE118] text-[#285610] shadow"
+                : "text-white/60 hover:text-white"
             }`}
           >
             Email Link
@@ -69,8 +69,8 @@ const Login = () => {
             onClick={() => setTab("password")}
             className={`flex-1 py-2 text-sm font-medium rounded-full transition-colors ${
               tab === "password"
-                ? "bg-white shadow text-gray-900"
-                : "text-gray-500 hover:text-gray-700"
+                ? "bg-[#FBE118] text-[#285610] shadow"
+                : "text-white/60 hover:text-white"
             }`}
           >
             Password
@@ -82,19 +82,24 @@ const Login = () => {
           <>
             {linkSent ? (
               <div className="text-center">
-                <div className="bg-golf-50 text-golf-700 p-4 rounded-md mb-4">
+                <div className="bg-[#FBE118]/20 text-golf-yellow p-4 rounded-md mb-4">
                   Magic link sent! Check your email to sign in.
                 </div>
-                <p className="text-sm text-gray-500">The link will expire in 15 minutes.</p>
+                <p className="text-sm text-white/60">
+                  The link will expire in 15 minutes.
+                </p>
               </div>
             ) : (
               <>
-                <p className="text-center text-sm text-gray-600 mb-4">
+                <p className="text-center text-sm text-white/60 mb-4">
                   Enter your email to receive a secure login link.
                 </p>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label htmlFor="email-link" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="email-link"
+                      className="block text-sm font-medium text-charcoal mb-1"
+                    >
                       Email Address
                     </label>
                     <input
@@ -108,10 +113,14 @@ const Login = () => {
                       className="input-field"
                     />
                     {emailError && (
-                      <p className="text-red-500 text-xs mt-1">{emailError}</p>
+                      <p className="text-golf-yellow text-xs mt-1">{emailError}</p>
                     )}
                   </div>
-                  <button type="submit" disabled={isSendingLink} className="w-full btn-primary">
+                  <button
+                    type="submit"
+                    disabled={isSendingLink}
+                    className="w-full btn-primary"
+                  >
                     {isSendingLink ? "Sending..." : "Send Magic Link"}
                   </button>
                 </form>
@@ -124,7 +133,10 @@ const Login = () => {
         {tab === "password" && (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email-pw" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="email-pw"
+                className="block text-sm font-medium text-charcoal mb-1"
+              >
                 Email Address
               </label>
               <input
@@ -138,11 +150,14 @@ const Login = () => {
                 className="input-field"
               />
               {emailError && (
-                <p className="text-red-500 text-xs mt-1">{emailError}</p>
+                <p className="text-golf-yellow text-xs mt-1">{emailError}</p>
               )}
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-charcoal mb-1"
+              >
                 Password
               </label>
               <input
@@ -158,18 +173,23 @@ const Login = () => {
                 className="input-field"
               />
               {tab === "password" && password && pwErrors.length > 0 && (
-                <ul className="text-xs text-red-500 mt-1 space-y-0.5 list-disc list-inside">
+                <ul className="text-xs text-golf-yellow mt-1 space-y-0.5 list-disc list-inside">
                   {pwErrors.map((e) => (
                     <li key={e}>{e}</li>
                   ))}
                 </ul>
               )}
             </div>
-            <button type="submit" disabled={isLoggingIn} className="w-full btn-primary">
+            <button
+              type="submit"
+              disabled={isLoggingIn}
+              className="w-full btn-primary"
+            >
               {isLoggingIn ? "Signing in..." : "Continue"}
             </button>
-            <p className="text-xs text-gray-500 text-center">
-              New here? Just enter your email and a password — your account is created automatically.
+            <p className="text-xs text-charcoal text-center">
+              New here? Just enter your email and a password — your account is
+              created automatically.
             </p>
           </form>
         )}

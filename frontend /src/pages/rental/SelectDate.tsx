@@ -96,12 +96,12 @@ const SelectDate = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Select a Date</h1>
-      <p className="text-gray-500 mb-6">
+      <h1 className="text-2xl font-bold text-golf-yellow mb-2">Select a Date</h1>
+      <p className="text-white/60 mb-6">
         {selectedCourse ? (
           <>
             Choose your rental date at{" "}
-            <span className="font-medium text-gray-700">
+            <span className="font-medium text-white">
               {selectedCourse.name}
             </span>
             , or skip.
@@ -111,18 +111,18 @@ const SelectDate = () => {
         )}
       </p>
 
-      <div className="bg-white rounded-lg border border-gray-200 p-6 max-w-sm select-none">
+      <div className="bg-white/10 rounded-lg border border-white/20 p-6 max-w-sm select-none">
         {/* Month header */}
         <div className="flex items-center justify-between mb-4">
           <button
             type="button"
             onClick={prevMonth}
             disabled={isCurrentMonth}
-            className="p-1 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="p-1 rounded hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             aria-label="Previous month"
           >
             <svg
-              className="w-5 h-5 text-gray-600"
+              className="w-5 h-5 text-white/70"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -136,18 +136,18 @@ const SelectDate = () => {
             </svg>
           </button>
 
-          <span className="text-sm font-semibold text-gray-800">
+          <span className="text-sm font-semibold text-white">
             {monthName} {displayYear}
           </span>
 
           <button
             type="button"
             onClick={nextMonth}
-            className="p-1 rounded hover:bg-gray-100 transition-colors"
+            className="p-1 rounded hover:bg-white/10 transition-colors"
             aria-label="Next month"
           >
             <svg
-              className="w-5 h-5 text-gray-600"
+              className="w-5 h-5 text-white/70"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -167,7 +167,7 @@ const SelectDate = () => {
           {DAY_LABELS.map((label) => (
             <div
               key={label}
-              className="text-center text-xs font-medium text-gray-400 py-1"
+              className="text-center text-xs font-medium text-white/50 py-1"
             >
               {label}
             </div>
@@ -203,13 +203,13 @@ const SelectDate = () => {
                 "w-8 h-8 mx-auto flex items-center justify-center text-sm rounded-full transition-colors ";
 
               if (isSelected) {
-                cellClass += "bg-golf-600 text-white font-semibold";
+                cellClass += "bg-[#FBE118] text-[#285610] font-semibold";
               } else if (isPast || isUnavailable) {
-                cellClass += "text-gray-300 cursor-default";
+                cellClass += "text-white/20 cursor-default";
                 if (isUnavailable) cellClass += " line-through";
               } else {
                 cellClass +=
-                  "text-gray-800 cursor-pointer hover:bg-golf-50 hover:text-golf-700";
+                  "text-white cursor-pointer hover:bg-white/10";
                 if (isToday) cellClass += " ring-1 ring-golf-400";
               }
 
@@ -235,9 +235,9 @@ const SelectDate = () => {
 
           {/* Loading overlay */}
           {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-white/60 rounded">
+            <div className="absolute inset-0 flex items-center justify-center bg-golf-dark/60 rounded">
               <svg
-                className="animate-spin h-5 w-5 text-golf-500"
+                className="animate-spin h-5 w-5 text-golf-yellow"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -262,7 +262,7 @@ const SelectDate = () => {
 
         {/* Selected date display */}
         {selectedDate && (
-          <p className="mt-4 text-center text-sm text-golf-700 font-medium">
+          <p className="mt-4 text-center text-sm text-golf-yellow font-medium">
             Selected:{" "}
             {new Date(selectedDate + "T00:00:00").toLocaleDateString(
               "default",

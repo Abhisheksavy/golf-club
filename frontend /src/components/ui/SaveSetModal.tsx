@@ -44,7 +44,7 @@ const SaveSetModal = ({
       <form onSubmit={handleSubmit}>
         <label
           htmlFor="bag-name"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-medium text-white/80 mb-1"
         >
           Set Name
         </label>

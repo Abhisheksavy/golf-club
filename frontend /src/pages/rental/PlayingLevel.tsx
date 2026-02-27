@@ -45,8 +45,8 @@ const PlayingLevel = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">What is your playing level?</h1>
-      <p className="text-gray-500 mb-8">We'll match you with clubs suited to your skill level.</p>
+      <h1 className="text-2xl font-bold text-golf-yellow mb-2">What is your playing level?</h1>
+      <p className="text-white/60 mb-8">We'll match you with clubs suited to your skill level.</p>
 
       <div className="grid gap-4">
         {LEVELS.map(({ key, label, description, icon }) => (
@@ -56,14 +56,14 @@ const PlayingLevel = () => {
             onClick={() => handleSelect(key)}
             className={`flex items-center gap-6 p-6 rounded-xl border-2 transition-all min-h-[90px] text-left ${
               playingLevel === key
-                ? "border-golf-500 bg-golf-50 ring-2 ring-golf-200"
-                : "border-gray-200 bg-white hover:border-golf-400 hover:bg-golf-50"
+                ? "border-[#FBE118] bg-[#FBE118]/10 ring-2 ring-[#FBE118]/30"
+                : "border-white/20 bg-white/10 hover:border-[#FBE118]/50 hover:bg-white/15"
             }`}
           >
-            <span className="text-golf-600 flex-shrink-0">{icon}</span>
+            <span className="text-golf-yellow flex-shrink-0">{icon}</span>
             <div>
-              <p className="text-lg font-semibold text-gray-900">{label}</p>
-              <p className="text-sm text-gray-500 mt-0.5">{description}</p>
+              <p className="text-lg font-semibold text-white">{label}</p>
+              <p className="text-sm text-white/60 mt-0.5">{description}</p>
             </div>
           </button>
         ))}

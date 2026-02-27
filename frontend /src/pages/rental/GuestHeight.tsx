@@ -29,17 +29,17 @@ const GuestHeight = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">
+      <h1 className="text-2xl font-bold text-golf-yellow mb-2">
         What is your height?
       </h1>
-      <p className="text-gray-500 mb-8">
+      <p className="text-white/60 mb-8">
         Club length is fitted to your height for best performance.
       </p>
 
-      <div className="bg-white rounded-lg border border-gray-200 p-6 max-w-sm">
+      <div className="bg-white/10 rounded-lg border border-white/20 p-6 max-w-sm">
         <label
           htmlFor="height-select"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-white/80 mb-2"
         >
           Select your height
         </label>

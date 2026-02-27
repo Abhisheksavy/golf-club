@@ -28,15 +28,15 @@ const SelectCourse = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Select a Course</h1>
-      <p className="text-gray-500 mb-6">
+      <h1 className="text-2xl font-bold text-golf-yellow mb-2">Select a Course</h1>
+      <p className="text-charcoal mb-6">
         Choose the golf course for your rental, or skip if you're not sure yet.
       </p>
 
       {isLoading ? (
-        <div className="text-center py-12 text-gray-500">Loading courses...</div>
+        <div className="text-center py-12 text-white/60">Loading courses...</div>
       ) : courses.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">No courses available.</div>
+        <div className="text-center py-8 text-white/60">No courses available.</div>
       ) : (
         <div className="grid gap-4">
           {courses.map((course) => (
@@ -46,13 +46,13 @@ const SelectCourse = () => {
               onClick={() => handleSelect(course.id)}
               className={`text-left p-6 rounded-lg border-2 transition-all ${
                 selectedCourse?.id === course.id
-                  ? "border-golf-500 bg-golf-50 ring-2 ring-golf-200"
-                  : "border-gray-200 hover:border-gray-300 bg-white"
+                  ? "border-[#FBE118] bg-[#FBE118]/10 ring-2 ring-[#FBE118]/30"
+                  : "border-white/20 hover:border-white/40 bg-white/10"
               }`}
             >
-              <h3 className="text-lg font-semibold text-gray-900">{course.name}</h3>
+              <h3 className="text-lg font-semibold text-white">{course.name}</h3>
               {(course.address || course.location) && (
-                <p className="text-sm text-gray-500 mt-1">{course.address ?? course.location}</p>
+                <p className="text-sm text-white/60 mt-1">{course.address ?? course.location}</p>
               )}
             </button>
           ))}

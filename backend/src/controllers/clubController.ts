@@ -5,8 +5,6 @@ import { Response } from "../utils/response";
 import { BooqableProduct } from "../types/booqable.type";
 import { fetchPage, transformProduct } from "../utils/helper";
 
-
-
 export async function fetchAllBooqableProducts(): Promise<BooqableProduct[]> {
   const pageSize = 100;
 
@@ -27,7 +25,7 @@ export async function fetchProductsByIds(
 ): Promise<ReturnType<typeof transformProduct>[]> {
   const all = await fetchAllBooqableProducts();
   const filtered = all.filter((p) => ids.includes(p.id));
-  
+
   return filtered
     .sort(
       (a, b) =>

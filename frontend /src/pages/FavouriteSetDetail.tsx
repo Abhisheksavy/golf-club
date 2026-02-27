@@ -1,17 +1,13 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { getClubs } from "../api/clubs";
+import type { Club } from "../types";
 import {
   useFavouriteSets,
   useFavouriteSetDetail,
 } from "../hooks/useFavouriteSets";
-import ClubCard from "../components/ui/ClubCard";
 import SaveSetModal from "../components/ui/SaveSetModal";
 import ConfirmModal from "../components/ui/ConfirmModal";
-import Modal from "../components/ui/Modal";
-import type { Club } from "../types";
 
 const FavouriteSetDetail = () => {
   const { setId } = useParams<{ setId: string }>();
@@ -20,19 +16,12 @@ const FavouriteSetDetail = () => {
 
   const [showRenameModal, setShowRenameModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showAddClubsModal, setShowAddClubsModal] = useState(false);
-  const [pendingClubs, setPendingClubs] = useState<Set<string>>(new Set());
 
   const { data: set, isLoading } = useFavouriteSetDetail(setId || "");
-  const { data: allClubsData } = useQuery({
-    queryKey: ["clubs"],
-    queryFn: () => getClubs({ limit: 100 }),
-  });
-  const allClubs = allClubsData?.clubs ?? [];
 
   if (isLoading) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-12 text-center text-gray-500">
+      <div className="max-w-3xl mx-auto px-4 py-12 text-center text-charcoal">
         Loading...
       </div>
     );
@@ -41,10 +30,10 @@ const FavouriteSetDetail = () => {
   if (!set) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-12 text-center">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <h2 className="text-xl font-semibold text-golf-yellow mb-2">
           Bag not found
         </h2>
-        <p className="text-gray-500 mb-4">
+        <p className="text-charcoal mb-4">
           This favourite bag doesn't exist or was deleted.
         </p>
         <button onClick={() => navigate("/my-bags")} className="btn-primary">
@@ -55,33 +44,11 @@ const FavouriteSetDetail = () => {
   }
 
   const setClubs = set.clubs as Club[];
-  const setClubIds = new Set(setClubs.map((c) => c._id));
-  const availableClubs = allClubs.filter((c) => !setClubIds.has(c._id));
-
-  console.log("setClubs", setClubs);
 
   const handleRemoveClub = (clubId: string) => {
     const updated = setClubs.filter((c) => c._id !== clubId);
     updateSetClubs(set._id, updated);
     toast.success("Club removed");
-  };
-
-  const handleTogglePending = (club: Club) => {
-    setPendingClubs((prev) => {
-      const next = new Set(prev);
-      next.has(club._id) ? next.delete(club._id) : next.add(club._id);
-      return next;
-    });
-  };
-
-  const handleConfirmAddClubs = () => {
-    const toAdd = availableClubs.filter((c) => pendingClubs.has(c._id));
-    if (toAdd.length > 0) {
-      updateSetClubs(set._id, [...setClubs, ...toAdd]);
-      toast.success(`${toAdd.length} club${toAdd.length > 1 ? "s" : ""} added`);
-    }
-    setPendingClubs(new Set());
-    setShowAddClubsModal(false);
   };
 
   const handleRename = (newName: string) => {
@@ -100,7 +67,7 @@ const FavouriteSetDetail = () => {
       {/* Back link */}
       <button
         onClick={() => navigate("/my-bags")}
-        className="text-sm text-golf-600 hover:text-golf-700 mb-4 inline-flex items-center gap-1"
+        className="text-sm text-golf-yellow hover:text-golf-yellow/80 mb-4 inline-flex items-center gap-1"
       >
         <svg
           className="w-4 h-4"
@@ -119,11 +86,13 @@ const FavouriteSetDetail = () => {
       </button>
 
       {/* Set info card */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+      <div className="bg-white/10 rounded-lg border border-white/20 p-6 mb-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{set.setName}</h1>
-            <p className="text-sm text-gray-500 mt-1">
+            <h1 className="text-2xl font-bold text-golf-yellow">
+              {set.setName}
+            </h1>
+            <p className="text-sm text-charcoal mt-1">
               {setClubs.length} {setClubs.length === 1 ? "club" : "clubs"}
             </p>
           </div>
@@ -146,14 +115,11 @@ const FavouriteSetDetail = () => {
 
       {/* Clubs in this set */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">
+        <h2 className="text-lg font-semibold text-golf-yellow">
           Clubs in this Bag
         </h2>
         <button
-          onClick={() => {
-            setPendingClubs(new Set());
-            setShowAddClubsModal(true);
-          }}
+          onClick={() => navigate(`/my-bags/${setId}/add-clubs`)}
           className="btn-primary text-sm"
         >
           + Add Clubs
@@ -161,10 +127,10 @@ const FavouriteSetDetail = () => {
       </div>
 
       {setClubs.length === 0 ? (
-        <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-          <p className="text-gray-500 mb-3">No clubs in this Bag yet.</p>
+        <div className="bg-white/10 rounded-lg border border-white/20 p-8 text-center">
+          <p className="text-charcoal mb-3">No clubs in this Bag yet.</p>
           <button
-            onClick={() => setShowAddClubsModal(true)}
+            onClick={() => navigate(`/my-bags/${setId}/add-clubs`)}
             className="btn-primary text-sm"
           >
             + Add Clubs
@@ -175,10 +141,10 @@ const FavouriteSetDetail = () => {
           {setClubs.map((club) => (
             <div
               key={club._id}
-              className="group bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-4 flex items-center gap-5 border border-gray-100"
+              className="group bg-white/10 rounded-2xl hover:bg-white/15 transition-all duration-300 p-4 flex items-center gap-5 border border-white/20"
             >
               {/* Image */}
-              <div className="w-20 h-16 rounded-xl bg-gray-50 overflow-hidden flex-shrink-0 ring-1 ring-gray-100">
+              <div className="w-20 h-16 rounded-xl bg-white/10 overflow-hidden flex-shrink-0">
                 {club.image ? (
                   <img
                     src={club.image}
@@ -186,7 +152,7 @@ const FavouriteSetDetail = () => {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-300">
+                  <div className="w-full h-full flex items-center justify-center text-charcoal">
                     <svg
                       className="w-6 h-6"
                       fill="none"
@@ -206,7 +172,7 @@ const FavouriteSetDetail = () => {
 
               {/* Info */}
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-gray-900 text-base truncate">
+                <h3 className="font-semibold text-charcoal text-base truncate">
                   {club.name}
                 </h3>
 
@@ -214,13 +180,13 @@ const FavouriteSetDetail = () => {
                 <span
                   className={`inline-flex items-center gap-1 mt-1 px-2.5 py-1 rounded-full text-xs font-semibold ${
                     club.isActive
-                      ? "bg-emerald-50 text-emerald-600"
-                      : "bg-red-50 text-red-600"
+                      ? "bg-dark-blue text-charcoal-600"
+                      : "bg-yellow-50 text-red-600"
                   }`}
                 >
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${
-                      club.isActive ? "bg-emerald-500" : "bg-red-500"
+                      club.isActive ? "bg-charcoal" : "bg-red-500"
                     }`}
                   />
                   {club.isActive ? "Active" : "Inactive"}
@@ -230,7 +196,7 @@ const FavouriteSetDetail = () => {
               {/* Delete Button */}
               <button
                 onClick={() => handleRemoveClub(club._id)}
-                className="opacity-0 group-hover:opacity-100 transition-all duration-200 bg-red-50 hover:bg-red-100 text-red-600 p-2 rounded-lg"
+                className="opacity-0 group-hover:opacity-100 transition-all duration-200 bg-red-50 hover:bg-charcoal text-red-600 p-2 rounded-lg"
                 title="Remove club"
               >
                 <svg
@@ -251,51 +217,6 @@ const FavouriteSetDetail = () => {
           ))}
         </div>
       )}
-
-      {/* Add Clubs Modal */}
-      <Modal
-        isOpen={showAddClubsModal}
-        onClose={() => {
-          setPendingClubs(new Set());
-          setShowAddClubsModal(false);
-        }}
-        title="Add Clubs"
-      >
-        {availableClubs.length === 0 ? (
-          <p className="text-gray-500 text-sm py-4">
-            All clubs are already in this set.
-          </p>
-        ) : (
-          <>
-            <p className="text-xs text-gray-500 mb-3">
-              Select clubs to add, then click Done.
-            </p>
-            <div className="max-h-96 overflow-y-auto -mx-6 px-6">
-              <div className="grid grid-cols-2 gap-3">
-                {availableClubs.map((club) => (
-                  <ClubCard
-                    key={club._id}
-                    club={club}
-                    isSelected={pendingClubs.has(club._id)}
-                    onToggle={handleTogglePending}
-                  />
-                ))}
-              </div>
-            </div>
-          </>
-        )}
-        <div className="flex items-center justify-between mt-4">
-          <span className="text-sm text-gray-500">
-            {pendingClubs.size > 0 && `${pendingClubs.size} selected`}
-          </span>
-          <button
-            onClick={handleConfirmAddClubs}
-            className="btn-primary text-sm"
-          >
-            Done
-          </button>
-        </div>
-      </Modal>
 
       <SaveSetModal
         isOpen={showRenameModal}

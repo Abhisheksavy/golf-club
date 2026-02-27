@@ -58,10 +58,10 @@ const RentalConfirmation = () => {
             />
           </svg>
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">
+        <h1 className="text-2xl font-bold text-golf-yellow mb-1">
           Reservation Confirmed!
         </h1>
-        <p className="text-gray-500 text-sm">
+        <p className="text-white/60 text-sm">
           {course
             ? `Your clubs are reserved at ${course.name}.`
             : "Your reservation has been confirmed."}
@@ -69,16 +69,16 @@ const RentalConfirmation = () => {
       </div>
 
       {/* Reservation details card */}
-      <div className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-100 mb-8">
+      <div className="bg-white/10 rounded-lg border border-white/20 divide-y divide-white/10 mb-8">
         {/* Course */}
         {course && (
           <div className="px-5 py-4">
-            <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">
+            <p className="text-xs text-white/40 uppercase tracking-wide mb-1">
               Course
             </p>
-            <p className="font-semibold text-gray-900">{course.name}</p>
+            <p className="font-semibold text-white">{course.name}</p>
             {(course.address || course.location) && (
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-white/60">
                 {course.address ?? course.location}
               </p>
             )}
@@ -88,10 +88,10 @@ const RentalConfirmation = () => {
         {/* Date */}
         {date && (
           <div className="px-5 py-4">
-            <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">
+            <p className="text-xs text-white/40 uppercase tracking-wide mb-1">
               Date
             </p>
-            <p className="font-semibold text-gray-900">
+            <p className="font-semibold text-white">
               {new Date(date).toLocaleDateString("en-US", {
                 weekday: "long",
                 year: "numeric",
@@ -105,13 +105,13 @@ const RentalConfirmation = () => {
         {/* Clubs */}
         {clubs.length > 0 && (
           <div className="px-5 py-4">
-            <p className="text-xs text-gray-400 uppercase tracking-wide mb-3">
+            <p className="text-xs text-white/40 uppercase tracking-wide mb-3">
               Reserved Clubs ({clubs.length})
             </p>
             <div className="space-y-2">
               {clubs.map((club) => (
                 <div key={club._id} className="flex items-center gap-3">
-                  <div className="w-10 h-8 rounded bg-gray-100 overflow-hidden flex-shrink-0">
+                  <div className="w-10 h-8 rounded bg-white/10 overflow-hidden flex-shrink-0">
                     {club.image ? (
                       <img
                         src={club.image}
@@ -119,7 +119,7 @@ const RentalConfirmation = () => {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-300">
+                      <div className="w-full h-full flex items-center justify-center text-white/20">
                         <svg
                           className="w-5 h-5"
                           fill="none"
@@ -137,11 +137,11 @@ const RentalConfirmation = () => {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">
+                    <p className="text-sm font-medium text-white truncate">
                       {club.name}
                     </p>
                     {club.category && (
-                      <p className="text-xs text-gray-400 capitalize">
+                      <p className="text-xs text-white/40 capitalize">
                         {club.category.replace(/-/g, " ")}
                       </p>
                     )}

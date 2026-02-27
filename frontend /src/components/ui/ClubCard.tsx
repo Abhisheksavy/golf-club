@@ -52,7 +52,7 @@ const ClubCard = ({
       <tr
         onClick={() => onToggle(club)}
         className={`group cursor-pointer border-b border-slate-100 transition-colors ${
-          isSelected ? "bg-emerald-50" : "hover:bg-slate-50"
+          isSelected ? "bg-[#FBE118]/10" : "hover:bg-white/5"
         }`}
       >
         {/* Checkbox col */}
@@ -84,7 +84,7 @@ const ClubCard = ({
 
         {/* Image */}
         <td className="py-3 pr-4 w-16">
-          <div className="w-12 h-12 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+          <div className="w-12 h-12 rounded-lg overflow-hidden bg-white/10 flex-shrink-0">
             {club.image ? (
               <img
                 src={club.image}
@@ -92,7 +92,7 @@ const ClubCard = ({
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-slate-300">
+              <div className="w-full h-full flex items-center justify-center text-white/20">
                 <svg
                   className="w-6 h-6"
                   fill="none"
@@ -113,10 +113,10 @@ const ClubCard = ({
 
         {/* Name + SKU */}
         <td className="py-3 pr-4 min-w-0">
-          <p className="text-sm font-semibold text-slate-800 line-clamp-1">
+          <p className="text-sm font-semibold text-white line-clamp-1">
             {club.name}
           </p>
-          <p className="text-[11px] text-slate-400 font-mono mt-0.5 truncate">
+          <p className="text-[11px] text-white/40 font-mono mt-0.5 truncate">
             {club.sku}
           </p>
         </td>
@@ -138,7 +138,7 @@ const ClubCard = ({
         {/* Tracking */}
         <td className="py-3 pr-4 hidden md:table-cell">
           {typeof trackingType === "string" && (
-            <span className="text-xs text-slate-500 capitalize">
+            <span className="text-xs text-white/50 capitalize">
               {trackingType}
             </span>
           )}
@@ -148,9 +148,9 @@ const ClubCard = ({
         <td className="py-3 pr-4 text-right hidden sm:table-cell">
           {price && (
             <div>
-              <span className="text-sm font-bold text-slate-800">{price}</span>
+              <span className="text-sm font-bold text-white">{price}</span>
               {typeof pricePeriod === "string" && (
-                <span className="text-[10px] text-slate-400 ml-1">
+                <span className="text-[10px] text-white/40 ml-1">
                   /{pricePeriod}
                 </span>
               )}
@@ -163,12 +163,12 @@ const ClubCard = ({
           <div className="flex items-center gap-1.5 justify-center">
             <div
               className={`w-1.5 h-1.5 rounded-full ${
-                isActive ? "bg-emerald-500" : "bg-slate-300"
+                isActive ? "bg-green-400" : "bg-white/20"
               }`}
             />
             <span
               className={`text-xs ${
-                isActive ? "text-emerald-700" : "text-slate-400"
+                isActive ? "text-green-400" : "text-white/40"
               }`}
             >
               {isActive ? "Active" : "Inactive"}
@@ -181,7 +181,7 @@ const ClubCard = ({
           {isArchived ? (
             <Badge label="Archived" color="bg-amber-100 text-amber-700" />
           ) : (
-            <span className="text-xs text-slate-400">—</span>
+            <span className="text-xs text-white/30">—</span>
           )}
         </td>
       </tr>
@@ -193,18 +193,18 @@ const ClubCard = ({
     <button
       type="button"
       onClick={() => onToggle(club)}
-      className={`relative bg-white rounded-2xl overflow-hidden text-left transition-all duration-200 group ${
+      className={`relative bg-white/10 rounded-2xl overflow-hidden text-left transition-all duration-200 group border border-white/20 ${
         isSelected
-          ? "ring-2 ring-emerald-500 shadow-lg shadow-emerald-100"
-          : "shadow-sm hover:shadow-md hover:-translate-y-0.5 ring-1 ring-slate-200 hover:ring-slate-300"
+          ? "ring-2 ring-[#FBE118] shadow-lg shadow-black/20"
+          : "ring-1 ring-white/20 hover:ring-white/40 hover:bg-white/5"
       }`}
     >
       {/* Selection check */}
       <div
         className={`absolute top-3 right-3 z-10 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-150 ${
           isSelected
-            ? "bg-emerald-500 border-emerald-500 shadow-md"
-            : "bg-white/80 border-slate-300 group-hover:border-emerald-400 backdrop-blur-sm"
+            ? "bg-[#FBE118] border-[#FBE118] shadow-md"
+            : "bg-white/20 border-white/30 group-hover:border-[#FBE118] backdrop-blur-sm"
         }`}
       >
         {isSelected && (
@@ -228,14 +228,14 @@ const ClubCard = ({
       <div className="absolute top-3 left-3 z-10">
         <div
           className={`w-2 h-2 rounded-full ${
-            isActive ? "bg-emerald-400" : "bg-slate-300"
+            isActive ? "bg-green-400" : "bg-white/20"
           } shadow`}
           title={isActive ? "Active" : "Inactive"}
         />
       </div>
 
       {/* Image */}
-      <div className="aspect-[4/3] bg-gradient-to-br from-slate-100 to-slate-50 overflow-hidden">
+      <div className="aspect-[4/3] bg-white/5 overflow-hidden">
         {club.image ? (
           <img
             src={club.image}
@@ -243,7 +243,7 @@ const ClubCard = ({
             className="w-full h-full object-inherit group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-slate-300">
+          <div className="w-full h-full flex items-center justify-center text-white/20">
             <svg
               className="w-14 h-14"
               fill="none"
@@ -262,7 +262,7 @@ const ClubCard = ({
       </div>
 
       {/* Content */}
-      <div className="p-4">
+      <div className="p-4 bg-transparent">
         {/* Badges */}
         <div className="flex flex-wrap gap-1.5 mb-2">
           {typeof productType === "string" && (
@@ -276,7 +276,7 @@ const ClubCard = ({
             />
           )}
           {typeof trackingType === "string" && (
-            <Badge label={trackingType} color="bg-slate-100 text-slate-500" />
+            <Badge label={trackingType} color="bg-white/10 text-white/50" />
           )}
           {isArchived && (
             <Badge label="Archived" color="bg-amber-100 text-amber-700" />
@@ -284,34 +284,34 @@ const ClubCard = ({
         </div>
 
         {/* Name */}
-        <h3 className="font-semibold text-sm text-slate-900 line-clamp-2 leading-snug mb-1">
+        <h3 className="font-semibold text-sm text-white line-clamp-2 leading-snug mb-1">
           {club.name}
         </h3>
 
         {/* SKU */}
-        <p className="text-[10px] font-mono text-slate-400 truncate mb-3">
+        <p className="text-[10px] font-mono text-white/40 truncate mb-3">
           {club.sku}
         </p>
 
         {/* Price row */}
-        <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+        <div className="flex items-center justify-between pt-2 border-t border-white/10">
           {price ? (
             <div className="flex items-baseline gap-1">
-              <span className="text-base font-bold text-slate-900">
+              <span className="text-base font-bold text-white">
                 {price}
               </span>
               {typeof pricePeriod === "string" && (
-                <span className="text-[11px] text-slate-400">
+                <span className="text-[11px] text-white/40">
                   /{pricePeriod}
                 </span>
               )}
             </div>
           ) : (
-            <span className="text-xs text-slate-400">No price set</span>
+            <span className="text-xs text-white/40">No price set</span>
           )}
 
           {deposit && deposit !== "$0.00" && (
-            <span className="text-[10px] text-slate-500 bg-slate-50 px-2 py-0.5 rounded-full">
+            <span className="text-[10px] text-white/50 bg-white/10 px-2 py-0.5 rounded-full">
               dep. {deposit}
             </span>
           )}

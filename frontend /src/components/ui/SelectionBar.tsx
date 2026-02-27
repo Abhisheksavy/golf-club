@@ -8,7 +8,7 @@ const SelectionBar = ({ count, onSave, onClear }: SelectionBarProps) => {
   if (count === 0) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 bg-golf-800 text-white shadow-lg">
+    <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#1e4410] border-t border-[#FBE118]/20 text-white shadow-lg">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         <span className="font-medium">
           {count} {count === 1 ? "club" : "clubs"} selected
@@ -22,7 +22,7 @@ const SelectionBar = ({ count, onSave, onClear }: SelectionBarProps) => {
           </button>
           <button
             onClick={onSave}
-            className="px-4 py-1.5 text-sm bg-white text-golf-800 font-medium rounded-md hover:bg-gray-100 transition-colors"
+            className="px-4 py-1.5 text-sm bg-[#FBE118] text-[#285610] font-medium rounded-md hover:bg-[#FBE118]/90 transition-colors"
           >
             Save as Set
           </button>

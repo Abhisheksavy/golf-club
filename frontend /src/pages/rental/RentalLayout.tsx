@@ -40,8 +40,8 @@ const RentalLayout = () => {
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                     i <= currentPhaseIndex
-                      ? "bg-golf-600 text-white"
-                      : "bg-gray-200 text-gray-500"
+                      ? "bg-[#FBE118] text-[#285610]"
+                      : "bg-white/20 text-white/50"
                   }`}
                 >
                   {i < currentPhaseIndex ? (
@@ -62,14 +62,14 @@ const RentalLayout = () => {
                     i + 1
                   )}
                 </div>
-                <span className="text-xs mt-1 text-gray-500 hidden sm:block">
+                <span className="text-xs mt-1 text-white/70 hidden sm:block">
                   {phase.label}
                 </span>
               </div>
               {i < PHASE_STEPS.length - 1 && (
                 <div
                   className={`w-12 sm:w-20 h-0.5 mx-1 ${
-                    i < currentPhaseIndex ? "bg-golf-600" : "bg-gray-200"
+                    i < currentPhaseIndex ? "bg-[#FBE118]" : "bg-white/20"
                   }`}
                 />
               )}
