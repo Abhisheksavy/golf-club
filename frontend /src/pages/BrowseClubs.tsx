@@ -658,7 +658,6 @@
 
 // export default BrowseClubs;
 
-
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
@@ -681,7 +680,9 @@ const BrowseClubs = () => {
   const [page, setPage] = useState(1);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [view, setView] = useState<"grid" | "table">("grid");
-  const [openDropdown, setOpenDropdown] = useState<"status" | "archived" | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<
+    "status" | "archived" | null
+  >(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { selectedCount, selectedClubs, toggle, clear, isSelected } =
@@ -699,7 +700,10 @@ const BrowseClubs = () => {
   // Close dropdowns on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
         setOpenDropdown(null);
       }
     };
@@ -724,12 +728,12 @@ const BrowseClubs = () => {
   const totalPages = data?.totalPages ?? 1;
   const total = data?.total ?? 0;
 
-  const handleFilterChange =
-    <T,>(setter: (v: T) => void) =>
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setter(e.target.value as T);
-      setPage(1);
-    };
+  // const handleFilterChange =
+  //   <T,>(setter: (v: T) => void) =>
+  //   (e: React.ChangeEvent<HTMLSelectElement>) => {
+  //     setter(e.target.value as T);
+  //     setPage(1);
+  //   };
 
   const handleSaveSet = (name: string) => {
     createSet(name, selectedClubs);
@@ -783,32 +787,71 @@ const BrowseClubs = () => {
               </div>
 
               {/* Filters container */}
-              <div ref={dropdownRef} className="flex flex-wrap gap-2 items-center">
+              <div
+                ref={dropdownRef}
+                className="flex flex-wrap gap-2 items-center"
+              >
                 {/* STATUS custom dropdown */}
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-white/80 font-medium whitespace-nowrap">Status</span>
+                  <span className="text-xs text-white/80 font-medium whitespace-nowrap">
+                    Status
+                  </span>
                   <div className="relative">
                     <button
                       type="button"
-                      onClick={() => setOpenDropdown(openDropdown === "status" ? null : "status")}
+                      onClick={() =>
+                        setOpenDropdown(
+                          openDropdown === "status" ? null : "status"
+                        )
+                      }
                       className="flex items-center gap-2 text-sm rounded-xl border border-white/20 bg-white/10 text-white px-3 py-2 hover:bg-white/15 transition-all min-w-[90px]"
                     >
                       <span className="flex-1 text-left">
-                        {isActive === "all" ? "All" : isActive === "true" ? "Active" : "Inactive"}
+                        {isActive === "all"
+                          ? "All"
+                          : isActive === "true"
+                          ? "Active"
+                          : "Inactive"}
                       </span>
-                      <svg className={`w-3 h-3 text-white/60 transition-transform flex-shrink-0 ${openDropdown === "status" ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      <svg
+                        className={`w-3 h-3 text-white/60 transition-transform flex-shrink-0 ${
+                          openDropdown === "status" ? "rotate-180" : ""
+                        }`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19 9l-7 7-7-7"
+                        />
                       </svg>
                     </button>
                     {openDropdown === "status" && (
                       <div className="absolute top-full left-0 mt-1 z-50 bg-[#1e4410] border border-white/20 rounded-xl shadow-xl overflow-hidden min-w-[110px]">
-                        {[{v:"all",l:"All"},{v:"true",l:"Active"},{v:"false",l:"Inactive"}].map(({v,l}) => (
+                        {[
+                          { v: "all", l: "All" },
+                          { v: "true", l: "Active" },
+                          { v: "false", l: "Inactive" },
+                        ].map(({ v, l }) => (
                           <button
                             key={v}
                             type="button"
-                            onClick={() => { setIsActive(v as "all"|"true"|"false"); setPage(1); setOpenDropdown(null); }}
-                            className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${isActive === v ? "bg-[#FBE118]/20 text-[#FBE118] font-medium" : "text-white hover:bg-white/10"}`}
-                          >{l}</button>
+                            onClick={() => {
+                              setIsActive(v as "all" | "true" | "false");
+                              setPage(1);
+                              setOpenDropdown(null);
+                            }}
+                            className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                              isActive === v
+                                ? "bg-[#FBE118]/20 text-[#FBE118] font-medium"
+                                : "text-white hover:bg-white/10"
+                            }`}
+                          >
+                            {l}
+                          </button>
                         ))}
                       </div>
                     )}
@@ -817,29 +860,65 @@ const BrowseClubs = () => {
 
                 {/* ARCHIVED custom dropdown */}
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-white/80 font-medium whitespace-nowrap">Archived</span>
+                  <span className="text-xs text-white/80 font-medium whitespace-nowrap">
+                    Archived
+                  </span>
                   <div className="relative">
                     <button
                       type="button"
-                      onClick={() => setOpenDropdown(openDropdown === "archived" ? null : "archived")}
+                      onClick={() =>
+                        setOpenDropdown(
+                          openDropdown === "archived" ? null : "archived"
+                        )
+                      }
                       className="flex items-center gap-2 text-sm rounded-xl border border-white/20 bg-white/10 text-white px-3 py-2 hover:bg-white/15 transition-all min-w-[120px]"
                     >
                       <span className="flex-1 text-left">
-                        {archived === "false" ? "Not Archived" : archived === "true" ? "Archived" : "All"}
+                        {archived === "false"
+                          ? "Not Archived"
+                          : archived === "true"
+                          ? "Archived"
+                          : "All"}
                       </span>
-                      <svg className={`w-3 h-3 text-white/60 transition-transform flex-shrink-0 ${openDropdown === "archived" ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      <svg
+                        className={`w-3 h-3 text-white/60 transition-transform flex-shrink-0 ${
+                          openDropdown === "archived" ? "rotate-180" : ""
+                        }`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19 9l-7 7-7-7"
+                        />
                       </svg>
                     </button>
                     {openDropdown === "archived" && (
                       <div className="absolute top-full left-0 mt-1 z-50 bg-[#1e4410] border border-white/20 rounded-xl shadow-xl overflow-hidden min-w-[130px]">
-                        {[{v:"false",l:"Not Archived"},{v:"true",l:"Archived"},{v:"all",l:"All"}].map(({v,l}) => (
+                        {[
+                          { v: "false", l: "Not Archived" },
+                          { v: "true", l: "Archived" },
+                          { v: "all", l: "All" },
+                        ].map(({ v, l }) => (
                           <button
                             key={v}
                             type="button"
-                            onClick={() => { setArchived(v as "all"|"true"|"false"); setPage(1); setOpenDropdown(null); }}
-                            className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${archived === v ? "bg-[#FBE118]/20 text-[#FBE118] font-medium" : "text-white hover:bg-white/10"}`}
-                          >{l}</button>
+                            onClick={() => {
+                              setArchived(v as "all" | "true" | "false");
+                              setPage(1);
+                              setOpenDropdown(null);
+                            }}
+                            className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                              archived === v
+                                ? "bg-[#FBE118]/20 text-[#FBE118] font-medium"
+                                : "text-white hover:bg-white/10"
+                            }`}
+                          >
+                            {l}
+                          </button>
                         ))}
                       </div>
                     )}
