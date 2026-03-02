@@ -1,12 +1,16 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getFavourites } from "../api/favourites";
+import { isAuthenticated } from "../hooks/useAuth";
 import type { Club } from "../types";
 
 const Dashboard = () => {
+  const authed = isAuthenticated();
+
   const { data } = useQuery({
     queryKey: ["favourites", "dashboard"],
     queryFn: () => getFavourites(1, 3),
+    enabled: authed,
   });
   const bags = data?.favourites ?? [];
 
@@ -26,7 +30,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-14">
         <Link
           to="/my-bags"
-          className="group relative bg-white/10 rounded-2xl border border-white/20 p-8 text-center transition-all duration-200 hover:bg-white/15 hover:-translate-y-1 overflow-hidden"
+          className="group relative bg-white/10 rounded-2xl border-2 border-white/20 p-8 text-center transition-all duration-200 hover:border-[#FBE118]/60 hover:bg-white/15 hover:-translate-y-1 overflow-hidden min-h-[140px]"
         >
           <div className="relative">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#FBE118]/20 text-golf-yellow mb-5 group-hover:bg-[#FBE118]/30 group-hover:scale-110 transition-all duration-200">
@@ -45,7 +49,7 @@ const Dashboard = () => {
               </svg>
             </div>
             <h2 className="text-xl font-bold text-golf-yellow mb-2">
-              Create / Manage Bags
+              Virtual Bags
             </h2>
             <p className="text-sm text-white leading-relaxed">
               Build your favourite club sets and manage your saved bags.
@@ -71,7 +75,7 @@ const Dashboard = () => {
 
         <Link
           to="/reserve/course"
-          className="group relative bg-white/10 rounded-2xl border border-white/20 p-8 text-center transition-all duration-200 hover:bg-white/15 hover:-translate-y-1 overflow-hidden"
+          className="group relative bg-white/10 rounded-2xl border-2 border-white/20 p-8 text-center transition-all duration-200 hover:border-[#FBE118]/60 hover:bg-white/15 hover:-translate-y-1 overflow-hidden min-h-[140px]"
         >
           <div className="relative">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#FBE118]/20 text-golf-yellow mb-5 group-hover:bg-[#FBE118]/30 group-hover:scale-110 transition-all duration-200">
@@ -90,7 +94,7 @@ const Dashboard = () => {
               </svg>
             </div>
             <h2 className="text-xl font-bold text-golf-yellow mb-2">
-              Reserve Clubs
+              Reservations
             </h2>
             <p className="text-sm text-white leading-relaxed">
               Pick a course, choose a date, and reserve clubs for your round.
@@ -115,8 +119,8 @@ const Dashboard = () => {
         </Link>
       </div>
 
-      {/* Your Bags */}
-      {bags.length > 0 && (
+      {/* Your Bags — only for authenticated users with saved bags */}
+      {authed && bags.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-4">
             <div>

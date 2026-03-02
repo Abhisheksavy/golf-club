@@ -28,7 +28,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
         <button
-          onClick={() => navigate(authed ? "/dashboard" : "/reserve/course")}
+          onClick={() => navigate("/dashboard")}
           className="text-lg font-bold tracking-tight text-golf-yellow transition-colors whitespace-nowrap"
         >
           Golf Club
@@ -36,19 +36,12 @@ const Navbar = () => {
 
         {/* Desktop nav links (≥768px) */}
         <div className="hidden md:flex items-center gap-1 ml-6 flex-1">
-          {authed && (
-            <>
-              <NavLink to="/dashboard" className={linkClass}>
-                Dashboard
-              </NavLink>
-              <NavLink to="/my-bags" className={linkClass}>
-                My Bags
-              </NavLink>
-              <NavLink to="/my-reservations" className={linkClass}>
-                My Reservations
-              </NavLink>
-            </>
-          )}
+          <NavLink to="/my-bags" className={linkClass}>
+            My Bags
+          </NavLink>
+          <NavLink to="/my-reservations" className={linkClass}>
+            My Reservations
+          </NavLink>
           <NavLink to="/reserve/course" className={linkClass}>
             Reserve Clubs
           </NavLink>
@@ -128,31 +121,20 @@ const Navbar = () => {
       {/* Mobile dropdown menu (<768px) */}
       {menuOpen && (
         <div className="md:hidden bg-golf-dark border-t border-[#FBE118]/20">
-          {authed && (
-            <>
-              <NavLink
-                to="/dashboard"
-                className={mobileLinkClass}
-                onClick={() => setMenuOpen(false)}
-              >
-                Dashboard
-              </NavLink>
-              <NavLink
-                to="/my-bags"
-                className={mobileLinkClass}
-                onClick={() => setMenuOpen(false)}
-              >
-                My Bags
-              </NavLink>
-              <NavLink
-                to="/my-reservations"
-                className={mobileLinkClass}
-                onClick={() => setMenuOpen(false)}
-              >
-                My Reservations
-              </NavLink>
-            </>
-          )}
+          <NavLink
+            to="/my-bags"
+            className={mobileLinkClass}
+            onClick={() => setMenuOpen(false)}
+          >
+            My Bags
+          </NavLink>
+          <NavLink
+            to="/my-reservations"
+            className={mobileLinkClass}
+            onClick={() => setMenuOpen(false)}
+          >
+            My Reservations
+          </NavLink>
           <NavLink
             to="/reserve/course"
             className={mobileLinkClass}

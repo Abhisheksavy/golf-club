@@ -2,19 +2,18 @@ import { useNavigate } from "react-router-dom";
 import { useRental } from "../../context/RentalContext";
 
 const MALE_HEIGHTS = [
-  "5'4\" and under",
-  "5'4\" to 5'7\"",
-  "5'7\" to 6'0\"",
-  "6'0\" to 6'4\"",
-  "6'4\" and up",
+  "5'4\" and under (Length-1)",
+  "5'4\" to 5'7\" (Length-1/2)",
+  "5'7\" to 6'0\" (Standard Length)",
+  "6'0\" to 6'4\" (Length+1/2)",
+  "6'4\" and over (Length+1)",
 ];
-
 const FEMALE_HEIGHTS = [
-  "5'0\" and under",
-  "5'0\" to 5'3\"",
-  "5'3\" to 5'7\"",
-  "5'7\" to 6'0\"",
-  "6'0\" and up",
+  "5'0\" and under (Length-1)",
+  "5'0\" to 5'3\" (Length-1/2)",
+  "5'3\" to 5'7\" (Standard Length)",
+  "5'7\" to 6'0\" (Length+1/2)",
+  "6'0\" and over (Length+1)",
 ];
 
 const GuestHeight = () => {
@@ -41,7 +40,7 @@ const GuestHeight = () => {
           htmlFor="height-select"
           className="block text-sm font-medium text-white/80 mb-2"
         >
-          Select your height
+          Select your height range
         </label>
         <select
           id="height-select"
@@ -50,7 +49,7 @@ const GuestHeight = () => {
           className="input-field"
         >
           <option value="" disabled>
-            Choose height...
+            Choose your height range
           </option>
           {heights.map((h) => (
             <option key={h} value={h}>

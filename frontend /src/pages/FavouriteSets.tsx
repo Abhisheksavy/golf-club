@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useFavouriteSets } from "../hooks/useFavouriteSets";
+import { isAuthenticated } from "../hooks/useAuth";
 import FavouriteSetCard from "../components/ui/FavouriteSetCard";
 import ConfirmModal from "../components/ui/ConfirmModal";
 
@@ -9,11 +10,36 @@ const PAGE_SIZE = 10;
 
 const FavouriteSets = () => {
   const [page, setPage] = useState(1);
+  const navigate = useNavigate();
+  const authed = isAuthenticated();
   const { sets, total, totalPages, isLoading, deleteSet } = useFavouriteSets(
     page,
     PAGE_SIZE
   );
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  if (!authed) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-16 text-center">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/10 mb-4">
+          <svg className="w-8 h-8 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          </svg>
+        </div>
+        <h1 className="text-xl font-bold text-golf-yellow mb-2">Log in to view your bags</h1>
+        <p className="text-white/60 text-sm mb-6">Your saved club sets are stored on your account.</p>
+        <button
+          onClick={() => {
+            sessionStorage.setItem("returnTo", "/my-bags");
+            navigate("/login");
+          }}
+          className="btn-primary"
+        >
+          Log In
+        </button>
+      </div>
+    );
+  }
 
   const handleDelete = () => {
     if (deleteTarget) {
@@ -50,7 +76,7 @@ const FavouriteSets = () => {
           </p>
         </div>
         <Link
-          to="/browse-clubs"
+          to="/my-bags/new"
           className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#FBE118] hover:bg-[#FBE118]/90 text-[#285610] text-sm font-semibold rounded-xl transition-all"
         >
           <svg
@@ -93,7 +119,7 @@ const FavouriteSets = () => {
             quick access.
           </p>
           <Link
-            to="/browse-clubs"
+            to="/my-bags/new"
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#FBE118] hover:bg-[#FBE118]/90 text-[#285610] text-sm font-semibold rounded-xl transition-colors"
           >
             Browse Clubs

@@ -111,7 +111,7 @@ const RentalConfirmation = () => {
             <div className="space-y-2">
               {clubs.map((club) => (
                 <div key={club._id} className="flex items-center gap-3">
-                  <div className="w-10 h-8 rounded bg-white/10 overflow-hidden flex-shrink-0">
+                  <div className="w-20 h-16 rounded-lg bg-white/10 overflow-hidden flex-shrink-0">
                     {club.image ? (
                       <img
                         src={club.image}

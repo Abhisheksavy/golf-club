@@ -75,11 +75,12 @@ const RentalSummary = () => {
       navigate("/login");
       return;
     }
-    const bagName = `My Bag — ${new Date().toLocaleDateString("en-US", {
+    const now = new Date();
+    const bagName = `My Bag — ${now.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
-    })}`;
+    })} ${now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}`;
     saveBagMutation.mutate({
       name: bagName,
       clubs: selectedClubs.map((c) => c._id),
@@ -185,7 +186,7 @@ const RentalSummary = () => {
           <div className="space-y-2">
             {selectedClubs.map((club) => (
               <div key={club._id} className="flex items-center gap-3">
-                <div className="w-10 h-8 rounded bg-white/10 overflow-hidden flex-shrink-0">
+                <div className="w-20 h-16 rounded-lg bg-white/10 overflow-hidden flex-shrink-0">
                   {club.image && (
                     <img
                       src={club.image}

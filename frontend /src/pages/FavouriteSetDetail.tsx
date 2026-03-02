@@ -180,13 +180,13 @@ const FavouriteSetDetail = () => {
                 <span
                   className={`inline-flex items-center gap-1 mt-1 px-2.5 py-1 rounded-full text-xs font-semibold ${
                     club.isActive
-                       ? "bg-emerald-50 text-emerald-600"
+                      ? "bg-emerald-50 text-emerald-600"
                       : "bg-red-50 text-red-600"
                   }`}
                 >
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${
-                       club.isActive ? "bg-emerald-500" : "bg-red-500"
+                      club.isActive ? "bg-emerald-500" : "bg-red-500"
                     }`}
                   />
                   {club.isActive ? "Active" : "Inactive"}

@@ -98,7 +98,7 @@ const Login = () => {
                   <div>
                     <label
                       htmlFor="email-link"
-                      className="block text-sm font-medium text-charcoal mb-1"
+                      className="block text-sm font-medium text-white mb-1"
                     >
                       Email Address
                     </label>
@@ -113,7 +113,9 @@ const Login = () => {
                       className="input-field"
                     />
                     {emailError && (
-                      <p className="text-golf-yellow text-xs mt-1">{emailError}</p>
+                      <p className="text-golf-yellow text-xs mt-1">
+                        {emailError}
+                      </p>
                     )}
                   </div>
                   <button
@@ -135,7 +137,7 @@ const Login = () => {
             <div>
               <label
                 htmlFor="email-pw"
-                className="block text-sm font-medium text-charcoal mb-1"
+                className="block text-sm font-medium text-white mb-1"
               >
                 Email Address
               </label>
@@ -156,7 +158,7 @@ const Login = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-charcoal mb-1"
+                className="block text-sm font-medium text-white mb-1"
               >
                 Password
               </label>
@@ -187,7 +189,7 @@ const Login = () => {
             >
               {isLoggingIn ? "Signing in..." : "Continue"}
             </button>
-            <p className="text-xs text-charcoal text-center">
+            <p className="text-xs text-white text-center">
               New here? Just enter your email and a password — your account is
               created automatically.
             </p>

@@ -13,7 +13,6 @@ const PHASE_STEPS = [
       "/reserve/height",
       "/reserve/preference",
       "/reserve/level",
-      "/reserve/strength",
       "/reserve/bag-select",
       "/reserve/bag-review",
     ],

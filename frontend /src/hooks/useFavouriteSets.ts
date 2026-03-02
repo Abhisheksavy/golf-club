@@ -6,6 +6,7 @@ import {
   updateFavourite,
   deleteFavourite,
 } from "../api/favourites";
+import { isAuthenticated } from "./useAuth";
 import type { Club } from "../types";
 
 const QUERY_KEY = "favourites";
@@ -16,6 +17,7 @@ export const useFavouriteSets = (page = 1, limit = 10) => {
   const { data, isLoading } = useQuery({
     queryKey: [QUERY_KEY, page, limit],
     queryFn: () => getFavourites(page, limit),
+    enabled: isAuthenticated(),
     refetchOnMount: "always",
   });
 

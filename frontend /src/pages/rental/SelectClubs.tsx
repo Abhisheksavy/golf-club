@@ -48,6 +48,21 @@ function assignCategory(club: Club): CategoryKey {
     : "other";
 }
 
+const MALE_HEIGHTS = [
+  "5'4\" and under (Length-1)",
+  "5'4\" to 5'7\" (Length-1/2)",
+  "5'7\" to 6'0\" (Standard Length)",
+  "6'0\" to 6'4\" (Length+1/2)",
+  "6'4\" and over (Length+1)",
+];
+const FEMALE_HEIGHTS = [
+  "5'0\" and under (Length-1)",
+  "5'0\" to 5'3\" (Length-1/2)",
+  "5'3\" to 5'7\" (Standard Length)",
+  "5'7\" to 6'0\" (Length+1/2)",
+  "6'0\" and over (Length+1)",
+];
+
 const SelectClubs = () => {
   const navigate = useNavigate();
   const {
@@ -59,6 +74,10 @@ const SelectClubs = () => {
     setSaveToBag,
     playingLevel,
     swingStrength,
+    gender,
+    setGender,
+    height,
+    setHeight,
   } = useRental();
 
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
@@ -200,6 +219,46 @@ const SelectClubs = () => {
           Select Your Clubs
         </h1>
         <p className="text-white/70 text-sm">{subtitle}</p>
+      </div>
+
+      {/* Height/Gender filter */}
+      <div className="flex flex-wrap gap-4 mb-3 pb-3 border-b border-white/10">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-medium text-white/70 uppercase tracking-wide">
+            Gender:
+          </span>
+          <div className="flex gap-1">
+            {(["male", "female"] as const).map((g) => (
+              <button
+                key={g}
+                type="button"
+                onClick={() => setGender(g)}
+                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors capitalize ${
+                  gender === g
+                    ? "bg-[#FBE118] text-[#285610]"
+                    : "bg-white/10 text-white hover:bg-white/20"
+                }`}
+              >
+                {g.charAt(0).toUpperCase() + g.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-medium text-white/70 uppercase tracking-wide">
+            Height:
+          </span>
+          <select
+            value={height || ""}
+            onChange={(e) => setHeight(e.target.value)}
+            className="text-xs bg-white/10 border border-white/20 text-white rounded-full px-3 py-1 focus:outline-none focus:ring-1 focus:ring-[#FBE118]"
+          >
+            <option value="">Select height</option>
+            {(gender === "female" ? FEMALE_HEIGHTS : MALE_HEIGHTS).map((h) => (
+              <option key={h} value={h}>{h}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Global shaft filter */}

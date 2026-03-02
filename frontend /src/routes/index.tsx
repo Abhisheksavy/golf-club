@@ -1,5 +1,4 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import { isAuthenticated } from "../hooks/useAuth";
 import Login from "../pages/Login";
 import Verify from "../pages/Verify";
 import Dashboard from "../pages/Dashboard";
@@ -24,6 +23,7 @@ import SavedBagSelect from "../pages/rental/SavedBagSelect";
 import SavedBagReview from "../pages/rental/SavedBagReview";
 import NotFound from "../pages/NotFound";
 import AddClubsPage from "../pages/AddClubsPage";
+import NewBagPage from "../pages/NewBagPage";
 // import ProtectedRoute from "../components/ProtectedRoute";
 import AppLayout from "../components/layout/AppLayout";
 
@@ -38,11 +38,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: isAuthenticated() ? (
-          <Navigate to="/dashboard" replace />
-        ) : (
-          <Navigate to="/reserve/course" replace />
-        ),
+        element: <Navigate to="/dashboard" replace />,
       },
       {
         path: "dashboard",
@@ -55,6 +51,10 @@ export const router = createBrowserRouter([
       {
         path: "my-bags",
         element: <FavouriteSets />,
+      },
+      {
+        path: "my-bags/new",
+        element: <NewBagPage />,
       },
       {
         path: "my-bags/:setId",
