@@ -22,12 +22,26 @@ const FavouriteSets = () => {
     return (
       <div className="max-w-3xl mx-auto px-4 py-16 text-center">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/10 mb-4">
-          <svg className="w-8 h-8 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          <svg
+            className="w-8 h-8 text-white/40"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+            />
           </svg>
         </div>
-        <h1 className="text-xl font-bold text-golf-yellow mb-2">Log in to view your bags</h1>
-        <p className="text-white/60 text-sm mb-6">Your saved club sets are stored on your account.</p>
+        <h1 className="text-xl font-bold text-golf-yellow mb-2">
+          Log in to view your bags
+        </h1>
+        <p className="text-white/60 text-sm mb-6">
+          Your saved club sets are stored on your account.
+        </p>
         <button
           onClick={() => {
             sessionStorage.setItem("returnTo", "/my-bags");
@@ -69,7 +83,7 @@ const FavouriteSets = () => {
           <h1 className="text-3xl font-bold text-golf-yellow tracking-tight">
             My Bags
           </h1>
-          <p className="text-white text-sm mt-1">
+          <p className="text-[#EDD287] text-sm mt-1">
             {total > 0
               ? `${total} saved bag${total !== 1 ? "s" : ""}`
               : "Save your favourite club combinations"}
@@ -139,19 +153,20 @@ const FavouriteSets = () => {
 
           {totalPages > 1 && (
             <div className="flex items-center justify-between mt-8">
-              <p className="text-sm text-white/60">
+              <p className="text-sm text-[#EDD287]">
                 Showing{" "}
-                <span className="font-medium text-white">
+                <span className="font-medium text-[#EDD287]">
                   {(page - 1) * PAGE_SIZE + 1}–
                   {Math.min(page * PAGE_SIZE, total)}
                 </span>{" "}
-                of <span className="font-medium text-white">{total}</span> bags
+                of <span className="font-medium text-[#EDD287]">{total}</span>{" "}
+                bags
               </p>
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setPage((p) => p - 1)}
                   disabled={page === 1}
-                  className="w-8 h-8 flex items-center justify-center rounded-xl border border-white/20 text-white/70 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/10 transition-all"
+                  className="w-8 h-8 flex items-center justify-center rounded-xl border border-white/20 text-[#EDD287] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/10 transition-all"
                 >
                   ‹
                 </button>
@@ -170,7 +185,7 @@ const FavouriteSets = () => {
                     item === "..." ? (
                       <span
                         key={`e-${idx}`}
-                        className="w-8 flex items-center justify-center text-white/40 text-sm"
+                        className="w-8 flex items-center justify-center text-[#EDD287] text-sm"
                       >
                         …
                       </span>
@@ -181,7 +196,7 @@ const FavouriteSets = () => {
                         className={`w-8 h-8 rounded-xl border text-sm font-medium transition-all ${
                           page === item
                             ? "bg-[#FBE118] text-[#285610] border-[#FBE118]"
-                            : "border-white/20 text-white/70 hover:bg-white/10"
+                            : "border-white/20 text-[#EDD287] hover:bg-white/10"
                         }`}
                       >
                         {item}
@@ -191,7 +206,7 @@ const FavouriteSets = () => {
                 <button
                   onClick={() => setPage((p) => p + 1)}
                   disabled={page === totalPages}
-                  className="w-8 h-8 flex items-center justify-center rounded-xl border border-white/20 text-white/70 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/10 transition-all"
+                  className="w-8 h-8 flex items-center justify-center rounded-xl border border-[#EDD287] text-[#EDD287] disabled:opacity-30 disabled:cursor-not-allowed hover:text-[#EDD287] transition-all"
                 >
                   ›
                 </button>

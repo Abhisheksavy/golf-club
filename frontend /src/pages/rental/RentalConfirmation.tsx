@@ -61,7 +61,7 @@ const RentalConfirmation = () => {
         <h1 className="text-2xl font-bold text-golf-yellow mb-1">
           Reservation Confirmed!
         </h1>
-        <p className="text-white/60 text-sm">
+        <p className="text-[#EDD287] text-sm">
           {course
             ? `Your clubs are reserved at ${course.name}.`
             : "Your reservation has been confirmed."}
@@ -73,12 +73,12 @@ const RentalConfirmation = () => {
         {/* Course */}
         {course && (
           <div className="px-5 py-4">
-            <p className="text-xs text-white/40 uppercase tracking-wide mb-1">
+            <p className="text-xs text-golf-yellow uppercase tracking-wide mb-1">
               Course
             </p>
-            <p className="font-semibold text-white">{course.name}</p>
+            <p className="font-semibold text-[#EDD287]">{course.name}</p>
             {(course.address || course.location) && (
-              <p className="text-sm text-white/60">
+              <p className="text-sm text-[#EDD287]">
                 {course.address ?? course.location}
               </p>
             )}
@@ -88,10 +88,10 @@ const RentalConfirmation = () => {
         {/* Date */}
         {date && (
           <div className="px-5 py-4">
-            <p className="text-xs text-white/40 uppercase tracking-wide mb-1">
+            <p className="text-xs text-golf-yellow uppercase tracking-wide mb-1">
               Date
             </p>
-            <p className="font-semibold text-white">
+            <p className="font-semibold text-[#EDD287]">
               {new Date(date).toLocaleDateString("en-US", {
                 weekday: "long",
                 year: "numeric",
@@ -105,7 +105,7 @@ const RentalConfirmation = () => {
         {/* Clubs */}
         {clubs.length > 0 && (
           <div className="px-5 py-4">
-            <p className="text-xs text-white/40 uppercase tracking-wide mb-3">
+            <p className="text-xs text-golf-yellow uppercase tracking-wide mb-3">
               Reserved Clubs ({clubs.length})
             </p>
             <div className="space-y-2">
@@ -137,11 +137,11 @@ const RentalConfirmation = () => {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white truncate">
+                    <p className="text-sm font-medium text-golf-yellow truncate">
                       {club.name}
                     </p>
                     {club.category && (
-                      <p className="text-xs text-white/40 capitalize">
+                      <p className="text-xs text-golf-yellow capitalize">
                         {club.category.replace(/-/g, " ")}
                       </p>
                     )}

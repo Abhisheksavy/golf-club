@@ -31,7 +31,7 @@ const SelectCourse = () => {
       <h1 className="text-2xl font-bold text-golf-yellow mb-2">
         Select a Course
       </h1>
-      <p className="text-white mb-6">
+      <p className="text-golf-yellow mb-6">
         Choose the golf course for your rental, or skip if you're not sure yet.
       </p>
 
@@ -56,7 +56,7 @@ const SelectCourse = () => {
                   : "border-white/20 hover:border-white/40 bg-white/10"
               }`}
             >
-              <h3 className="text-lg font-semibold text-white">
+              <h3 className="text-lg font-semibold text-golf-yellow">
                 {course.name}
               </h3>
               {(course.address || course.location) && (

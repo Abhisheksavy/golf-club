@@ -45,11 +45,11 @@ const PlayingLevel = () => {
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold text-golf-yellow mb-1 text-center">Tell Us More About Your Game</h1>
-      <p className="text-white/60 text-sm mb-8 text-center">This helps us recommend the right clubs.</p>
+      <p className="text-golf-yellow text-sm mb-8 text-center">This helps us recommend the right clubs.</p>
 
       {/* Playing level */}
       <div className="mb-8">
-        <p className="text-sm font-medium text-white/80 mb-3">What's your playing level?</p>
+        <p className="text-sm font-medium text-golf-yellow mb-3">What's your playing level?</p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {LEVELS.map(({ key, label }) => (
             <button
@@ -62,7 +62,7 @@ const PlayingLevel = () => {
                   : "border-white/20 bg-white/10 hover:border-[#FBE118]/50 hover:bg-white/15"
               }`}
             >
-              <p className={`font-semibold text-sm ${playingLevel === key ? "text-golf-yellow" : "text-white"}`}>
+              <p className={`font-semibold text-sm ${playingLevel === key ? "text-golf-yellow" : "text-[#EDD287]"}`}>
                 {label}
               </p>
               {/* <p className="text-xs text-white/50 mt-0.5">{description}</p> */}
@@ -73,7 +73,7 @@ const PlayingLevel = () => {
 
       {/* Swing strength */}
       <div className="mb-8">
-        <p className="text-sm font-medium text-white/80 mb-3">How would you describe your swing strength?</p>
+        <p className="text-sm font-medium text-golf-yellow mb-3">How would you describe your swing strength?</p>
         <div className="grid grid-cols-2 gap-3">
           {STRENGTHS.map(({ key, label }) => (
             <button
@@ -86,7 +86,7 @@ const PlayingLevel = () => {
                   : "border-white/20 bg-white/10 hover:border-[#FBE118]/50 hover:bg-white/15"
               }`}
             >
-              <p className={`font-semibold text-sm ${swingStrength === key ? "text-golf-yellow" : "text-white"}`}>
+              <p className={`font-semibold text-sm ${swingStrength === key ? "text-golf-yellow" : "text-[#EDD287]"}`}>
                 {label}
               </p>
               {/* <p className="text-xs text-white/50 mt-0.5">{description}</p> */}

@@ -96,12 +96,14 @@ const SelectDate = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-golf-yellow mb-2">Select a Date</h1>
-      <p className="text-white/60 mb-6">
+      <h1 className="text-2xl font-bold text-golf-yellow mb-2">
+        Select a Date
+      </h1>
+      <p className="text-[#EDD287] mb-6">
         {selectedCourse ? (
           <>
             Choose your rental date at{" "}
-            <span className="font-medium text-white">
+            <span className="font-medium text-golf-yellow">
               {selectedCourse.name}
             </span>
             , or skip.
@@ -118,7 +120,7 @@ const SelectDate = () => {
             type="button"
             onClick={prevMonth}
             disabled={isCurrentMonth}
-            className="p-1 rounded hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="p-1 rounded hover:bg-[#EDD287] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             aria-label="Previous month"
           >
             <svg
@@ -136,18 +138,18 @@ const SelectDate = () => {
             </svg>
           </button>
 
-          <span className="text-sm font-semibold text-white">
+          <span className="text-sm font-semibold text-[#EDD287]">
             {monthName} {displayYear}
           </span>
 
           <button
             type="button"
             onClick={nextMonth}
-            className="p-1 rounded hover:bg-white/10 transition-colors"
+            className="p-1 rounded hover:bg-[#EDD287] transition-colors"
             aria-label="Next month"
           >
             <svg
-              className="w-5 h-5 text-white/70"
+              className="w-5 h-5 text-[#EDD287]"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -167,7 +169,7 @@ const SelectDate = () => {
           {DAY_LABELS.map((label) => (
             <div
               key={label}
-              className="text-center text-xs font-medium text-white/50 py-1"
+              className="text-center text-xs font-medium text-[#EDD287] py-1"
             >
               {label}
             </div>
@@ -208,8 +210,7 @@ const SelectDate = () => {
                 cellClass += "text-white/20 cursor-default";
                 if (isUnavailable) cellClass += " line-through";
               } else {
-                cellClass +=
-                  "text-white cursor-pointer hover:bg-white/10";
+                cellClass += "text-[#EDD287] cursor-pointer hover:bg-white/10";
                 if (isToday) cellClass += " ring-1 ring-golf-400";
               }
 

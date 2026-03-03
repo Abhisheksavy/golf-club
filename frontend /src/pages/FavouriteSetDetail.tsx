@@ -92,7 +92,7 @@ const FavouriteSetDetail = () => {
             <h1 className="text-2xl font-bold text-golf-yellow">
               {set.setName}
             </h1>
-            <p className="text-sm text-white mt-1">
+            <p className="text-sm text-[#EDD287] mt-1">
               {setClubs.length} {setClubs.length === 1 ? "club" : "clubs"}
             </p>
           </div>
@@ -172,7 +172,7 @@ const FavouriteSetDetail = () => {
 
               {/* Info */}
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-white text-base truncate">
+                <h3 className="font-semibold text-[#EDD287] text-base truncate">
                   {club.name}
                 </h3>
 

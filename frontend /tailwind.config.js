@@ -22,8 +22,9 @@ export default {
         },
         "golf-dark": "#285610",
         "golf-yellow": "#FBE118",
-        charcoal: "#2D2D2A",
+        "charcoal": "#2D2D2A",
         "dark-blue": "#34659B",
+        "golf-white": "#EDD287",
         cream: {
           50: "#fefdf8",
           100: "#fdf9ed",

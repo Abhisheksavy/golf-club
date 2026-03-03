@@ -44,7 +44,7 @@ const SaveSetModal = ({
       <form onSubmit={handleSubmit}>
         <label
           htmlFor="bag-name"
-          className="block text-sm font-medium text-white/80 mb-1"
+          className="block text-sm font-medium text-[#EDD287] mb-1"
         >
           Set Name
         </label>
@@ -55,7 +55,7 @@ const SaveSetModal = ({
           onChange={(e) => setName(e.target.value)}
           placeholder="e.g. Weekend Round"
           autoFocus
-          className="input-field"
+          className="input-field text-[#EDD287]"
         />
         {isDuplicate && (
           <p className="text-red-500 text-xs mt-1">

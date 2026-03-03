@@ -80,7 +80,10 @@ const RentalSummary = () => {
       month: "short",
       day: "numeric",
       year: "numeric",
-    })} ${now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}`;
+    })} ${now.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    })}`;
     saveBagMutation.mutate({
       name: bagName,
       clubs: selectedClubs.map((c) => c._id),
@@ -149,10 +152,12 @@ const RentalSummary = () => {
         {/* Course */}
         {selectedCourse && (
           <div className="p-4">
-            <p className="text-xs text-white/50 uppercase tracking-wide mb-1">
+            <p className="text-xs text-golf-yellow uppercase tracking-wide mb-1">
               Course
             </p>
-            <p className="font-semibold text-white">{selectedCourse.name}</p>
+            <p className="font-semibold text-[#EDD287]">
+              {selectedCourse.name}
+            </p>
             {(selectedCourse.address || selectedCourse.location) && (
               <p className="text-sm text-white/60">
                 {selectedCourse.address ?? selectedCourse.location}
@@ -164,10 +169,10 @@ const RentalSummary = () => {
         {/* Date */}
         {selectedDate && (
           <div className="p-4">
-            <p className="text-xs text-white/50 uppercase tracking-wide mb-1">
+            <p className="text-xs text-golf-yellow uppercase tracking-wide mb-1">
               Date
             </p>
-            <p className="font-semibold text-white">
+            <p className="font-semibold text-[#EDD287]">
               {new Date(selectedDate).toLocaleDateString("en-US", {
                 weekday: "long",
                 year: "numeric",
@@ -180,7 +185,7 @@ const RentalSummary = () => {
 
         {/* Clubs */}
         <div className="p-4">
-          <p className="text-xs text-white/50 uppercase tracking-wide mb-3">
+          <p className="text-xs text-golf-yellow uppercase tracking-wide mb-3">
             Clubs ({selectedClubs.length})
           </p>
           <div className="space-y-2">
@@ -196,7 +201,7 @@ const RentalSummary = () => {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <span className="text-sm text-white">{club.name}</span>
+                  <span className="text-sm text-golf-yellow">{club.name}</span>
                   {club.category && (
                     <span className="ml-2 text-xs text-white/40 capitalize">
                       {club.category.replace(/-/g, " ")}

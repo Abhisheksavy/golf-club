@@ -55,12 +55,12 @@ const FavouriteSetCard = ({ set, onDelete }: FavouriteSetCardProps) => {
       <div className="p-4 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-2 mb-3">
           <div>
-            <h3 className="font-bold text-white text-base leading-tight">{set.setName}</h3>
+            <h3 className="font-bold text-[#EDD287] text-base leading-tight">{set.setName}</h3>
             <div className="flex items-center gap-1.5 mt-1">
-              <svg className="w-3.5 h-3.5 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-3.5 h-3.5 text-[#EDD287]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
-              <span className="text-xs text-white/50 font-medium">{clubs.length} {clubs.length === 1 ? "club" : "clubs"}</span>
+              <span className="text-xs text-[#EDD287] font-medium">{clubs.length} {clubs.length === 1 ? "club" : "clubs"}</span>
             </div>
           </div>
           <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-[#FBE118]/20 flex items-center justify-center">
@@ -71,7 +71,7 @@ const FavouriteSetCard = ({ set, onDelete }: FavouriteSetCardProps) => {
         {clubs.length > 0 && (
           <div className="mb-4 space-y-1">
             {clubs.slice(0, 2).map((club) => (
-              <p key={club._id} className="text-[11px] text-white/40 truncate leading-tight">• {club.name}</p>
+              <p key={club._id} className="text-[11px] text-[#EDD287] truncate leading-tight">• {club.name}</p>
             ))}
             {clubs.length > 2 && (
               <p className="text-[11px] text-white/40">• and {clubs.length - 2} more…</p>
@@ -91,7 +91,7 @@ const FavouriteSetCard = ({ set, onDelete }: FavouriteSetCardProps) => {
           </Link>
           <button
             onClick={() => onDelete(set._id)}
-            className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-red-400 bg-red-500/10 hover:bg-red-500/20 transition-colors"
+            className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-red-400 bg-[#EDD287] hover:bg-red-500/20 transition-colors"
           >
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

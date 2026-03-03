@@ -39,7 +39,7 @@ const SavedBagSelect = () => {
       <h1 className="text-2xl font-bold text-golf-yellow mb-2">
         Welcome back!
       </h1>
-      <p className="text-white/60 mb-8">
+      <p className="text-golf-yellow mb-8">
         Use a saved bag or start fresh with new club selections.
       </p>
 
@@ -76,8 +76,8 @@ const SavedBagSelect = () => {
                   className="flex items-center justify-between p-5 rounded-xl border-2 border-white/20 bg-white/10 hover:border-[#FBE118]/50 hover:bg-white/15 transition-all text-left"
                 >
                   <div>
-                    <p className="font-semibold text-white">{bag.setName}</p>
-                    <p className="text-sm text-white/60 mt-0.5">
+                    <p className="font-semibold text-golf-yellow">{bag.setName}</p>
+                    <p className="text-sm text-[#EDD287] mt-0.5">
                       {Array.isArray(bag.clubs) ? bag.clubs.length : 0} club
                       {bag.clubs.length !== 1 ? "s" : ""}
                     </p>
@@ -111,7 +111,7 @@ const SavedBagSelect = () => {
         className="w-full flex items-center justify-center gap-3 p-6 rounded-xl border-2 border-dashed border-white/30 bg-white/10 hover:border-[#FBE118]/50 hover:bg-white/15 transition-all"
       >
         <svg
-          className="w-6 h-6 text-golf-600"
+          className="w-6 h-6 text-golf-yellow"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -123,7 +123,7 @@ const SavedBagSelect = () => {
             d="M12 4.5v15m7.5-7.5h-15"
           />
         </svg>
-        <span className="font-medium text-white">Choose new clubs</span>
+        <span className="font-medium text-golf-yellow">Choose new clubs</span>
       </button>
     </div>
   );

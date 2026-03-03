@@ -58,7 +58,7 @@ const Login = () => {
             onClick={() => setTab("link")}
             className={`flex-1 py-2 text-sm font-medium rounded-full transition-colors ${
               tab === "link"
-                ? "bg-[#FBE118] text-[#285610] shadow"
+                ? "bg-[#EDD287] text-[#285610] shadow"
                 : "text-white/60 hover:text-white"
             }`}
           >
@@ -91,14 +91,14 @@ const Login = () => {
               </div>
             ) : (
               <>
-                <p className="text-center text-sm text-white/60 mb-4">
+                <p className="text-center text-sm text-golf-yellow mb-4">
                   Enter your email to receive a secure login link.
                 </p>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
                     <label
                       htmlFor="email-link"
-                      className="block text-sm font-medium text-white mb-1"
+                      className="block text-sm font-medium text-golf-yellow mb-1 "
                     >
                       Email Address
                     </label>
@@ -110,7 +110,7 @@ const Login = () => {
                       onBlur={(e) => validateEmail(e.target.value)}
                       placeholder="you@example.com"
                       required
-                      className="input-field"
+                      className="input-field rounded-full border-golf-yellow placeholder:text-[#EDD287] text-[#EDD287]"
                     />
                     {emailError && (
                       <p className="text-golf-yellow text-xs mt-1">
@@ -118,10 +118,15 @@ const Login = () => {
                       </p>
                     )}
                   </div>
+                  {/* className={`flex-1 py-2 text-sm font-medium rounded-full transition-colors ${
+              tab === "link"
+                ? "bg-[#EDD287] text-[#285610] shadow"
+                : "text-white/60 hover:text-white"
+            }`} */}
                   <button
                     type="submit"
                     disabled={isSendingLink}
-                    className="w-full btn-primary"
+                    className="w-full  rounded-full bg-[#EDD287] text-[#285610] py-2 text-md"
                   >
                     {isSendingLink ? "Sending..." : "Send Magic Link"}
                   </button>
@@ -137,7 +142,7 @@ const Login = () => {
             <div>
               <label
                 htmlFor="email-pw"
-                className="block text-sm font-medium text-white mb-1"
+                className="block text-sm font-medium text-golf-yellow mb-1"
               >
                 Email Address
               </label>
@@ -149,7 +154,7 @@ const Login = () => {
                 onBlur={(e) => validateEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
-                className="input-field"
+                className="input-field rounded-full border-golf-yellow placeholder:text-[#EDD287] text-[#EDD287]"
               />
               {emailError && (
                 <p className="text-golf-yellow text-xs mt-1">{emailError}</p>
@@ -158,7 +163,7 @@ const Login = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-white mb-1"
+                className="block text-sm font-medium text-golf-yellow mb-1"
               >
                 Password
               </label>
@@ -172,7 +177,7 @@ const Login = () => {
                 }}
                 placeholder="••••••••"
                 required
-                className="input-field"
+                className="input-field rounded-full border-golf-yellow placeholder:text-[#EDD287] text-[#EDD287]"
               />
               {tab === "password" && password && pwErrors.length > 0 && (
                 <ul className="text-xs text-golf-yellow mt-1 space-y-0.5 list-disc list-inside">
@@ -185,11 +190,11 @@ const Login = () => {
             <button
               type="submit"
               disabled={isLoggingIn}
-              className="w-full btn-primary"
+              className="w-full  rounded-full bg-[#EDD287] text-[#285610] py-2 text-md"
             >
               {isLoggingIn ? "Signing in..." : "Continue"}
             </button>
-            <p className="text-xs text-white text-center">
+            <p className="text-xs text-golf-yellow text-center">
               New here? Just enter your email and a password — your account is
               created automatically.
             </p>

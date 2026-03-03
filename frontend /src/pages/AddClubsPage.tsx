@@ -11,7 +11,11 @@ import type { Club } from "../types";
 
 const CATEGORIES = [
   { key: "driver", label: "Driver", optional: true },
-  { key: "fairway-woods-hybrids", label: "Fairway Woods & Hybrids", optional: true },
+  {
+    key: "fairway-woods-hybrids",
+    label: "Fairway Woods & Hybrids",
+    optional: true,
+  },
   { key: "irons", label: "Irons", optional: false },
   { key: "wedges", label: "Wedges", optional: true },
   { key: "putter", label: "Putter", optional: false },
@@ -50,7 +54,13 @@ const FEMALE_HEIGHTS = [
 
 function assignCategory(club: Club): CategoryKey {
   if (!club.category) return "other";
-  const known: CategoryKey[] = ["driver", "fairway-woods-hybrids", "irons", "wedges", "putter"];
+  const known: CategoryKey[] = [
+    "driver",
+    "fairway-woods-hybrids",
+    "irons",
+    "wedges",
+    "putter",
+  ];
   return known.includes(club.category as CategoryKey)
     ? (club.category as CategoryKey)
     : "other";
@@ -66,10 +76,14 @@ const AddClubsPage = () => {
   const [height, setHeight] = useState<string | null>(null);
   const [shaftFilter, setShaftFilter] = useState("all");
   const [ironTypeFilter, setIronTypeFilter] = useState("all");
-  const [categorySearch, setCategorySearch] = useState<Record<string, string>>({});
+  const [categorySearch, setCategorySearch] = useState<Record<string, string>>(
+    {}
+  );
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
-  const { data: set, isLoading: setLoading } = useFavouriteSetDetail(setId || "");
+  const { data: set, isLoading: setLoading } = useFavouriteSetDetail(
+    setId || ""
+  );
 
   const { data: allClubsData, isLoading: clubsLoading } = useQuery({
     queryKey: ["clubs", { limit: 100 }],
@@ -152,8 +166,18 @@ const AddClubsPage = () => {
         onClick={() => navigate(`/my-bags/${setId}`)}
         className="text-sm text-golf-yellow hover:text-golf-yellow/80 mb-4 inline-flex items-center gap-1"
       >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 19l-7-7 7-7"
+          />
         </svg>
         Back to {set.setName}
       </button>
@@ -161,8 +185,9 @@ const AddClubsPage = () => {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-golf-yellow">Add Clubs</h1>
-        <p className="text-white/60 text-sm mt-1">
-          Select clubs to add to <span className="text-white font-medium">{set.setName}</span>
+        <p className="text-[#EDD287] text-sm mt-1">
+          Select clubs to add to{" "}
+          <span className="text-[#EDD287]font-medium">{set.setName}</span>
         </p>
       </div>
 
@@ -171,7 +196,9 @@ const AddClubsPage = () => {
         {/* Gender + Height */}
         <div className="flex flex-wrap gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-white/70 uppercase tracking-wide">Gender:</span>
+            <span className="text-xs font-medium text-golf-yellow uppercase tracking-wide">
+              Gender:
+            </span>
             <div className="flex gap-1">
               {(["male", "female"] as const).map((g) => (
                 <button
@@ -179,7 +206,9 @@ const AddClubsPage = () => {
                   type="button"
                   onClick={() => setGender(g)}
                   className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                    gender === g ? "bg-[#FBE118] text-[#285610]" : "bg-white/10 text-white hover:bg-white/20"
+                    gender === g
+                      ? "bg-[#FBE118] text-[#285610]"
+                      : "bg-white/10 text-white hover:bg-white/20"
                   }`}
                 >
                   {g.charAt(0).toUpperCase() + g.slice(1)}
@@ -188,16 +217,22 @@ const AddClubsPage = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-white/70 uppercase tracking-wide">Height:</span>
+            <span className="text-xs font-medium text-golf-yellow uppercase tracking-wide">
+              Height:
+            </span>
             <select
               value={height || ""}
               onChange={(e) => setHeight(e.target.value)}
               className="text-xs bg-white/10 border border-white/20 text-white rounded-full px-3 py-1 focus:outline-none focus:ring-1 focus:ring-[#FBE118]"
             >
               <option value="">Select height</option>
-              {(gender === "female" ? FEMALE_HEIGHTS : MALE_HEIGHTS).map((h) => (
-                <option key={h} value={h}>{h}</option>
-              ))}
+              {(gender === "female" ? FEMALE_HEIGHTS : MALE_HEIGHTS).map(
+                (h) => (
+                  <option key={h} value={h}>
+                    {h}
+                  </option>
+                )
+              )}
             </select>
           </div>
         </div>
@@ -205,7 +240,9 @@ const AddClubsPage = () => {
         {/* Shaft + Iron type */}
         <div className="flex flex-wrap gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-white/70 uppercase tracking-wide">Shaft:</span>
+            <span className="text-xs font-medium text-golf-yellow uppercase tracking-wide">
+              Shaft:
+            </span>
             <div className="flex gap-1">
               {SHAFT_OPTIONS.map(({ key, label }) => (
                 <button
@@ -213,7 +250,9 @@ const AddClubsPage = () => {
                   type="button"
                   onClick={() => setShaftFilter(key)}
                   className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                    shaftFilter === key ? "bg-[#FBE118] text-[#285610]" : "bg-white/10 text-white hover:bg-white/20"
+                    shaftFilter === key
+                      ? "bg-[#FBE118] text-[#285610]"
+                      : "bg-white/10 text-white hover:bg-white/20"
                   }`}
                 >
                   {label}
@@ -222,7 +261,9 @@ const AddClubsPage = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-white/70 uppercase tracking-wide">Iron Type:</span>
+            <span className="text-xs font-medium text-golf-yellow uppercase tracking-wide">
+              Iron Type:
+            </span>
             <div className="flex gap-1 flex-wrap">
               {IRON_OPTIONS.map(({ key, label }) => (
                 <button
@@ -230,7 +271,9 @@ const AddClubsPage = () => {
                   type="button"
                   onClick={() => setIronTypeFilter(key)}
                   className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                    ironTypeFilter === key ? "bg-[#FBE118] text-[#285610]" : "bg-white/10 text-white hover:bg-white/20"
+                    ironTypeFilter === key
+                      ? "bg-[#FBE118] text-[#285610]"
+                      : "bg-white/10 text-white hover:bg-white/20"
                   }`}
                 >
                   {label}
@@ -249,21 +292,32 @@ const AddClubsPage = () => {
         <div className="space-y-3">
           {CATEGORIES.map(({ key, label, optional }) => {
             const categoryClubs = getClubsForCategory(key);
-            const allCategoryClubs = availableClubs.filter((c) => assignCategory(c) === key);
+            const allCategoryClubs = availableClubs.filter(
+              (c) => assignCategory(c) === key
+            );
             const isCollapsed = collapsed[key] ?? false;
-            const selectedInCategory = allCategoryClubs.filter((c) => pendingClubs.has(c._id));
+            const selectedInCategory = allCategoryClubs.filter((c) =>
+              pendingClubs.has(c._id)
+            );
 
             return (
-              <div key={key} className="bg-white/10 rounded-lg border border-white/20 overflow-hidden">
+              <div
+                key={key}
+                className="bg-white/10 rounded-lg border border-white/20 overflow-hidden"
+              >
                 <button
                   type="button"
                   onClick={() => toggleCollapse(key)}
                   className="w-full flex items-center justify-between px-4 py-3 bg-white/5 hover:bg-white/15 transition-colors text-left"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-golf-yellow text-sm">{label}</span>
+                    <span className="font-semibold text-golf-yellow text-sm">
+                      {label}
+                    </span>
                     {optional && (
-                      <span className="text-xs text-white/50 font-normal">(Optional)</span>
+                      <span className="text-xs text-white/50 font-normal">
+                        (Optional)
+                      </span>
                     )}
                     {selectedInCategory.length > 0 && (
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#FBE118] text-[#285610]">
@@ -272,12 +326,23 @@ const AddClubsPage = () => {
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-white/50">{allCategoryClubs.length} clubs</span>
+                    <span className="text-xs text-white/50">
+                      {allCategoryClubs.length} clubs
+                    </span>
                     <svg
-                      className={`w-4 h-4 text-white/50 transition-transform ${isCollapsed ? "-rotate-90" : ""}`}
-                      fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                      className={`w-4 h-4 text-white/50 transition-transform ${
+                        isCollapsed ? "-rotate-90" : ""
+                      }`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </div>
                 </button>
@@ -287,9 +352,16 @@ const AddClubsPage = () => {
                     <div className="relative mb-2">
                       <svg
                         className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/40"
-                        fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                        />
                       </svg>
                       <input
                         type="text"
@@ -301,8 +373,10 @@ const AddClubsPage = () => {
                     </div>
 
                     {categoryClubs.length === 0 ? (
-                      <p className="text-xs text-white/40 py-3 text-center">
-                        {getSearch(key) ? "No clubs match your search." : "No clubs in this category."}
+                      <p className="text-xs text-[#EDD287] py-3 text-center">
+                        {getSearch(key)
+                          ? "No clubs match your search."
+                          : "No clubs in this category."}
                       </p>
                     ) : (
                       <div className="divide-y divide-white/10">
@@ -323,15 +397,35 @@ const AddClubsPage = () => {
                               />
                               {club.image && (
                                 <div className="w-20 h-16 rounded-lg bg-white/10 overflow-hidden flex-shrink-0">
-                                  <img src={club.image} alt={club.name} className="w-full h-full object-cover" />
+                                  <img
+                                    src={club.image}
+                                    alt={club.name}
+                                    className="w-full h-full object-cover"
+                                  />
                                 </div>
                               )}
-                              <span className={`text-sm flex-1 min-w-0 truncate ${isSelected ? "font-medium text-white" : "text-white/80"}`}>
+                              <span
+                                className={`text-sm flex-1 min-w-0 truncate ${
+                                  isSelected
+                                    ? "font-medium text-white"
+                                    : "text-white/80"
+                                }`}
+                              >
                                 {club.name}
                               </span>
                               {isSelected && (
-                                <svg className="w-4 h-4 text-golf-yellow flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                <svg
+                                  className="w-4 h-4 text-golf-yellow flex-shrink-0"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                  strokeWidth={2.5}
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M5 13l4 4L19 7"
+                                  />
                                 </svg>
                               )}
                             </label>
@@ -351,7 +445,9 @@ const AddClubsPage = () => {
       <div className="fixed bottom-0 left-0 right-0 bg-[#1e4410] border-t border-[#FBE118]/20 px-4 py-3 flex items-center justify-between">
         <span className="text-sm text-white/70">
           {pendingClubs.size > 0
-            ? `${pendingClubs.size} club${pendingClubs.size > 1 ? "s" : ""} selected`
+            ? `${pendingClubs.size} club${
+                pendingClubs.size > 1 ? "s" : ""
+              } selected`
             : "Select clubs to add"}
         </span>
         <div className="flex gap-3">
