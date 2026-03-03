@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { getStoredUser, useLogout, isAuthenticated } from "../../hooks/useAuth";
 
 const Navbar = () => {
@@ -10,10 +10,8 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
-    `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-      isActive
-        ? "bg-dark-blue text-golf-yellow"
-        : "text-golf-yellow hover:bg-dark-blue"
+    `px-3 pt-2  text-base font-medium transition-all text-golf-yellow border-b ${
+      isActive ? "border-golf-yellow" : "border-transparent "
     }`;
 
   const mobileLinkClass = ({ isActive }: { isActive: boolean }) =>
@@ -24,18 +22,27 @@ const Navbar = () => {
     }`;
 
   return (
-    <nav className="bg-golf-dark text-charcoal shadow-md">
+    <nav className="bg-golf-dark text-charcoal ">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
-        <button
-          onClick={() => navigate("/dashboard")}
+        <Link
+          to="https://www.firestx.com/"
           className="text-lg font-bold tracking-tight text-golf-yellow transition-colors whitespace-nowrap"
         >
-          Golf Club
-        </button>
+          <img
+            src="https://images.squarespace-cdn.com/content/v1/69727db21fefbc03b1e14f00/8c0977ec-66a5-4340-b6c0-604cf8b5a7cc/GOLD_FireStx+logo+-+centered+-+cropped+no+background+-+larger+emblem+-+brand+only+-+gold.png?format=50w"
+            className="w-auto max-w-full max-h-12"
+          />
+        </Link>
 
         {/* Desktop nav links (≥768px) */}
-        <div className="hidden md:flex items-center gap-1 ml-6 flex-1">
+        <div className="hidden md:flex items-end justify-end gap-1 ml-6 flex-1">
+          <Link
+            to="https://www.firestx.com/"
+            className="px-3 pt-2 text-base font-medium text-golf-yellow border-b border-transparent hover:border-golf-yellow/50 transition-all"
+          >
+            Home
+          </Link>
           <NavLink to="/my-bags" className={linkClass}>
             My Bags
           </NavLink>
@@ -54,7 +61,7 @@ const Navbar = () => {
               <span className="text-sm text-golf-yellow/70">{user?.email}</span>
               <button
                 onClick={logout}
-                className="px-3 py-1.5 text-sm border border-[#FBE118]/40 rounded-md text-golf-yellow transition-colors"
+                className="px-3 py-1.5 text-base border border-[#FBE118]/40 rounded-full  bg-[#EDD287] text-golf-dark  transition-colors"
               >
                 Logout
               </button>
@@ -62,7 +69,7 @@ const Navbar = () => {
           ) : (
             <button
               onClick={() => navigate("/login")}
-              className="px-3 py-1.5 text-sm border border-[#FBE118]/40 rounded-md text-golf-yellow transition-colors"
+              className="px-3 py-1.5 text-base border border-[#FBE118]/40 rounded-full bg-[#EDD287] text-golf-dark transition-colors"
             >
               Log In
             </button>
