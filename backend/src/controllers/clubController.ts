@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import { Response as ExpressResponse } from "express";
 import { Response } from "../utils/response";
 import { BooqableProduct } from "../types/booqable.type";
-import { fetchPage, transformProduct } from "../utils/helper";
+import { fetchPage, transformProduct, buildCategoryMap } from "../utils/helper";
 
 export async function fetchAllBooqableProducts(): Promise<BooqableProduct[]> {
   const pageSize = 100;
@@ -23,7 +23,10 @@ export async function fetchAllBooqableProducts(): Promise<BooqableProduct[]> {
 export async function fetchProductsByIds(
   ids: string[]
 ): Promise<ReturnType<typeof transformProduct>[]> {
-  const all = await fetchAllBooqableProducts();
+  const [all, categoryMap] = await Promise.all([
+    fetchAllBooqableProducts(),
+    buildCategoryMap(),
+  ]);
   const filtered = all.filter((p) => ids.includes(p.id));
 
   return filtered
@@ -32,7 +35,7 @@ export async function fetchProductsByIds(
         new Date((b.attributes.created_at as string) ?? "").getTime() -
         new Date((a.attributes.created_at as string) ?? "").getTime()
     )
-    .map(transformProduct);
+    .map((p) => transformProduct(p, categoryMap));
 }
 
 export const getClubs = async (
@@ -53,7 +56,11 @@ export const getClubs = async (
       Math.max(1, parseInt(req.query.limit as string) || 10)
     );
 
-    let filtered = await fetchAllBooqableProducts();
+    const [filtered_all, categoryMap] = await Promise.all([
+      fetchAllBooqableProducts(),
+      buildCategoryMap(),
+    ]);
+    let filtered = filtered_all;
 
     if (archivedParam === "true" || isActiveParam === "false") {
       filtered = filtered.filter((p) => p.attributes.archived);
@@ -91,7 +98,7 @@ export const getClubs = async (
     const totalPages = Math.ceil(total / limit);
     const clubs = filtered
       .slice((page - 1) * limit, page * limit)
-      .map(transformProduct);
+      .map((p) => transformProduct(p, categoryMap));
 
     res
       .status(StatusCodes.OK)
@@ -212,7 +219,10 @@ export const getAvailableClubs = async (
   try {
     const { course, date } = req.query as { course?: string; date?: string };
 
-    const allProducts = await fetchAllBooqableProducts();
+    const [allProducts, categoryMap] = await Promise.all([
+      fetchAllBooqableProducts(),
+      buildCategoryMap(),
+    ]);
     const active = allProducts.filter((p) => !p.attributes.archived);
 
     // Course-only mode (no date): all active products are available.
@@ -226,7 +236,7 @@ export const getAvailableClubs = async (
             new Date((a.attributes.created_at as string) ?? "").getTime()
         )
         .map((p) => ({
-          ...transformProduct(p),
+          ...transformProduct(p, categoryMap),
           available: true,
           unavailabilityReason: null,
         }));
@@ -280,7 +290,7 @@ export const getAvailableClubs = async (
               )
             : true;
           return {
-            ...transformProduct(p),
+            ...transformProduct(p, categoryMap),
             available: isAvailable,
             unavailabilityReason: isAvailable
               ? null

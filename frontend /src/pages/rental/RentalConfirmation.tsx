@@ -167,22 +167,22 @@ const RentalConfirmation = () => {
       </div>
 
       {/* Action buttons */}
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <button
           onClick={handleViewReservations}
-          className="btn-primary w-full sm:w-auto"
+          className="btn-primary w-full !py-3 text-center"
         >
           View My Reservations
         </button>
         <button
           onClick={handleNewReservation}
-          className="btn-secondary w-full sm:w-auto"
+          className="btn-secondary w-full !py-3 text-center"
         >
           Make Another Reservation
         </button>
         <button
           onClick={handleDashboard}
-          className="btn-secondary w-full sm:w-auto"
+          className="btn-secondary w-full !py-3 text-center"
         >
           Dashboard
         </button>

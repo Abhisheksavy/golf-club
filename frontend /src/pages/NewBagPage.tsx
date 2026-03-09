@@ -128,7 +128,7 @@ const NewBagPage = () => {
 
   const handleSaveBag = () => {
     if (!isAuthenticated()) {
-      sessionStorage.setItem("returnTo", "/my-bags/new");
+      localStorage.setItem("returnTo", "/my-bags/new");
       navigate("/login");
       return;
     }

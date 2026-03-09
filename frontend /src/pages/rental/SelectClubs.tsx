@@ -292,16 +292,17 @@ const SelectClubs = () => {
             {!loadBagMode ? (
               <button
                 onClick={() => setLoadBagMode(true)}
-                className="text-sm text-golf-yellow hover:text-golf-yellow/80 font-medium"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FBE118] text-[#285610] text-xs font-bold uppercase tracking-wide hover:bg-[#FBE118]/80 transition-colors"
               >
-                Load from saved bag
+                <span className="text-sm leading-none">+</span>
+                LOAD FROM SAVED BAG
               </button>
             ) : (
               <button
                 onClick={() => setLoadBagMode(false)}
-                className="text-sm text-white/50 hover:text-golf-yellow"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 text-white/60 text-xs font-bold uppercase tracking-wide hover:bg-white/20 transition-colors"
               >
-                Cancel
+                CANCEL
               </button>
             )}
           </div>
@@ -501,8 +502,7 @@ const SelectClubs = () => {
                                 </span>
                                 {showAvailability && unavailable && (
                                   <span className="text-xs text-red-300 flex-shrink-0">
-                                    {club.unavailabilityReason ===
-                                    "at-this-course"
+                                    {club.unavailabilityReason === "at-this-course"
                                       ? "Not at course"
                                       : "Not available"}
                                   </span>

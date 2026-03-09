@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useVerifyMagicLink } from "../hooks/useAuth";
 
@@ -6,16 +6,20 @@ const Verify = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { mutate, isPending, isError, error } = useVerifyMagicLink();
+  const called = useRef(false);
 
   const token = searchParams.get("token");
 
   useEffect(() => {
+    if (called.current) return;
+    called.current = true;
     if (token) {
       mutate(token);
     } else {
       navigate("/login");
     }
-  }, [token, mutate, navigate]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-golf-dark">

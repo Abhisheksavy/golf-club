@@ -30,6 +30,11 @@ export interface BooqableProduct {
     archived: boolean;
     photo_url: string | null;
     tag_list: string[];
+    product_group_id?: string;
+    [key: string]: unknown;
+  };
+  relationships?: {
+    product_group?: { data?: { id: string; type: string } | null };
     [key: string]: unknown;
   };
 }

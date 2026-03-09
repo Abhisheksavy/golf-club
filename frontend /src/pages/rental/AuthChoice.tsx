@@ -12,7 +12,7 @@ const AuthChoice = () => {
   }
 
   const handleLogin = () => {
-    sessionStorage.setItem("returnTo", "/reserve/bag-select");
+    localStorage.setItem("returnTo", "/reserve/bag-select");
     navigate("/login");
   };
 

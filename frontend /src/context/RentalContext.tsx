@@ -33,11 +33,20 @@ interface RentalContextType extends RentalState {
 const RentalContext = createContext<RentalContextType | null>(null);
 
 const SESSION_KEY = "rental_ctx";
+const BACKUP_KEY = "rental_ctx_backup";
 
 function loadSaved(): Partial<RentalState> {
   try {
     const raw = sessionStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) : {};
+    if (raw) return JSON.parse(raw);
+    // Fallback: restore from localStorage backup written before a cross-tab magic link redirect
+    const backup = localStorage.getItem(BACKUP_KEY);
+    if (backup) {
+      sessionStorage.setItem(SESSION_KEY, backup);
+      localStorage.removeItem(BACKUP_KEY);
+      return JSON.parse(backup);
+    }
+    return {};
   } catch {
     return {};
   }
@@ -65,7 +74,11 @@ export const RentalProvider = ({ children }: { children: React.ReactNode }) => {
   const [playingLevel, _setPlayingLevel] = useState<"beginner" | "intermediate" | "expert" | null>(saved.playingLevel ?? null);
   const [swingStrength, _setSwingStrength] = useState<"gentle" | "strong" | null>(saved.swingStrength ?? null);
 
-  const setCourse = (v: Course | null) => { _setCourse(v); persist({ selectedCourse: v }); };
+  const setCourse = (v: Course | null) => {
+    _setCourse(v);
+    _setClubs([]);
+    persist({ selectedCourse: v, selectedClubs: [] });
+  };
   const setDate = (v: string | null) => { _setDate(v); persist({ selectedDate: v }); };
   const setClubs = (v: Club[]) => { _setClubs(v); persist({ selectedClubs: v }); };
   const setSaveToBag = (v: boolean) => { _setSaveToBag(v); persist({ saveToBag: v }); };

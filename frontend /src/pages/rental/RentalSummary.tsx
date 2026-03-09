@@ -71,7 +71,8 @@ const RentalSummary = () => {
 
   const handleSaveBag = () => {
     if (!loggedIn) {
-      sessionStorage.setItem("returnTo", "/reserve/summary");
+      localStorage.setItem("rental_ctx_backup", sessionStorage.getItem("rental_ctx") ?? "{}");
+      localStorage.setItem("returnTo", "/reserve/summary");
       navigate("/login");
       return;
     }
@@ -93,7 +94,8 @@ const RentalSummary = () => {
   const handlePlayRound = () => {
     if (!canCheckout) return;
     if (!loggedIn) {
-      sessionStorage.setItem("returnTo", "/reserve/summary");
+      localStorage.setItem("rental_ctx_backup", sessionStorage.getItem("rental_ctx") ?? "{}");
+      localStorage.setItem("returnTo", "/reserve/summary");
       navigate("/login");
       return;
     }

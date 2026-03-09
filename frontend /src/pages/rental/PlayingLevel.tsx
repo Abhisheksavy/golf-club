@@ -5,17 +5,17 @@ const LEVELS = [
   {
     key: "beginner" as const,
     label: "Beginner",
-    // description: "New to the game or still learning the basics",
+    description: "Filters to Cavity Backs",
   },
   {
     key: "intermediate" as const,
     label: "Intermediate",
-    // description: "Play regularly and have a decent handicap",
+    description: "Filters to Muscle Backs",
   },
   {
     key: "expert" as const,
     label: "Expert",
-    // description: "Competitive player with a low handicap",
+    description: "Filters to Blades",
   },
 ];
 
@@ -23,12 +23,12 @@ const STRENGTHS = [
   {
     key: "gentle" as const,
     label: "Gentle",
-    // description: "Smooth, controlled swing — Flexible shaft",
+    description: "Filters to Flexible Shafts",
   },
   {
     key: "strong" as const,
     label: "Strong",
-    // description: "Fast, powerful swing — Stiff shaft",
+    description: "Filters to Stiff Shafts",
   },
 ];
 
@@ -51,7 +51,7 @@ const PlayingLevel = () => {
       <div className="mb-8">
         <p className="text-sm font-medium text-golf-yellow mb-3">What's your playing level?</p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {LEVELS.map(({ key, label }) => (
+          {LEVELS.map(({ key, label, description }) => (
             <button
               key={key}
               type="button"
@@ -65,7 +65,7 @@ const PlayingLevel = () => {
               <p className={`font-semibold text-sm ${playingLevel === key ? "text-golf-yellow" : "text-[#EDD287]"}`}>
                 {label}
               </p>
-              {/* <p className="text-xs text-white/50 mt-0.5">{description}</p> */}
+              <p className="text-xs text-white/50 mt-1">{description}</p>
             </button>
           ))}
         </div>
@@ -75,7 +75,7 @@ const PlayingLevel = () => {
       <div className="mb-8">
         <p className="text-sm font-medium text-golf-yellow mb-3">How would you describe your swing strength?</p>
         <div className="grid grid-cols-2 gap-3">
-          {STRENGTHS.map(({ key, label }) => (
+          {STRENGTHS.map(({ key, label, description }) => (
             <button
               key={key}
               type="button"
@@ -89,7 +89,7 @@ const PlayingLevel = () => {
               <p className={`font-semibold text-sm ${swingStrength === key ? "text-golf-yellow" : "text-[#EDD287]"}`}>
                 {label}
               </p>
-              {/* <p className="text-xs text-white/50 mt-0.5">{description}</p> */}
+              <p className="text-xs text-white/50 mt-1">{description}</p>
             </button>
           ))}
         </div>

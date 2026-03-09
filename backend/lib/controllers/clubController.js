@@ -27,7 +27,10 @@ async function fetchAllBooqableProducts() {
     return [first.data, ...rest.map((p) => p.data)].flat();
 }
 async function fetchProductsByIds(ids) {
-    const all = await fetchAllBooqableProducts();
+    const [all, categoryMap] = await Promise.all([
+        fetchAllBooqableProducts(),
+        (0, helper_1.buildCategoryMap)(),
+    ]);
     const filtered = all.filter((p) => ids.includes(p.id));
     return filtered
         .sort((a, b) => {
@@ -35,14 +38,18 @@ async function fetchProductsByIds(ids) {
         return new Date((_a = b.attributes.created_at) !== null && _a !== void 0 ? _a : "").getTime() -
             new Date((_b = a.attributes.created_at) !== null && _b !== void 0 ? _b : "").getTime();
     })
-        .map(helper_1.transformProduct);
+        .map((p) => (0, helper_1.transformProduct)(p, categoryMap));
 }
 const getClubs = async (req, res) => {
     try {
         const { brand, category, search, isActive: isActiveParam, archived: archivedParam, } = req.query;
         const page = Math.max(1, parseInt(req.query.page) || 1);
         const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 10));
-        let filtered = await fetchAllBooqableProducts();
+        const [filtered_all, categoryMap] = await Promise.all([
+            fetchAllBooqableProducts(),
+            (0, helper_1.buildCategoryMap)(),
+        ]);
+        let filtered = filtered_all;
         if (archivedParam === "true" || isActiveParam === "false") {
             filtered = filtered.filter((p) => p.attributes.archived);
         }
@@ -69,7 +76,7 @@ const getClubs = async (req, res) => {
         const totalPages = Math.ceil(total / limit);
         const clubs = filtered
             .slice((page - 1) * limit, page * limit)
-            .map(helper_1.transformProduct);
+            .map((p) => (0, helper_1.transformProduct)(p, categoryMap));
         res
             .status(http_status_codes_1.StatusCodes.OK)
             .json(response_1.Response.success("clubs fetched successfully", { clubs, total, totalPages, page, limit }, http_status_codes_1.StatusCodes.OK));
@@ -140,7 +147,10 @@ const getAvailableClubs = async (req, res) => {
     var _a;
     try {
         const { course, date } = req.query;
-        const allProducts = await fetchAllBooqableProducts();
+        const [allProducts, categoryMap] = await Promise.all([
+            fetchAllBooqableProducts(),
+            (0, helper_1.buildCategoryMap)(),
+        ]);
         const active = allProducts.filter((p) => !p.attributes.archived);
         // Course-only mode (no date): all active products are available.
         // Booqable products are bulk/non-trackable so there are no per-location
@@ -152,7 +162,7 @@ const getAvailableClubs = async (req, res) => {
                 return new Date((_a = b.attributes.created_at) !== null && _a !== void 0 ? _a : "").getTime() -
                     new Date((_b = a.attributes.created_at) !== null && _b !== void 0 ? _b : "").getTime();
             })
-                .map((p) => (Object.assign(Object.assign({}, (0, helper_1.transformProduct)(p)), { available: true, unavailabilityReason: null })));
+                .map((p) => (Object.assign(Object.assign({}, (0, helper_1.transformProduct)(p, categoryMap)), { available: true, unavailabilityReason: null })));
             res
                 .status(http_status_codes_1.StatusCodes.OK)
                 .json(response_1.Response.success("Available clubs fetched", result, http_status_codes_1.StatusCodes.OK));
@@ -184,7 +194,7 @@ const getAvailableClubs = async (req, res) => {
             const isAvailable = locationId
                 ? await checkProductAvailableOnDate(p.id, locationId, parsedDate.year, parsedDate.month, parsedDate.day)
                 : true;
-            return Object.assign(Object.assign({}, (0, helper_1.transformProduct)(p)), { available: isAvailable, unavailabilityReason: isAvailable
+            return Object.assign(Object.assign({}, (0, helper_1.transformProduct)(p, categoryMap)), { available: isAvailable, unavailabilityReason: isAvailable
                     ? null
                     : "on-this-date", _createdAt: (_a = p.attributes.created_at) !== null && _a !== void 0 ? _a : "" });
         })))

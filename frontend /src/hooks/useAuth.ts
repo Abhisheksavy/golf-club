@@ -26,9 +26,9 @@ export const useVerifyMagicLink = () => {
     onSuccess: (data) => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-      const returnTo = sessionStorage.getItem("returnTo");
+      const returnTo = localStorage.getItem("returnTo");
       if (returnTo) {
-        sessionStorage.removeItem("returnTo");
+        localStorage.removeItem("returnTo");
         navigate(returnTo);
       } else {
         navigate("/dashboard");
@@ -46,9 +46,9 @@ export const usePasswordLogin = () => {
     onSuccess: (data) => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-      const returnTo = sessionStorage.getItem("returnTo");
+      const returnTo = localStorage.getItem("returnTo");
       if (returnTo) {
-        sessionStorage.removeItem("returnTo");
+        localStorage.removeItem("returnTo");
         navigate(returnTo);
       } else {
         navigate("/dashboard");
