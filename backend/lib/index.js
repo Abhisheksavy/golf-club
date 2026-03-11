@@ -11,7 +11,7 @@ const db_1 = __importDefault(require("./config/db"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
-    origin: process.env.CORS || "http://localhost:5173",
+    origin: process.env.CORS ? process.env.CORS.split(",").map((o) => o.trim()) : "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
