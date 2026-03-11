@@ -49,7 +49,7 @@ const MyReservations = () => {
         <h1 className="text-xl font-bold text-golf-yellow mb-2">
           Log in to view your reservations
         </h1>
-        <p className="text-white/60 text-sm mb-6">
+        <p className="text-golf-yellow text-sm mb-6">
           Your reserved club sets are saved to your account.
         </p>
         <button onClick={() => navigate("/login")} className="btn-primary">
