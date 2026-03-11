@@ -58,8 +58,8 @@ const Login = () => {
             onClick={() => setTab("link")}
             className={`flex-1 py-2 text-sm font-medium rounded-full transition-colors ${
               tab === "link"
-                ? "bg-[#EDD287] text-[#285610] shadow"
-                : "text-white/60 hover:text-white"
+                ? "bg-golf-yellow text-[#285610] shadow"
+                : "text-golf-yellow hover:text-golf-yellow"
             }`}
           >
             Email Link
@@ -69,8 +69,8 @@ const Login = () => {
             onClick={() => setTab("password")}
             className={`flex-1 py-2 text-sm font-medium rounded-full transition-colors ${
               tab === "password"
-                ? "bg-[#FBE118] text-[#285610] shadow"
-                : "text-white/60 hover:text-white"
+                ? "bg-[#FBE118] text-golf-dark"
+                : "text-golf-yellow hover:text-golf-yellow"
             }`}
           >
             Password
@@ -85,7 +85,7 @@ const Login = () => {
                 <div className="bg-[#FBE118]/20 text-golf-yellow p-4 rounded-md mb-4">
                   Magic link sent! Check your email to sign in.
                 </div>
-                <p className="text-sm text-white/60">
+                <p className="text-sm text-golf-yellow">
                   The link will expire in 15 minutes.
                 </p>
               </div>
@@ -110,7 +110,7 @@ const Login = () => {
                       onBlur={(e) => validateEmail(e.target.value)}
                       placeholder="you@example.com"
                       required
-                      className="input-field rounded-full border-golf-yellow placeholder:text-[#EDD287] text-[#EDD287]"
+                      className="input-field rounded-full border-golf-yellow placeholder:text-golf-yellow text-golf-yellow"
                     />
                     {emailError && (
                       <p className="text-golf-yellow text-xs mt-1">
@@ -126,7 +126,7 @@ const Login = () => {
                   <button
                     type="submit"
                     disabled={isSendingLink}
-                    className="w-full  rounded-full bg-[#EDD287] text-[#285610] py-2 text-md"
+                    className="w-full  rounded-full bg-golf-yellow text-[#285610] py-2 text-md"
                   >
                     {isSendingLink ? "Sending..." : "Send Magic Link"}
                   </button>
@@ -154,7 +154,7 @@ const Login = () => {
                 onBlur={(e) => validateEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
-                className="input-field rounded-full border-golf-yellow placeholder:text-[#EDD287] text-[#EDD287]"
+                className="input-field rounded-full border-golf-yellow placeholder:text-golf-yellow text-golf-yellow"
               />
               {emailError && (
                 <p className="text-golf-yellow text-xs mt-1">{emailError}</p>
@@ -177,7 +177,7 @@ const Login = () => {
                 }}
                 placeholder="••••••••"
                 required
-                className="input-field rounded-full border-golf-yellow placeholder:text-[#EDD287] text-[#EDD287]"
+                className="input-field rounded-full border-golf-yellow placeholder:text-golf-yellow text-golf-yellow"
               />
               {tab === "password" && password && pwErrors.length > 0 && (
                 <ul className="text-xs text-golf-yellow mt-1 space-y-0.5 list-disc list-inside">
@@ -190,7 +190,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={isLoggingIn}
-              className="w-full  rounded-full bg-[#EDD287] text-[#285610] py-2 text-md"
+              className="w-full  rounded-full bg-golf-yellow text-[#285610] py-2 text-md"
             >
               {isLoggingIn ? "Signing in..." : "Continue"}
             </button>
