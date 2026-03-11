@@ -2,24 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useRental } from "../../context/RentalContext";
-import { getClubs, getAvailableClubs } from "../../api/clubs";
+import { getClubs, getAvailableClubs, getCollections } from "../../api/clubs";
 import { getFavourites } from "../../api/favourites";
 import type { Club, AvailableClub } from "../../types";
 
-const CATEGORIES = [
-  { key: "driver", label: "Driver", optional: true },
-  {
-    key: "fairway-woods-hybrids",
-    label: "Fairway Woods & Hybrids",
-    optional: true,
-  },
-  { key: "irons", label: "Irons", optional: false },
-  { key: "wedges", label: "Wedges", optional: true },
-  { key: "putter", label: "Putter", optional: false },
-  { key: "other", label: "Other", optional: true },
-] as const;
-
-type CategoryKey = (typeof CATEGORIES)[number]["key"];
+type CategoryKey = string;
 
 const SHAFT_OPTIONS = [
   { key: "all", label: "All" },
@@ -34,18 +21,8 @@ const IRON_OPTIONS = [
   { key: "blades", label: "Blades" },
 ];
 
-function assignCategory(club: Club): CategoryKey {
-  if (!club.category) return "other";
-  const known: CategoryKey[] = [
-    "driver",
-    "fairway-woods-hybrids",
-    "irons",
-    "wedges",
-    "putter",
-  ];
-  return known.includes(club.category as CategoryKey)
-    ? (club.category as CategoryKey)
-    : "other";
+function assignCategory(club: Club): string {
+  return club.category ?? "other";
 }
 
 const MALE_HEIGHTS = [
@@ -80,10 +57,12 @@ const SelectClubs = () => {
     setHeight,
   } = useRental();
 
+  const CATEGORY_PAGE_SIZE = 8;
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [categorySearch, setCategorySearch] = useState<Record<string, string>>(
     {}
   );
+  const [categoryPage, setCategoryPage] = useState<Record<string, number>>({});
   const [loadBagMode, setLoadBagMode] = useState(false);
   const autoSelectedRef = useRef(false);
 
@@ -141,6 +120,16 @@ const SelectClubs = () => {
     }
   }, [allClubs.length]);
 
+  const { data: collectionsData } = useQuery({
+    queryKey: ["collections"],
+    queryFn: getCollections,
+  });
+
+  const categories = [
+    ...(collectionsData ?? []),
+    { key: "other", label: "Other" },
+  ];
+
   const { data: bagsData } = useQuery({
     queryKey: ["favourites", "all"],
     queryFn: () => getFavourites(1, 100),
@@ -176,8 +165,13 @@ const SelectClubs = () => {
   };
 
   const getSearch = (key: string) => categorySearch[key] ?? "";
-  const setSearch = (key: string, val: string) =>
+  const getCatPage = (key: string) => categoryPage[key] ?? 1;
+  const setCatPage = (key: string, p: number) =>
+    setCategoryPage((prev) => ({ ...prev, [key]: p }));
+  const setSearch = (key: string, val: string) => {
     setCategorySearch((prev) => ({ ...prev, [key]: val }));
+    setCatPage(key, 1);
+  };
 
   const getClubsForCategory = (key: CategoryKey): AvailableClub[] => {
     let clubs = allClubs.filter((c) => assignCategory(c) === key);
@@ -236,7 +230,7 @@ const SelectClubs = () => {
                 className={`px-3 py-1 rounded-full text-xs font-medium transition-colors capitalize ${
                   gender === g
                     ? "bg-[#FBE118] text-[#285610]"
-                    : "bg-white/10 text-[#EDD287] hover:bg-white/20"
+                    : "bg-white/10 text-golf-yellow hover:bg-white/20"
                 }`}
               >
                 {g.charAt(0).toUpperCase() + g.slice(1)}
@@ -251,7 +245,7 @@ const SelectClubs = () => {
           <select
             value={height || ""}
             onChange={(e) => setHeight(e.target.value)}
-            className="text-xs bg-white/10 border border-white/20 text-[#EDD287] rounded-full px-3 py-1 focus:outline-none focus:ring-1 focus:ring-[#FBE118]"
+            className="text-xs bg-white/10 border border-white/20 text-golf-yellow rounded-full px-3 py-1 focus:outline-none focus:ring-1 focus:ring-[#FBE118]"
           >
             <option value="">Select height</option>
             {(gender === "female" ? FEMALE_HEIGHTS : MALE_HEIGHTS).map((h) => (
@@ -274,11 +268,14 @@ const SelectClubs = () => {
               <button
                 key={key}
                 type="button"
-                onClick={() => setShaftFilter(key)}
+                onClick={() => {
+                  setShaftFilter(key);
+                  setCategoryPage({});
+                }}
                 className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                   shaftFilter === key
                     ? "bg-[#FBE118] text-[#285610]"
-                    : "bg-white/10 text-[#EDD287] hover:bg-white/20"
+                    : "bg-white/10 text-golf-yellow hover:bg-white/20"
                 }`}
               >
                 {label}
@@ -343,8 +340,16 @@ const SelectClubs = () => {
               Loading clubs...
             </div>
           ) : (
-            CATEGORIES.map(({ key, label, optional }) => {
+            categories.map(({ key, label }) => {
               const categoryClubs = getClubsForCategory(key);
+              const catPage = getCatPage(key);
+              const catTotalPages = Math.ceil(
+                categoryClubs.length / CATEGORY_PAGE_SIZE
+              );
+              const paginatedClubs = categoryClubs.slice(
+                (catPage - 1) * CATEGORY_PAGE_SIZE,
+                catPage * CATEGORY_PAGE_SIZE
+              );
               const allCategoryClubs = allClubs.filter(
                 (c) => assignCategory(c) === key
               );
@@ -368,11 +373,6 @@ const SelectClubs = () => {
                       <span className="font-semibold text-golf-yellow text-sm">
                         {label}
                       </span>
-                      {optional && (
-                        <span className="text-xs text-golf-yellow font-normal">
-                          (Optional)
-                        </span>
-                      )}
                       {selectedInCategory.length > 0 && (
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#FBE118] text-[#285610]">
                           {selectedInCategory.length} selected
@@ -431,13 +431,18 @@ const SelectClubs = () => {
                       {/* Iron type sub-filter */}
                       {key === "irons" && (
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xs text-golf-yellow">Type:</span>
+                          <span className="text-xs text-golf-yellow">
+                            Type:
+                          </span>
                           <div className="flex gap-1 flex-wrap">
                             {IRON_OPTIONS.map(({ key: ik, label: il }) => (
                               <button
                                 key={ik}
                                 type="button"
-                                onClick={() => setIronTypeFilter(ik)}
+                                onClick={() => {
+                                  setIronTypeFilter(ik);
+                                  setCatPage("irons", 1);
+                                }}
                                 className={`px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors ${
                                   ironTypeFilter === ik
                                     ? "bg-[#FBE118] text-[#285610]"
@@ -453,14 +458,14 @@ const SelectClubs = () => {
 
                       {/* Club list */}
                       {categoryClubs.length === 0 ? (
-                        <p className="text-xs text-[#EDD287] py-3 text-center">
+                        <p className="text-xs text-golf-yellow py-3 text-center">
                           {getSearch(key)
                             ? "No clubs match your search."
                             : "No clubs in this category."}
                         </p>
                       ) : (
                         <div className="divide-y divide-white/10">
-                          {categoryClubs.map((club) => {
+                          {paginatedClubs.map((club) => {
                             const isSelected = selectedIds.has(club._id);
                             const unavailable = !club.available;
 
@@ -480,7 +485,7 @@ const SelectClubs = () => {
                                   checked={isSelected}
                                   disabled={unavailable}
                                   onChange={() => toggleClub(club)}
-                                  className="rounded border-white/30 text-golf-yellow focus:ring-[#FBE118] flex-shrink-0 bg-white/10"
+                                  className="rounded border-golf-yellow text-golf-yellow focus:ring-[#FBE118] flex-shrink-0  bg-golf-yellow"
                                 />
                                 {club.image && (
                                   <div className="w-20 h-16 rounded-lg bg-white/10 overflow-hidden flex-shrink-0">
@@ -501,8 +506,9 @@ const SelectClubs = () => {
                                   {club.name}
                                 </span>
                                 {showAvailability && unavailable && (
-                                  <span className="text-xs text-red-300 flex-shrink-0">
-                                    {club.unavailabilityReason === "at-this-course"
+                                  <span className="text-xs text-golf-yellow flex-shrink-0">
+                                    {club.unavailabilityReason ===
+                                    "at-this-course"
                                       ? "Not at course"
                                       : "Not available"}
                                   </span>
@@ -525,6 +531,39 @@ const SelectClubs = () => {
                               </label>
                             );
                           })}
+                        </div>
+                      )}
+                      {catTotalPages > 1 && (
+                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/10">
+                          <p className="text-xs text-golf-yellow">
+                            {(catPage - 1) * CATEGORY_PAGE_SIZE + 1}–
+                            {Math.min(
+                              catPage * CATEGORY_PAGE_SIZE,
+                              categoryClubs.length
+                            )}{" "}
+                            of {categoryClubs.length}
+                          </p>
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => setCatPage(key, catPage - 1)}
+                              disabled={catPage === 1}
+                              className="w-7 h-7 flex items-center justify-center rounded border border-white/20 text-golf-yellow disabled:opacity-30 hover:bg-white/10 text-sm"
+                            >
+                              ‹
+                            </button>
+                            <span className="text-xs text-golf-yellow px-1">
+                              {catPage}/{catTotalPages}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setCatPage(key, catPage + 1)}
+                              disabled={catPage === catTotalPages}
+                              className="w-7 h-7 flex items-center justify-center rounded border border-white/20 text-golf-yellow disabled:opacity-30 hover:bg-white/10 text-sm"
+                            >
+                              ›
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -576,7 +615,7 @@ const SelectClubs = () => {
                         {club.name}
                       </p>
                       {club.category && (
-                        <p className="text-xs text-white/50 capitalize truncate">
+                        <p className="text-xs text-golf-yellow capitalize truncate">
                           {club.category.replace(/-/g, " ")}
                         </p>
                       )}

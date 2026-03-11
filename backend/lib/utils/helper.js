@@ -4,6 +4,7 @@ exports.enrichFavourite = enrichFavourite;
 exports.getClubCategory = getClubCategory;
 exports.getShaftType = getShaftType;
 exports.getIronType = getIronType;
+exports.getCollections = getCollections;
 exports.buildCategoryMap = buildCategoryMap;
 exports.transformProduct = transformProduct;
 exports.fetchPage = fetchPage;
@@ -15,15 +16,15 @@ async function enrichFavourite(fav) {
 }
 function getClubCategory(tags) {
     const t = tags.map((s) => s.toLowerCase());
-    if (t.some((s) => s === "driver" || s === "drivers"))
+    if (t.some((s) => s.includes("driver")))
         return "driver";
-    if (t.some((s) => s === "fairway-wood" || s === "fairway-woods" || s === "fairway wood" || s === "hybrid" || s === "hybrids"))
+    if (t.some((s) => s.includes("fairway") || s.includes("wood") || s.includes("hybrid")))
         return "fairway-woods-hybrids";
-    if (t.some((s) => s === "iron" || s === "irons"))
+    if (t.some((s) => s.includes("iron")))
         return "irons";
-    if (t.some((s) => s === "wedge" || s === "wedges"))
+    if (t.some((s) => s.includes("wedge")))
         return "wedges";
-    if (t.some((s) => s === "putter" || s === "putters"))
+    if (t.some((s) => s.includes("putter")))
         return "putter";
     return undefined;
 }
@@ -47,7 +48,10 @@ function getIronType(tags) {
 }
 // --- Collection-based category map ---
 function collectionNameToCategory(name) {
-    const n = name.toLowerCase();
+    const n = name.toLowerCase().trim();
+    if (n === "all products")
+        return undefined; // skip meta-collection
+    // Established keys for the 5 golf club types
     if (n.includes("driver"))
         return "driver";
     if (n.includes("wood") || n.includes("hybrid"))
@@ -58,27 +62,62 @@ function collectionNameToCategory(name) {
         return "wedges";
     if (n.includes("putter"))
         return "putter";
-    return undefined;
+    // Slugify any other collection name (e.g. "Complete Bags" → "complete-bags")
+    return n.replace(/\s+&\s+/g, "-").replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
 }
 // Simple in-process cache (5 min TTL)
 let _categoryMapCache = null;
 let _categoryMapExpiry = 0;
+let _collectionsCache = null;
+let _collectionsExpiry = 0;
+async function getCollections() {
+    var _a;
+    if (_collectionsCache && Date.now() < _collectionsExpiry) {
+        return _collectionsCache;
+    }
+    try {
+        const res = await fetch("https://firestx.booqable.com/api/4/collections?page[size]=100", { headers: { Authorization: `Bearer ${process.env.BOOQABLE_TOKEN}` } });
+        if (!res.ok)
+            return [];
+        const json = (await res.json());
+        const collections = ((_a = json.data) !== null && _a !== void 0 ? _a : [])
+            .map((c) => ({ key: collectionNameToCategory(c.attributes.name), label: c.attributes.name }))
+            .filter((c) => c.key !== undefined);
+        _collectionsCache = collections;
+        _collectionsExpiry = Date.now() + 5 * 60 * 1000;
+        return collections;
+    }
+    catch (err) {
+        console.error("getCollections error:", err);
+        return [];
+    }
+}
 async function buildCategoryMap() {
-    var _a, _b, _c;
+    var _a, _b;
     if (_categoryMapCache && Date.now() < _categoryMapExpiry) {
         return _categoryMapCache;
     }
     try {
-        const res = await fetch("https://firestx.booqable.com/api/4/collections?include=product_groups", { headers: { Authorization: `Bearer ${process.env.BOOQABLE_TOKEN}` } });
-        if (!res.ok)
+        // Step 1: Fetch all collections to get their IDs and names
+        const colRes = await fetch("https://firestx.booqable.com/api/4/collections?page[size]=100", { headers: { Authorization: `Bearer ${process.env.BOOQABLE_TOKEN}` } });
+        if (!colRes.ok) {
+            console.error("buildCategoryMap: collections fetch error", colRes.status);
             return new Map();
-        const json = (await res.json());
+        }
+        const colJson = (await colRes.json());
+        // Step 2: For each relevant collection, fetch product_groups via filter
         const map = new Map();
-        for (const col of json.data) {
+        for (const col of (_a = colJson.data) !== null && _a !== void 0 ? _a : []) {
             const category = collectionNameToCategory(col.attributes.name);
             if (!category)
                 continue;
-            for (const pg of (_c = (_b = (_a = col.relationships) === null || _a === void 0 ? void 0 : _a.product_groups) === null || _b === void 0 ? void 0 : _b.data) !== null && _c !== void 0 ? _c : []) {
+            const pgRes = await fetch(`https://firestx.booqable.com/api/4/product_groups?filter[collection_id]=${col.id}&page[size]=100`, { headers: { Authorization: `Bearer ${process.env.BOOQABLE_TOKEN}` } });
+            if (!pgRes.ok) {
+                console.error(`buildCategoryMap: product_groups filter error ${pgRes.status} for collection ${col.id}`);
+                continue;
+            }
+            const pgJson = (await pgRes.json());
+            for (const pg of (_b = pgJson.data) !== null && _b !== void 0 ? _b : []) {
                 map.set(pg.id, category);
             }
         }
@@ -86,7 +125,8 @@ async function buildCategoryMap() {
         _categoryMapExpiry = Date.now() + 5 * 60 * 1000;
         return map;
     }
-    catch (_d) {
+    catch (err) {
+        console.error("buildCategoryMap error:", err);
         return new Map();
     }
 }

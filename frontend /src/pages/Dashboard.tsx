@@ -17,11 +17,11 @@ const Dashboard = () => {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
       {/* Hero */}
-      <div className="text-center mb-12">
+      <div className="text-center mb-12 mt-10">
         <h1 className="text-4xl font-bold text-golf-yellow tracking-tight mb-3">
           What would you like to do?
         </h1>
-        <p className="text-[#EDD287] text-base max-w-sm mx-auto">
+        <p className="text-golf-yellow text-base max-w-sm mx-auto">
           Choose an action to get started with your round.
         </p>
       </div>
@@ -51,7 +51,7 @@ const Dashboard = () => {
             <h2 className="text-xl font-bold text-golf-yellow mb-2">
               Virtual Bags
             </h2>
-            <p className="text-sm text-[#EDD287] leading-relaxed">
+            <p className="text-sm text-golf-yellow leading-relaxed">
               Build your favourite club sets and manage your saved bags.
             </p>
             <div className="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-golf-yellow group-hover:gap-2.5 transition-all">
@@ -96,7 +96,7 @@ const Dashboard = () => {
             <h2 className="text-xl font-bold text-golf-yellow mb-2">
               Reservations
             </h2>
-            <p className="text-sm text-[#EDD287] leading-relaxed">
+            <p className="text-sm text-golf-yellow leading-relaxed">
               Pick a course, choose a date, and reserve clubs for your round.
             </p>
             <div className="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-golf-yellow group-hover:gap-2.5 transition-all">
@@ -125,7 +125,7 @@ const Dashboard = () => {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-lg font-bold text-golf-yellow">Your Bags</h3>
-              <p className="text-xs text-[#EDD287] mt-0.5">
+              <p className="text-xs text-golf-yellow mt-0.5">
                 Quick access to your saved sets
               </p>
             </div>
@@ -205,10 +205,10 @@ const Dashboard = () => {
                   </div>
                   <div className="p-4 flex items-center justify-between">
                     <div>
-                      <p className="font-semibold text-[#EDD287] text-sm">
+                      <p className="font-semibold text-golf-yellow text-sm">
                         {bag.setName}
                       </p>
-                      <p className="text-xs text-[#Edd287] mt-0.5">
+                      <p className="text-xs text-golf-yellow mt-0.5">
                         {clubs.length} {clubs.length === 1 ? "club" : "clubs"}
                       </p>
                     </div>

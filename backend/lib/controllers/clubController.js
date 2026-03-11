@@ -11,7 +11,7 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAvailableClubs = exports.getClubById = exports.getClubs = void 0;
+exports.getAvailableClubs = exports.getClubById = exports.getCollectionsHandler = exports.getClubs = void 0;
 exports.fetchAllBooqableProducts = fetchAllBooqableProducts;
 exports.fetchProductsByIds = fetchProductsByIds;
 const http_status_codes_1 = require("http-status-codes");
@@ -89,6 +89,21 @@ const getClubs = async (req, res) => {
     }
 };
 exports.getClubs = getClubs;
+const getCollectionsHandler = async (_req, res) => {
+    try {
+        const collections = await (0, helper_1.getCollections)();
+        res
+            .status(http_status_codes_1.StatusCodes.OK)
+            .json(response_1.Response.success("collections fetched", collections, http_status_codes_1.StatusCodes.OK));
+    }
+    catch (error) {
+        console.error("getCollectionsHandler error:", error);
+        res
+            .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)
+            .json(response_1.Response.failure("Server error", null, http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR));
+    }
+};
+exports.getCollectionsHandler = getCollectionsHandler;
 const getClubById = async (req, res) => {
     try {
         const apiRes = await fetch(`https://firestx.booqable.com/api/4/products/${req.params.id}`, { headers: { Authorization: `Bearer ${process.env.BOOQABLE_TOKEN}` } });

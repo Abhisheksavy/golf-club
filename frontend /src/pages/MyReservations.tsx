@@ -8,9 +8,9 @@ import type { Club } from "../types";
 const PAGE_SIZE = 10;
 
 const STATUS_STYLES: Record<string, string> = {
-  confirmed: "bg-green-500/20 text-green-300",
-  pending: "bg-[#FBE118]/20 text-golf-yellow",
-  cancelled: "bg-red-500/20 text-red-300",
+  confirmed: "bg-green-500 text-charcoal",
+  pending: "bg-[#FBE118]text-golf-yellow",
+  cancelled: "bg-red-500 text-red-300",
 };
 
 const MyReservations = () => {
@@ -66,13 +66,13 @@ const MyReservations = () => {
           <h1 className="text-2xl font-bold text-golf-yellow">
             My Reservations
           </h1>
-          <p className="text-[#EDD287] text-sm mt-1">
+          <p className="text-golf-yellow text-sm mt-1">
             All your reserved club sets
           </p>
         </div>
         <button
           onClick={() => navigate("/reserve/course")}
-          className="btn-primary bg-golf-yellow text-charcoal hover:text-white/70 text-sm"
+          className="btn-primary bg-golf-yellow text-golf-dark hover:text-golf-yellow text-sm"
         >
           New Reservation
         </button>
@@ -99,8 +99,8 @@ const MyReservations = () => {
               />
             </svg>
           </div>
-          <p className="text-white/60 font-medium">No reservations yet</p>
-          <p className="text-white/40 text-sm mt-1">
+          <p className="text-golf-yellow font-medium">No reservations yet</p>
+          <p className="text-golf-yellow text-sm mt-1">
             Reserve your clubs for an upcoming round.
           </p>
           <button
@@ -133,7 +133,7 @@ const MyReservations = () => {
                 >
                   <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
                     <div>
-                      <p className="font-semibold text-[#EDD287]">
+                      <p className="font-semibold text-golf-yellow">
                         {reservation.course}
                       </p>
                       <p className="text-sm text-golf-yellow mt-0.5">
@@ -185,13 +185,11 @@ const MyReservations = () => {
                               )}
                             </div>
                             <div className="min-w-0">
-                              <p
-                                className="text-sm text-[#EDD287] truncate"
-                              >
+                              <p className="text-sm text-golf-yellow truncate">
                                 {club.name}
                               </p>
                               {club.category && (
-                                <p className="text-xs text-white/50 capitalize">
+                                <p className="text-xs text-white/70 capitalize">
                                   {club.category.replace(/-/g, " ")}
                                 </p>
                               )}
@@ -210,66 +208,68 @@ const MyReservations = () => {
             })}
           </div>
 
-          {totalPages > 1 && (
+          {reservations.length > 0 && (
             <div className="flex items-center justify-between mt-6">
-              <p className="text-sm text-white/60">
+              <p className="text-sm text-golf-yellow">
                 Showing{" "}
-                <span className="font-medium text-white">
+                <span className="font-medium text-golf-yellow">
                   {(page - 1) * PAGE_SIZE + 1}–
                   {Math.min(page * PAGE_SIZE, total)}
                 </span>{" "}
-                of <span className="font-medium text-white">{total}</span>{" "}
+                of <span className="font-medium text-golf-yellow">{total}</span>{" "}
                 reservations
               </p>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setPage((p) => p - 1)}
-                  disabled={page === 1}
-                  className="w-8 h-8 flex items-center justify-center rounded-xl border border-white/20 text-white/70 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/10 transition-all"
-                >
-                  ‹
-                </button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1)
-                  .filter(
-                    (p) =>
-                      p === 1 || p === totalPages || Math.abs(p - page) <= 1
-                  )
-                  .reduce<(number | "...")[]>((acc, p, idx, arr) => {
-                    if (idx > 0 && p - (arr[idx - 1] as number) > 1)
-                      acc.push("...");
-                    acc.push(p);
-                    return acc;
-                  }, [])
-                  .map((item, idx) =>
-                    item === "..." ? (
-                      <span
-                        key={`e-${idx}`}
-                        className="w-8 flex items-center justify-center text-white/40 text-sm"
-                      >
-                        …
-                      </span>
-                    ) : (
-                      <button
-                        key={item}
-                        onClick={() => setPage(item as number)}
-                        className={`w-8 h-8 rounded-xl border text-sm font-medium transition-all ${
-                          page === item
-                            ? "bg-[#FBE118] text-[#285610] border-[#FBE118]"
-                            : "border-white/20 text-white/70 hover:bg-white/10"
-                        }`}
-                      >
-                        {item}
-                      </button>
+              {totalPages > 1 && (
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setPage((p) => p - 1)}
+                    disabled={page === 1}
+                    className="w-8 h-8 flex items-center justify-center rounded-xl border border-white/20 text-golf-yellow disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/10 transition-all"
+                  >
+                    ‹
+                  </button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter(
+                      (p) =>
+                        p === 1 || p === totalPages || Math.abs(p - page) <= 1
                     )
-                  )}
-                <button
-                  onClick={() => setPage((p) => p + 1)}
-                  disabled={page === totalPages}
-                  className="w-8 h-8 flex items-center justify-center rounded-xl border border-white/20 text-white/70 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/10 transition-all"
-                >
-                  ›
-                </button>
-              </div>
+                    .reduce<(number | "...")[]>((acc, p, idx, arr) => {
+                      if (idx > 0 && p - (arr[idx - 1] as number) > 1)
+                        acc.push("...");
+                      acc.push(p);
+                      return acc;
+                    }, [])
+                    .map((item, idx) =>
+                      item === "..." ? (
+                        <span
+                          key={`e-${idx}`}
+                          className="w-8 flex items-center justify-center text-golf-yellow text-sm"
+                        >
+                          …
+                        </span>
+                      ) : (
+                        <button
+                          key={item}
+                          onClick={() => setPage(item as number)}
+                          className={`w-8 h-8 rounded-xl border text-sm font-medium transition-all ${
+                            page === item
+                              ? "bg-[#FBE118] text-[#285610] border-[#FBE118]"
+                              : "border-white/20 text-white/70 hover:bg-white/10"
+                          }`}
+                        >
+                          {item}
+                        </button>
+                      )
+                    )}
+                  <button
+                    onClick={() => setPage((p) => p + 1)}
+                    disabled={page === totalPages}
+                    className="w-8 h-8 flex items-center justify-center rounded-xl border border-white/20 text-white/70 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/10 transition-all"
+                  >
+                    ›
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </>

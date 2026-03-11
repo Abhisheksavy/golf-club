@@ -6,8 +6,15 @@ import connectDB from "./config/db";
 dotenv.config();
 
 const app = express();
+app.use(
+  cors({
+    origin: process.env.CORS || "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 app.use(express.json());
-app.use(cors());
 app.use("/api/v1", router);
 const port = process.env.PORT;
 

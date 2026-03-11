@@ -22,8 +22,8 @@ const Navbar = () => {
     }`;
 
   return (
-    <nav className="bg-golf-dark text-charcoal ">
-      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <nav className="bg-golf-dark text-golf-yellow  w-full  ">
+      <div className="w-full mx-auto px-[4vw] py-[2vw] flex items-center gap-[2vw] justify-between">
         {/* Logo */}
         <Link
           to="https://www.firestx.com/"
@@ -31,7 +31,7 @@ const Navbar = () => {
         >
           <img
             src="https://images.squarespace-cdn.com/content/v1/69727db21fefbc03b1e14f00/8c0977ec-66a5-4340-b6c0-604cf8b5a7cc/GOLD_FireStx+logo+-+centered+-+cropped+no+background+-+larger+emblem+-+brand+only+-+gold.png?format=50w"
-            className="w-auto max-w-full max-h-12"
+            className="w-auto max-w-full md:max-h-[4.375rem] max-h-9"
           />
         </Link>
 
@@ -58,7 +58,7 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-4">
           {authed ? (
             <>
-              <span className="text-sm text-golf-yellow/70">{user?.email}</span>
+              <span className="text-base text-golf-yellow">{user?.email}</span>
               <button
                 onClick={logout}
                 className="px-3 py-1.5 text-base border border-[#FBE118]/40 rounded-full  bg-[#EDD287] text-golf-dark  transition-colors"

@@ -62,10 +62,10 @@ const PlayingLevel = () => {
                   : "border-white/20 bg-white/10 hover:border-[#FBE118]/50 hover:bg-white/15"
               }`}
             >
-              <p className={`font-semibold text-sm ${playingLevel === key ? "text-golf-yellow" : "text-[#EDD287]"}`}>
+              <p className={`font-semibold text-sm ${playingLevel === key ? "text-golf-yellow" : "text-golf-yellow"}`}>
                 {label}
               </p>
-              <p className="text-xs text-white/50 mt-1">{description}</p>
+              <p className="text-xs text-golf-yellow mt-1">{description}</p>
             </button>
           ))}
         </div>
@@ -86,10 +86,10 @@ const PlayingLevel = () => {
                   : "border-white/20 bg-white/10 hover:border-[#FBE118]/50 hover:bg-white/15"
               }`}
             >
-              <p className={`font-semibold text-sm ${swingStrength === key ? "text-golf-yellow" : "text-[#EDD287]"}`}>
+              <p className={`font-semibold text-sm ${swingStrength === key ? "text-golf-yellow" : "text-golf-yellow"}`}>
                 {label}
               </p>
-              <p className="text-xs text-white/50 mt-1">{description}</p>
+              <p className="text-xs text-golf-yellow mt-1">{description}</p>
             </button>
           ))}
         </div>

@@ -2,23 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useRental } from "../../context/RentalContext";
-import { getClubs, getAvailableClubs } from "../../api/clubs";
+import { getClubs, getAvailableClubs, getCollections } from "../../api/clubs";
 import type { Club, AvailableClub } from "../../types";
 
-const CATEGORIES = [
-  { key: "driver", label: "Driver", optional: true },
-  {
-    key: "fairway-woods-hybrids",
-    label: "Fairway Woods & Hybrids",
-    optional: true,
-  },
-  { key: "irons", label: "Irons", optional: false },
-  { key: "wedges", label: "Wedges", optional: true },
-  { key: "putter", label: "Putter", optional: false },
-  { key: "other", label: "Other", optional: true },
-] as const;
-
-type CategoryKey = (typeof CATEGORIES)[number]["key"];
+type CategoryKey = string;
 
 const SHAFT_OPTIONS = [
   { key: "all", label: "All" },
@@ -48,18 +35,8 @@ const FEMALE_HEIGHTS = [
   "6'0\" and over (Length+1)",
 ];
 
-function assignCategory(club: Club): CategoryKey {
-  if (!club.category) return "other";
-  const known: CategoryKey[] = [
-    "driver",
-    "fairway-woods-hybrids",
-    "irons",
-    "wedges",
-    "putter",
-  ];
-  return known.includes(club.category as CategoryKey)
-    ? (club.category as CategoryKey)
-    : "other";
+function assignCategory(club: Club): string {
+  return club.category ?? "other";
 }
 
 const SavedBagReview = () => {
@@ -92,6 +69,13 @@ const SavedBagReview = () => {
     {}
   );
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+
+  const { data: collectionsData } = useQuery({
+    queryKey: ["collections"],
+    queryFn: getCollections,
+  });
+
+  const categories = [...(collectionsData ?? []), { key: "other", label: "Other" }];
 
   const hasCourseAndDate = !!(selectedCourse && selectedDate);
   const hasCourseOnly = !!(selectedCourse && !selectedDate);
@@ -189,7 +173,7 @@ const SavedBagReview = () => {
         <h1 className="text-2xl font-bold text-golf-yellow mb-1">
           Review Saved Bag
         </h1>
-        <p className="text-white/60 text-sm">
+        <p className="text-golf-yellow text-sm">
           {hasCourseAndDate
             ? `Availability shown for ${selectedCourse!.name} on ${new Date(
                 selectedDate!
@@ -228,7 +212,7 @@ const SavedBagReview = () => {
       {/* Height/Gender filter */}
       <div className="flex flex-wrap gap-4 mb-3 pb-3 border-b border-white/10">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-white/70 uppercase tracking-wide">
+          <span className="text-xs font-medium text-golf-yellow uppercase tracking-wide">
             Gender:
           </span>
           <div className="flex gap-1">
@@ -240,7 +224,7 @@ const SavedBagReview = () => {
                 className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                   gender === g
                     ? "bg-[#FBE118] text-[#285610]"
-                    : "bg-white/10 text-white hover:bg-white/20"
+                    : "bg-white/10 text-golf-yellow hover:bg-white/20"
                 }`}
               >
                 {g.charAt(0).toUpperCase() + g.slice(1)}
@@ -249,13 +233,13 @@ const SavedBagReview = () => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-white/70 uppercase tracking-wide">
+          <span className="text-xs font-medium text-golf-yellow uppercase tracking-wide">
             Height:
           </span>
           <select
             value={height || ""}
             onChange={(e) => setHeight(e.target.value)}
-            className="text-xs bg-white/10 border border-white/20 text-white rounded-full px-3 py-1 focus:outline-none focus:ring-1 focus:ring-[#FBE118]"
+            className="text-xs bg-white/10 border border-white/20 text-golf-yellow rounded-full px-3 py-1 focus:outline-none focus:ring-1 focus:ring-[#FBE118]"
           >
             <option value="">Select height</option>
             {(gender === "female" ? FEMALE_HEIGHTS : MALE_HEIGHTS).map((h) => (
@@ -270,7 +254,7 @@ const SavedBagReview = () => {
       {/* Shaft filter */}
       <div className="flex flex-wrap gap-4 mb-4 pb-4 border-b border-white/20">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-white/70 uppercase tracking-wide">
+          <span className="text-xs font-medium text-golf-yellow uppercase tracking-wide">
             Shaft:
           </span>
           <div className="flex gap-1">
@@ -282,7 +266,7 @@ const SavedBagReview = () => {
                 className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                   shaftFilter === key
                     ? "bg-[#FBE118] text-[#285610]"
-                    : "bg-white/10 text-white hover:bg-white/20"
+                    : "bg-white/10 text-golf-yellow hover:bg-white/20"
                 }`}
               >
                 {label}
@@ -301,7 +285,7 @@ const SavedBagReview = () => {
               Loading clubs...
             </div>
           ) : (
-            CATEGORIES.map(({ key, label, optional }) => {
+            categories.map(({ key, label }) => {
               const categoryClubs = getClubsForCategory(key);
               const allCategoryClubs = allClubs.filter(
                 (c) => assignCategory(c) === key
@@ -326,11 +310,6 @@ const SavedBagReview = () => {
                       <span className="font-semibold text-golf-yellow text-sm">
                         {label}
                       </span>
-                      {optional && (
-                        <span className="text-xs text-white/50 font-normal">
-                          (Optional)
-                        </span>
-                      )}
                       {selectedInCategory.length > 0 && (
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#FBE118] text-[#285610]">
                           {selectedInCategory.length} selected
@@ -338,11 +317,11 @@ const SavedBagReview = () => {
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-white/50">
+                      <span className="text-xs text-golf-yellow">
                         {allCategoryClubs.length} clubs
                       </span>
                       <svg
-                        className={`w-4 h-4 text-white/50 transition-transform ${
+                        className={`w-4 h-4 text-golf-yellow transition-transform ${
                           isCollapsed ? "-rotate-90" : ""
                         }`}
                         fill="none"
@@ -365,7 +344,7 @@ const SavedBagReview = () => {
                       {/* Per-category search */}
                       <div className="relative mb-2">
                         <svg
-                          className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/40"
+                          className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-golf-yellow"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -382,14 +361,14 @@ const SavedBagReview = () => {
                           placeholder={`Search ${label.toLowerCase()} clubs...`}
                           value={getSearch(key)}
                           onChange={(e) => setSearch(key, e.target.value)}
-                          className="w-full pl-8 pr-3 py-1.5 text-sm border border-white/20 rounded-md bg-white/10 text-[#EDD287] placeholder-[#EDD287] focus:outline-none focus:ring-1 focus:ring-[#FBE118] focus:border-[#FBE118]"
+                          className="w-full pl-8 pr-3 py-1.5 text-sm border border-white/20 rounded-md bg-white/10 text-golf-yellow placeholder-golf-yellow focus:outline-none focus:ring-1 focus:ring-[#FBE118] focus:border-[#FBE118]"
                         />
                       </div>
 
                       {/* Iron type sub-filter */}
                       {key === "irons" && (
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xs text-white/50">Type:</span>
+                          <span className="text-xs text-golf-yellow">Type:</span>
                           <div className="flex gap-1 flex-wrap">
                             {IRON_OPTIONS.map(({ key: ik, label: il }) => (
                               <button
@@ -399,7 +378,7 @@ const SavedBagReview = () => {
                                 className={`px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors ${
                                   ironTypeFilter === ik
                                     ? "bg-[#FBE118] text-[#285610]"
-                                    : "bg-white/10 text-white hover:bg-white/20"
+                                    : "bg-white/10 text-golf-yellow hover:bg-white/20"
                                 }`}
                               >
                                 {il}
@@ -411,7 +390,7 @@ const SavedBagReview = () => {
 
                       {/* Club list */}
                       {categoryClubs.length === 0 ? (
-                        <p className="text-xs text-white/40 py-3 text-center">
+                        <p className="text-xs text-golf-yellow py-3 text-center">
                           {getSearch(key)
                             ? "No clubs match your search."
                             : "No clubs in this category."}
@@ -438,7 +417,7 @@ const SavedBagReview = () => {
                                   checked={isSelected}
                                   disabled={unavailable}
                                   onChange={() => toggleClub(club)}
-                                  className="rounded border-white/30 text-golf-yellow focus:ring-[#FBE118] flex-shrink-0 bg-white/10"
+                                  className="rounded border-golf-yellow text-golf-yellow focus:ring-[#FBE118] flex-shrink-0  bg-golf-yellow"
                                 />
                                 {club.image && (
                                   <div className="w-20 h-16 rounded-lg bg-white/10 overflow-hidden flex-shrink-0">
@@ -452,14 +431,14 @@ const SavedBagReview = () => {
                                 <span
                                   className={`text-sm flex-1 min-w-0 truncate ${
                                     isSelected
-                                      ? "font-medium text-white"
-                                      : "text-white/80"
+                                      ? "font-medium text-golf-yellow"
+                                      : "text-golf-yellow"
                                   }`}
                                 >
                                   {club.name}
                                 </span>
                                 {showAvailability && unavailable && (
-                                  <span className="text-xs text-amber-400 flex-shrink-0">
+                                  <span className="text-xs text-golf-yellow flex-shrink-0">
                                     {club.unavailabilityReason ===
                                     "at-this-course"
                                       ? "Not at course"
@@ -536,15 +515,15 @@ const SavedBagReview = () => {
                       }`}
                     >
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-white truncate">
+                        <p className="text-xs font-medium text-golf-yellow truncate">
                           {club.name}
                         </p>
                         {isUnavailable ? (
-                          <p className="text-xs text-amber-400 truncate">
+                          <p className="text-xs text-golf-yellow truncate">
                             Unavailable
                           </p>
                         ) : club.category ? (
-                          <p className="text-xs text-white/50 capitalize truncate">
+                          <p className="text-xs text-golf-yellow capitalize truncate">
                             {club.category.replace(/-/g, " ")}
                           </p>
                         ) : null}

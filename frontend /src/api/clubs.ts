@@ -23,3 +23,8 @@ export const getAvailableClubs = async (
   });
   return data.data;
 };
+
+export const getCollections = async (): Promise<Array<{ key: string; label: string }>> => {
+  const { data } = await apiClient.get("/clubs/collections");
+  return data.data;
+};

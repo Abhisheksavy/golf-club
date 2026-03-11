@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import { Response as ExpressResponse } from "express";
 import { Response } from "../utils/response";
 import { BooqableProduct } from "../types/booqable.type";
-import { fetchPage, transformProduct, buildCategoryMap } from "../utils/helper";
+import { fetchPage, transformProduct, buildCategoryMap, getCollections } from "../utils/helper";
 
 export async function fetchAllBooqableProducts(): Promise<BooqableProduct[]> {
   const pageSize = 100;
@@ -120,6 +120,23 @@ export const getClubs = async (
           StatusCodes.INTERNAL_SERVER_ERROR
         )
       );
+  }
+};
+
+export const getCollectionsHandler = async (
+  _req: AuthRequest,
+  res: ExpressResponse
+): Promise<void> => {
+  try {
+    const collections = await getCollections();
+    res
+      .status(StatusCodes.OK)
+      .json(Response.success("collections fetched", collections, StatusCodes.OK));
+  } catch (error) {
+    console.error("getCollectionsHandler error:", error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(Response.failure("Server error", null, StatusCodes.INTERNAL_SERVER_ERROR));
   }
 };
 

@@ -99,7 +99,7 @@ const SelectDate = () => {
       <h1 className="text-2xl font-bold text-golf-yellow mb-2">
         Select a Date
       </h1>
-      <p className="text-[#EDD287] mb-6">
+      <p className="text-golf-yellow mb-6">
         {selectedCourse ? (
           <>
             Choose your rental date at{" "}
@@ -138,18 +138,18 @@ const SelectDate = () => {
             </svg>
           </button>
 
-          <span className="text-sm font-semibold text-[#EDD287]">
+          <span className="text-sm font-semibold text-golf-yellow">
             {monthName} {displayYear}
           </span>
 
           <button
             type="button"
             onClick={nextMonth}
-            className="p-1 rounded hover:bg-[#EDD287] transition-colors"
+            className="p-1 rounded hover:bg-golf-yellow transition-colors"
             aria-label="Next month"
           >
             <svg
-              className="w-5 h-5 text-[#EDD287]"
+              className="w-5 h-5 text-golf-dark"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -169,7 +169,7 @@ const SelectDate = () => {
           {DAY_LABELS.map((label) => (
             <div
               key={label}
-              className="text-center text-xs font-medium text-[#EDD287] py-1"
+              className="text-center text-xs font-medium text-golf-yellow py-1"
             >
               {label}
             </div>
@@ -205,12 +205,12 @@ const SelectDate = () => {
                 "w-8 h-8 mx-auto flex items-center justify-center text-sm rounded-full transition-colors ";
 
               if (isSelected) {
-                cellClass += "bg-[#FBE118] text-[#285610] font-semibold";
+                cellClass += "bg-golf-dark text-golf-yellow font-semibold";
               } else if (isPast || isUnavailable) {
                 cellClass += "text-white/20 cursor-default";
                 if (isUnavailable) cellClass += " line-through";
               } else {
-                cellClass += "text-[#EDD287] cursor-pointer hover:bg-white/10";
+                cellClass += "text-golf-yellow cursor-pointer hover:bg-white/10";
                 if (isToday) cellClass += " ring-1 ring-golf-400";
               }
 

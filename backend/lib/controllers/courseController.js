@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAvailableDates = exports.getCourses = void 0;
+exports.getAvailableDatesForBag = exports.getAvailableDates = exports.getCourses = void 0;
 const http_status_codes_1 = require("http-status-codes");
 const response_1 = require("../utils/response");
 const getCourses = async (_req, res) => {
@@ -102,4 +102,51 @@ const getAvailableDates = async (req, res) => {
     }
 };
 exports.getAvailableDates = getAvailableDates;
+const getAvailableDatesForBag = async (req, res) => {
+    const year = typeof req.query.year === "string" ? req.query.year : undefined;
+    const month = typeof req.query.month === "string" ? req.query.month : undefined;
+    const raw = req.query.productIds;
+    const productIds = Array.isArray(raw)
+        ? raw
+        : typeof raw === "string"
+            ? raw.split(",").filter(Boolean)
+            : [];
+    if (!year || !month || productIds.length === 0) {
+        res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json(response_1.Response.failure("year, month, and productIds are required", null, http_status_codes_1.StatusCodes.BAD_REQUEST));
+        return;
+    }
+    try {
+        const perProductDates = await Promise.all(productIds.map(async (pid) => {
+            var _a;
+            const qs = [
+                `filter[subject_type]=item`,
+                `filter[subject_id]=${encodeURIComponent(pid)}`,
+                `filter[year]=${encodeURIComponent(year)}`,
+                `filter[month]=${encodeURIComponent(month)}`,
+            ].join("&");
+            const apiRes = await fetch(`https://firestx.booqable.com/api/4/availabilities?${qs}`, { headers: { Authorization: `Bearer ${process.env.BOOQABLE_TOKEN}` } });
+            if (!apiRes.ok)
+                return null;
+            const json = (await apiRes.json());
+            return ((_a = json.data) !== null && _a !== void 0 ? _a : [])
+                .filter((r) => r.attributes.available === true)
+                .map((r) => r.attributes.date);
+        }));
+        const validResults = perProductDates.filter((d) => d !== null);
+        let dates;
+        if (validResults.length === 0) {
+            dates = [];
+        }
+        else {
+            const sets = validResults.map((arr) => new Set(arr));
+            dates = [...sets[0]].filter((d) => sets.every((s) => s.has(d)));
+        }
+        res.status(http_status_codes_1.StatusCodes.OK).json(response_1.Response.success("Available dates fetched", { dates }, http_status_codes_1.StatusCodes.OK));
+    }
+    catch (error) {
+        console.error("getAvailableDatesForBag error:", error);
+        res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(response_1.Response.failure("Server error", null, http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR));
+    }
+};
+exports.getAvailableDatesForBag = getAvailableDatesForBag;
 //# sourceMappingURL=courseController.js.map

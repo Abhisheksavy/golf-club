@@ -157,11 +157,11 @@ const RentalSummary = () => {
             <p className="text-xs text-golf-yellow uppercase tracking-wide mb-1">
               Course
             </p>
-            <p className="font-semibold text-[#EDD287]">
+            <p className="font-semibold text-golf-yellow">
               {selectedCourse.name}
             </p>
             {(selectedCourse.address || selectedCourse.location) && (
-              <p className="text-sm text-white/60">
+              <p className="text-sm text-golf-yellow">
                 {selectedCourse.address ?? selectedCourse.location}
               </p>
             )}
@@ -174,7 +174,7 @@ const RentalSummary = () => {
             <p className="text-xs text-golf-yellow uppercase tracking-wide mb-1">
               Date
             </p>
-            <p className="font-semibold text-[#EDD287]">
+            <p className="font-semibold text-golf-yellow">
               {new Date(selectedDate).toLocaleDateString("en-US", {
                 weekday: "long",
                 year: "numeric",
@@ -205,8 +205,8 @@ const RentalSummary = () => {
                 <div className="flex-1 min-w-0">
                   <span className="text-sm text-golf-yellow">{club.name}</span>
                   {club.category && (
-                    <span className="ml-2 text-xs text-white/40 capitalize">
-                      {club.category.replace(/-/g, " ")}
+                    <span className="ml-2 text-xs text-white capitalize">
+                    ({club.category.replace(/-/g, " ")})
                     </span>
                   )}
                 </div>

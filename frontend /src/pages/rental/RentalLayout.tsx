@@ -1,5 +1,4 @@
 import { Outlet, useLocation } from "react-router-dom";
-import { RentalProvider } from "../../context/RentalContext";
 
 // Major phase steps shown in the step indicator
 const PHASE_STEPS = [
@@ -29,8 +28,7 @@ const RentalLayout = () => {
   );
 
   return (
-    <RentalProvider>
-      <div className="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+    <div className="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
         {/* Step indicator */}
         <div className="flex items-center justify-center mb-6 sm:mb-8">
           {PHASE_STEPS.map((phase, i) => (
@@ -78,7 +76,6 @@ const RentalLayout = () => {
 
         <Outlet />
       </div>
-    </RentalProvider>
   );
 };
 

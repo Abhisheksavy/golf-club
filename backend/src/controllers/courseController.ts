@@ -178,3 +178,68 @@ export const getAvailableDates = async (
       );
   }
 };
+
+export const getAvailableDatesForBag = async (
+  req: Request,
+  res: ExpressResponse
+): Promise<void> => {
+  const year = typeof req.query.year === "string" ? req.query.year : undefined;
+  const month = typeof req.query.month === "string" ? req.query.month : undefined;
+  const raw = req.query.productIds;
+  const productIds: string[] = Array.isArray(raw)
+    ? (raw as string[])
+    : typeof raw === "string"
+    ? raw.split(",").filter(Boolean)
+    : [];
+
+  if (!year || !month || productIds.length === 0) {
+    res.status(StatusCodes.BAD_REQUEST).json(
+      Response.failure("year, month, and productIds are required", null, StatusCodes.BAD_REQUEST)
+    );
+    return;
+  }
+
+  try {
+    const perProductDates = await Promise.all(
+      productIds.map(async (pid) => {
+        const qs = [
+          `filter[subject_type]=item`,
+          `filter[subject_id]=${encodeURIComponent(pid)}`,
+          `filter[year]=${encodeURIComponent(year)}`,
+          `filter[month]=${encodeURIComponent(month)}`,
+        ].join("&");
+
+        const apiRes = await fetch(
+          `https://firestx.booqable.com/api/4/availabilities?${qs}`,
+          { headers: { Authorization: `Bearer ${process.env.BOOQABLE_TOKEN}` } }
+        );
+
+        if (!apiRes.ok) return null;
+
+        const json = (await apiRes.json()) as { data?: BooqableAvailability[] };
+        return (json.data ?? [])
+          .filter((r) => r.attributes.available === true)
+          .map((r) => r.attributes.date);
+      })
+    );
+
+    const validResults = perProductDates.filter((d): d is string[] => d !== null);
+
+    let dates: string[];
+    if (validResults.length === 0) {
+      dates = [];
+    } else {
+      const sets = validResults.map((arr) => new Set(arr));
+      dates = [...sets[0]].filter((d) => sets.every((s) => s.has(d)));
+    }
+
+    res.status(StatusCodes.OK).json(
+      Response.success("Available dates fetched", { dates }, StatusCodes.OK)
+    );
+  } catch (error) {
+    console.error("getAvailableDatesForBag error:", error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(
+      Response.failure("Server error", null, StatusCodes.INTERNAL_SERVER_ERROR)
+    );
+  }
+};

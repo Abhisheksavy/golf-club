@@ -122,7 +122,7 @@ const BrowseClubs = () => {
                   placeholder="Search clubs..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-white/20 bg-white/10 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-[#FBE118] transition-all"
+                  className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-white/20 bg-white/10 text-golf-yellow placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-[#FBE118] transition-all"
                 />
               </div>
 

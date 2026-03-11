@@ -43,7 +43,7 @@ const FavouriteSets = () => {
           <h1 className="text-3xl font-bold text-golf-yellow tracking-tight">
             My Bags
           </h1>
-          <p className="text-[#EDD287] text-sm mt-1">
+          <p className="text-golf-yellow text-sm mt-1">
             {total > 0
               ? `${total} saved bag${total !== 1 ? "s" : ""}`
               : "Save your favourite club combinations"}
@@ -87,8 +87,8 @@ const FavouriteSets = () => {
               />
             </svg>
           </div>
-          <h3 className="text-white font-semibold text-lg mb-1">No bags yet</h3>
-          <p className="text-white/50 text-sm text-center max-w-xs mb-6">
+          <h3 className="text-golf-yellow font-semibold text-lg mb-1">No bags yet</h3>
+          <p className="text-golf-yellow text-sm text-center max-w-xs mb-6">
             Browse clubs and save your favourite combinations into a bag for
             quick access.
           </p>
@@ -113,20 +113,20 @@ const FavouriteSets = () => {
 
           {totalPages > 1 && (
             <div className="flex items-center justify-between mt-8">
-              <p className="text-sm text-[#EDD287]">
+              <p className="text-sm text-golf-yellow">
                 Showing{" "}
-                <span className="font-medium text-[#EDD287]">
+                <span className="font-medium text-golf-yellow">
                   {(page - 1) * PAGE_SIZE + 1}–
                   {Math.min(page * PAGE_SIZE, total)}
                 </span>{" "}
-                of <span className="font-medium text-[#EDD287]">{total}</span>{" "}
+                of <span className="font-medium text-golf-yellow">{total}</span>{" "}
                 bags
               </p>
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setPage((p) => p - 1)}
                   disabled={page === 1}
-                  className="w-8 h-8 flex items-center justify-center rounded-xl border border-white/20 text-[#EDD287] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/10 transition-all"
+                  className="w-8 h-8 flex items-center justify-center rounded-xl border border-white/20 text-golf-yellow disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/10 transition-all"
                 >
                   ‹
                 </button>
@@ -145,7 +145,7 @@ const FavouriteSets = () => {
                     item === "..." ? (
                       <span
                         key={`e-${idx}`}
-                        className="w-8 flex items-center justify-center text-[#EDD287] text-sm"
+                        className="w-8 flex items-center justify-center text-golf-yellow text-sm"
                       >
                         …
                       </span>
@@ -156,7 +156,7 @@ const FavouriteSets = () => {
                         className={`w-8 h-8 rounded-xl border text-sm font-medium transition-all ${
                           page === item
                             ? "bg-[#FBE118] text-[#285610] border-[#FBE118]"
-                            : "border-white/20 text-[#EDD287] hover:bg-white/10"
+                            : "border-white/20 text-golf-yellow hover:bg-white/10"
                         }`}
                       >
                         {item}
@@ -166,7 +166,7 @@ const FavouriteSets = () => {
                 <button
                   onClick={() => setPage((p) => p + 1)}
                   disabled={page === totalPages}
-                  className="w-8 h-8 flex items-center justify-center rounded-xl border border-[#EDD287] text-[#EDD287] disabled:opacity-30 disabled:cursor-not-allowed hover:text-[#EDD287] transition-all"
+                  className="w-8 h-8 flex items-center justify-center rounded-xl border border-golf-yellow text-golf-yellow disabled:opacity-30 disabled:cursor-not-allowed hover:text-[#EDD287] transition-all"
                 >
                   ›
                 </button>

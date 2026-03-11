@@ -6,6 +6,18 @@ export const getCourses = async (): Promise<Course[]> => {
   return data.data;
 };
 
+export const getAvailableDatesForBag = async (
+  locationId: string,
+  productIds: string[],
+  year: number,
+  month: number
+): Promise<string[]> => {
+  const { data } = await apiClient.get(`/courses/${locationId}/available-dates-for-bag`, {
+    params: { productIds: productIds.join(","), year, month },
+  });
+  return data.data.dates;
+};
+
 export const getAvailableDates = async (
   locationId: string,
   year: number,
