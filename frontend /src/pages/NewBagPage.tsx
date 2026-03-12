@@ -6,6 +6,7 @@ import { getClubs, getCollections } from "../api/clubs";
 import { createFavourite } from "../api/favourites";
 import { isAuthenticated } from "../hooks/useAuth";
 import type { Club } from "../types";
+import ClubSelectCard from "../components/ui/ClubSelectCard";
 
 type CategoryKey = string;
 
@@ -65,6 +66,7 @@ const NewBagPage = () => {
     {}
   );
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const [showFilters, setShowFilters] = useState(false);
   const [selectedClubs, setSelectedClubs] = useState<Club[]>([]);
   const [bagName, setBagName] = useState("");
 
@@ -189,92 +191,110 @@ const NewBagPage = () => {
         </p>
       </div>
 
-      {/* Filters */}
-      <div className="space-y-2 mb-4 pb-4 border-b border-white/20">
-        {/* Gender + Height */}
-        <div className="flex flex-wrap gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-golf-yellow uppercase tracking-wide">
-              Gender:
-            </span>
-            <div className="flex gap-1">
-              {(["male", "female"] as const).map((g) => (
-                <button
-                  key={g}
-                  type="button"
-                  onClick={() => setGender(g)}
-                  className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                    gender === g
-                      ? "bg-[#FBE118] text-[#285610]"
-                      : "bg-white/10 text-golf-yellow hover:bg-white/20"
-                  }`}
-                >
-                  {g.charAt(0).toUpperCase() + g.slice(1)}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-golf-yellow uppercase tracking-wide">Height:</span>
-            <select
-              value={height || ""}
-              onChange={(e) => setHeight(e.target.value)}
-              className="text-xs bg-white/10 border border-white/20 text-golf-yellow rounded-full px-3 py-1 focus:outline-none focus:ring-1 focus:ring-[#FBE118]"
-            >
-              <option value="">Select height</option>
-              {(gender === "female" ? FEMALE_HEIGHTS : MALE_HEIGHTS).map((h) => (
-                <option key={h} value={h}>{h}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Shaft + Iron type */}
-        <div className="flex flex-wrap gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-golf-yellow uppercase tracking-wide">
-              Shaft:
-            </span>
-            <div className="flex gap-1">
-              {SHAFT_OPTIONS.map(({ key, label }) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setShaftFilter(key)}
-                  className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                    shaftFilter === key
-                      ? "bg-[#FBE118] text-[#285610]"
-                      : "bg-white/10 text-golf-yellow hover:bg-white/20"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-golf-yellow uppercase tracking-wide">
-              Iron Type:
-            </span>
-            <div className="flex gap-1 flex-wrap">
-              {IRON_OPTIONS.map(({ key, label }) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setIronTypeFilter(key)}
-                  className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                    ironTypeFilter === key
-                      ? "bg-[#FBE118] text-[#285610]"
-                      : "bg-white/10 text-golf-yellow hover:bg-white/20"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+      {/* Filters toggle */}
+      <div className="mb-4">
+        <button
+          type="button"
+          onClick={() => setShowFilters((v) => !v)}
+          className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-golf-yellow text-sm font-medium hover:bg-white/20 transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
+          </svg>
+          Filters
+          <svg className={`w-3.5 h-3.5 transition-transform ${showFilters ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
       </div>
+
+      {showFilters && (
+        <div className="space-y-2 mb-4 pb-4 border-b border-white/20">
+          {/* Gender + Height */}
+          <div className="flex flex-wrap gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-golf-yellow uppercase tracking-wide">
+                Gender:
+              </span>
+              <div className="flex gap-1">
+                {(["male", "female"] as const).map((g) => (
+                  <button
+                    key={g}
+                    type="button"
+                    onClick={() => setGender(g)}
+                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                      gender === g
+                        ? "bg-[#FBE118] text-[#285610]"
+                        : "bg-white/10 text-golf-yellow hover:bg-white/20"
+                    }`}
+                  >
+                    {g.charAt(0).toUpperCase() + g.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-golf-yellow uppercase tracking-wide">Height:</span>
+              <select
+                value={height || ""}
+                onChange={(e) => setHeight(e.target.value)}
+                className="text-xs bg-white/10 border border-white/20 text-golf-yellow rounded-full px-3 py-1 focus:outline-none focus:ring-1 focus:ring-[#FBE118]"
+              >
+                <option value="">Select height</option>
+                {(gender === "female" ? FEMALE_HEIGHTS : MALE_HEIGHTS).map((h) => (
+                  <option key={h} value={h}>{h}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Shaft + Iron type */}
+          <div className="flex flex-wrap gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-golf-yellow uppercase tracking-wide">
+                Shaft:
+              </span>
+              <div className="flex gap-1">
+                {SHAFT_OPTIONS.map(({ key, label }) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setShaftFilter(key)}
+                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                      shaftFilter === key
+                        ? "bg-[#FBE118] text-[#285610]"
+                        : "bg-white/10 text-golf-yellow hover:bg-white/20"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-golf-yellow uppercase tracking-wide">
+                Iron Type:
+              </span>
+              <div className="flex gap-1 flex-wrap">
+                {IRON_OPTIONS.map(({ key, label }) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setIronTypeFilter(key)}
+                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                      ironTypeFilter === key
+                        ? "bg-[#FBE118] text-[#285610]"
+                        : "bg-white/10 text-golf-yellow hover:bg-white/20"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Two-column layout */}
       <div className="flex flex-col gap-4 lg:flex-row lg:gap-6 lg:items-start">
@@ -369,58 +389,16 @@ const NewBagPage = () => {
                             : "No clubs in this category."}
                         </p>
                       ) : (
-                        <div className="divide-y divide-white/10">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                           {categoryClubs.map((club) => {
                             const isSelected = selectedIds.has(club._id);
                             return (
-                              <label
+                              <ClubSelectCard
                                 key={club._id}
-                                className={`flex items-center gap-3 py-2 px-1 cursor-pointer rounded transition-colors ${
-                                  isSelected
-                                    ? "bg-white/15"
-                                    : "hover:bg-white/10"
-                                }`}
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={isSelected}
-                                  onChange={() => toggleClub(club)}
-                                  className="rounded border-golf-yellow text-golf-yellow focus:ring-[#FBE118] flex-shrink-0  bg-golf-yellow"
-                                />
-                                {club.image && (
-                                  <div className="w-20 h-16 rounded-lg bg-white/10 overflow-hidden flex-shrink-0">
-                                    <img
-                                      src={club.image}
-                                      alt={club.name}
-                                      className="w-full h-full object-cover"
-                                    />
-                                  </div>
-                                )}
-                                <span
-                                  className={`text-sm flex-1 min-w-0 truncate ${
-                                    isSelected
-                                      ? "font-medium text-golf-yellow"
-                                      : "text-golf-yellow"
-                                  }`}
-                                >
-                                  {club.name}
-                                </span>
-                                {isSelected && (
-                                  <svg
-                                    className="w-4 h-4 text-golf-yellow flex-shrink-0"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                    strokeWidth={2.5}
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      d="M5 13l4 4L19 7"
-                                    />
-                                  </svg>
-                                )}
-                              </label>
+                                club={club}
+                                isSelected={isSelected}
+                                onToggle={toggleClub}
+                              />
                             );
                           })}
                         </div>
@@ -510,21 +488,23 @@ const NewBagPage = () => {
       </div>
 
       {/* Sticky bottom action bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-[#1e4410] border-t border-[#FBE118]/20 px-4 py-3 flex items-center gap-3">
-        <input
-          type="text"
-          placeholder="Name your bag..."
-          value={bagName}
-          onChange={(e) => setBagName(e.target.value)}
-          className="flex-1 px-3 py-2 text-sm border border-white/20 rounded-md bg-white/10 text-white placeholder-golf-yellow focus:outline-none focus:ring-1 focus:ring-[#FBE118] focus:border-[#FBE118]"
-        />
-        <button
-          onClick={handleSaveBag}
-          disabled={saveMutation.isPending || selectedClubs.length === 0}
-          className="btn-primary text-sm disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-        >
-          {saveMutation.isPending ? "Saving..." : "Save Bag"}
-        </button>
+      <div className="fixed bottom-0 left-0 right-0 bg-[#1e4410] border-t border-[#FBE118]/20">
+        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center gap-3">
+          <input
+            type="text"
+            placeholder="Name your bag..."
+            value={bagName}
+            onChange={(e) => setBagName(e.target.value)}
+            className="flex-1 px-3 py-2 text-sm border border-white/20 rounded-md bg-white/10 text-white placeholder-golf-yellow focus:outline-none focus:ring-1 focus:ring-[#FBE118] focus:border-[#FBE118]"
+          />
+          <button
+            onClick={handleSaveBag}
+            disabled={saveMutation.isPending || selectedClubs.length === 0}
+            className="btn-primary text-sm disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+          >
+            {saveMutation.isPending ? "Saving..." : "Save Bag"}
+          </button>
+        </div>
       </div>
 
       {/* Spacer for fixed footer */}

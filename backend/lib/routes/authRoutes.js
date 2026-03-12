@@ -6,5 +6,7 @@ const authRouter = (0, express_1.Router)();
 authRouter.post("/requestMagicLink", authController_1.requestMagicLink);
 authRouter.post("/verify", authController_1.verifyMagicLink);
 authRouter.post("/login", authController_1.loginWithPassword);
+authRouter.post("/forgot-password", authController_1.requestPasswordReset);
+authRouter.post("/reset-password", authController_1.resetPassword);
 exports.default = authRouter;
 //# sourceMappingURL=authRoutes.js.map

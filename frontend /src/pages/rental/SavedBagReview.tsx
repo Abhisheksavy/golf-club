@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useRental } from "../../context/RentalContext";
 import { getClubs, getAvailableClubs, getCollections } from "../../api/clubs";
 import type { Club, AvailableClub } from "../../types";
+import ClubSelectCard from "../../components/ui/ClubSelectCard";
 
 type CategoryKey = string;
 
@@ -276,285 +277,165 @@ const SavedBagReview = () => {
         </div>
       </div>
 
-      {/* Two-column layout */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:gap-6 lg:items-start">
-        {/* Left: Category accordion */}
-        <div className="flex-1 min-w-0 space-y-3">
-          {isLoading ? (
-            <div className="text-center py-16 text-golf-yellow">
-              Loading clubs...
-            </div>
-          ) : (
-            categories.map(({ key, label }) => {
-              const categoryClubs = getClubsForCategory(key);
-              const allCategoryClubs = allClubs.filter(
-                (c) => assignCategory(c) === key
-              );
-              const isCollapsed = collapsed[key] ?? false;
-              const selectedInCategory = allCategoryClubs.filter((c) =>
-                selectedIds.has(c._id)
-              );
-
-              return (
-                <div
-                  key={key}
-                  className="bg-white/10 rounded-lg border border-white/20 overflow-hidden"
-                >
-                  {/* Section header */}
-                  <button
-                    type="button"
-                    onClick={() => toggleCollapse(key)}
-                    className="w-full flex items-center justify-between px-4 py-3 bg-white/5 hover:bg-white/15 transition-colors text-left"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-golf-yellow text-sm">
-                        {label}
-                      </span>
-                      {selectedInCategory.length > 0 && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#FBE118] text-[#285610]">
-                          {selectedInCategory.length} selected
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-golf-yellow">
-                        {allCategoryClubs.length} clubs
-                      </span>
-                      <svg
-                        className={`w-4 h-4 text-golf-yellow transition-transform ${
-                          isCollapsed ? "-rotate-90" : ""
-                        }`}
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </div>
-                  </button>
-
-                  {/* Section body */}
-                  {!isCollapsed && (
-                    <div className="p-3">
-                      {/* Per-category search */}
-                      <div className="relative mb-2">
-                        <svg
-                          className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-golf-yellow"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                          />
-                        </svg>
-                        <input
-                          type="text"
-                          placeholder={`Search ${label.toLowerCase()} clubs...`}
-                          value={getSearch(key)}
-                          onChange={(e) => setSearch(key, e.target.value)}
-                          className="w-full pl-8 pr-3 py-1.5 text-sm border border-white/20 rounded-md bg-white/10 text-golf-yellow placeholder-golf-yellow focus:outline-none focus:ring-1 focus:ring-[#FBE118] focus:border-[#FBE118]"
-                        />
-                      </div>
-
-                      {/* Iron type sub-filter */}
-                      {key === "irons" && (
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xs text-golf-yellow">Type:</span>
-                          <div className="flex gap-1 flex-wrap">
-                            {IRON_OPTIONS.map(({ key: ik, label: il }) => (
-                              <button
-                                key={ik}
-                                type="button"
-                                onClick={() => setIronTypeFilter(ik)}
-                                className={`px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors ${
-                                  ironTypeFilter === ik
-                                    ? "bg-[#FBE118] text-[#285610]"
-                                    : "bg-white/10 text-golf-yellow hover:bg-white/20"
-                                }`}
-                              >
-                                {il}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Club list */}
-                      {categoryClubs.length === 0 ? (
-                        <p className="text-xs text-golf-yellow py-3 text-center">
-                          {getSearch(key)
-                            ? "No clubs match your search."
-                            : "No clubs in this category."}
-                        </p>
-                      ) : (
-                        <div className="divide-y divide-white/10">
-                          {categoryClubs.map((club) => {
-                            const isSelected = selectedIds.has(club._id);
-                            const unavailable = !club.available;
-
-                            return (
-                              <label
-                                key={club._id}
-                                className={`flex items-center gap-3 py-2 px-1 rounded transition-colors ${
-                                  unavailable
-                                    ? "opacity-40 cursor-not-allowed"
-                                    : isSelected
-                                    ? "bg-white/15 cursor-pointer"
-                                    : "hover:bg-white/10 cursor-pointer"
-                                }`}
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={isSelected}
-                                  disabled={unavailable}
-                                  onChange={() => toggleClub(club)}
-                                  className="rounded border-golf-yellow text-golf-yellow focus:ring-[#FBE118] flex-shrink-0  bg-golf-yellow"
-                                />
-                                {club.image && (
-                                  <div className="w-20 h-16 rounded-lg bg-white/10 overflow-hidden flex-shrink-0">
-                                    <img
-                                      src={club.image}
-                                      alt={club.name}
-                                      className="w-full h-full object-cover"
-                                    />
-                                  </div>
-                                )}
-                                <span
-                                  className={`text-sm flex-1 min-w-0 truncate ${
-                                    isSelected
-                                      ? "font-medium text-golf-yellow"
-                                      : "text-golf-yellow"
-                                  }`}
-                                >
-                                  {club.name}
-                                </span>
-                                {showAvailability && unavailable && (
-                                  <span className="text-xs text-golf-yellow flex-shrink-0">
-                                    {club.unavailabilityReason ===
-                                    "at-this-course"
-                                      ? "Not at course"
-                                      : "Not available"}
-                                  </span>
-                                )}
-                                {isSelected && !unavailable && (
-                                  <svg
-                                    className="w-4 h-4 text-golf-yellow flex-shrink-0"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                    strokeWidth={2.5}
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      d="M5 13l4 4L19 7"
-                                    />
-                                  </svg>
-                                )}
-                              </label>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })
+      {/* Your Bag — compact bar */}
+      <div className="mb-4 bg-white/10 rounded-lg border border-white/20 overflow-hidden">
+        <div className="px-4 py-2 bg-[#FBE118] flex items-center gap-3">
+          <h2 className="text-sm font-semibold text-[#285610] shrink-0">
+            Your Bag
+          </h2>
+          {selectedClubs.length > 0 && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-golf-dark text-golf-yellow shrink-0">
+              {selectedClubs.length}
+            </span>
           )}
         </div>
-
-        {/* Right: Your Bag panel */}
-        <div className="w-full lg:w-56 lg:flex-shrink-0 lg:sticky lg:top-4">
-          <div className="bg-white/10 rounded-lg border border-white/20 overflow-hidden">
-            <div className="px-4 py-3 bg-[#FBE118] flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-[#285610]">Your Bag</h2>
-              {selectedClubs.length > 0 && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-golf-dark text-golf-yellow">
-                  {selectedClubs.length}
-                </span>
-              )}
-            </div>
-
-            {selectedClubs.length === 0 ? (
-              <div className="px-4 py-4 lg:py-6 flex items-center gap-3 lg:flex-col lg:text-center">
-                <svg
-                  className="w-7 h-7 lg:w-8 lg:h-8 text-white/20 lg:mx-auto lg:mb-2 flex-shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+        {selectedClubs.length === 0 ? (
+          <p className="text-xs text-white/40 px-4 py-3">No clubs selected yet.</p>
+        ) : (
+          <div className="flex flex-wrap gap-2 px-4 py-3">
+            {selectedClubs.map((club) => {
+              const liveClub = allClubs.find((c) => c._id === club._id);
+              const isUnavailable = liveClub && !liveClub.available;
+              return (
+                <span
+                  key={club._id}
+                  className={`inline-flex items-center gap-1.5 pl-3 pr-1 py-1 rounded-full text-xs font-medium border ${
+                    isUnavailable
+                      ? "bg-red-900/30 border-red-500/40 text-red-300"
+                      : "bg-white/10 border-white/20 text-golf-yellow"
+                  }`}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                  />
-                </svg>
-                <p className="text-xs text-white/40">No clubs selected yet</p>
-              </div>
-            ) : (
-              <div className="divide-y divide-white/10 max-h-48 lg:max-h-80 overflow-y-auto">
-                {selectedClubs.map((club) => {
-                  const liveClub = allClubs.find((c) => c._id === club._id);
-                  const isUnavailable = liveClub && !liveClub.available;
-                  return (
-                    <div
-                      key={club._id}
-                      className={`flex items-center gap-2 px-3 py-2 ${
-                        isUnavailable ? "opacity-50" : ""
-                      }`}
-                    >
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-golf-yellow truncate">
-                          {club.name}
-                        </p>
-                        {isUnavailable ? (
-                          <p className="text-xs text-golf-yellow truncate">
-                            Unavailable
-                          </p>
-                        ) : club.category ? (
-                          <p className="text-xs text-golf-yellow capitalize truncate">
-                            {club.category.replace(/-/g, " ")}
-                          </p>
-                        ) : null}
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => removeClub(club._id)}
-                        className="flex-shrink-0 text-white/30 hover:text-red-400 transition-colors"
-                        title="Remove"
-                      >
-                        <svg
-                          className="w-3.5 h-3.5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+                  {club.name}
+                  {isUnavailable && (
+                    <span className="text-[10px] text-red-400 font-normal">(unavailable)</span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeClub(club._id)}
+                    className="text-white/40 hover:text-red-400 transition-colors ml-0.5"
+                  >
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </span>
+              );
+            })}
           </div>
-        </div>
+        )}
+      </div>
+
+      {/* Full-width accordion */}
+      <div className="space-y-3">
+        {isLoading ? (
+          <div className="text-center py-16 text-golf-yellow">Loading clubs...</div>
+        ) : (
+          categories.map(({ key, label }) => {
+            const categoryClubs = getClubsForCategory(key);
+            const allCategoryClubs = allClubs.filter(
+              (c) => assignCategory(c) === key
+            );
+            const isCollapsed = collapsed[key] ?? false;
+            const selectedInCategory = allCategoryClubs.filter((c) =>
+              selectedIds.has(c._id)
+            );
+
+            return (
+              <div
+                key={key}
+                className="bg-white/10 rounded-lg border border-white/20 overflow-hidden"
+              >
+                <button
+                  type="button"
+                  onClick={() => toggleCollapse(key)}
+                  className="w-full flex items-center justify-between px-4 py-3 bg-white/5 hover:bg-white/15 transition-colors text-left"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-golf-yellow text-sm">{label}</span>
+                    {selectedInCategory.length > 0 && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#FBE118] text-[#285610]">
+                        {selectedInCategory.length} selected
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-golf-yellow">{allCategoryClubs.length} clubs</span>
+                    <svg
+                      className={`w-4 h-4 text-golf-yellow transition-transform ${isCollapsed ? "-rotate-90" : ""}`}
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </button>
+
+                {!isCollapsed && (
+                  <div className="p-4">
+                    <div className="relative mb-3">
+                      <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-golf-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      <input
+                        type="text"
+                        placeholder={`Search ${label.toLowerCase()} clubs...`}
+                        value={getSearch(key)}
+                        onChange={(e) => setSearch(key, e.target.value)}
+                        className="w-full pl-8 pr-3 py-1.5 text-sm border border-white/20 rounded-md bg-white/10 text-golf-yellow placeholder-golf-yellow focus:outline-none focus:ring-1 focus:ring-[#FBE118] focus:border-[#FBE118]"
+                      />
+                    </div>
+
+                    {key === "irons" && (
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-xs text-golf-yellow">Type:</span>
+                        <div className="flex gap-1 flex-wrap">
+                          {IRON_OPTIONS.map(({ key: ik, label: il }) => (
+                            <button
+                              key={ik}
+                              type="button"
+                              onClick={() => setIronTypeFilter(ik)}
+                              className={`px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors ${
+                                ironTypeFilter === ik
+                                  ? "bg-[#FBE118] text-[#285610]"
+                                  : "bg-white/10 text-golf-yellow hover:bg-white/20"
+                              }`}
+                            >
+                              {il}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {categoryClubs.length === 0 ? (
+                      <p className="text-xs text-golf-yellow py-3 text-center">
+                        {getSearch(key) ? "No clubs match your search." : "No clubs in this category."}
+                      </p>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                        {categoryClubs.map((club) => {
+                          const isSelected = selectedIds.has(club._id);
+                          const unavailable = !club.available;
+
+                          return (
+                            <ClubSelectCard
+                              key={club._id}
+                              club={club}
+                              isSelected={isSelected}
+                              onToggle={toggleClub}
+                              unavailable={unavailable}
+                              unavailabilityReason={club.unavailabilityReason}
+                              showAvailability={showAvailability}
+                            />
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
       </div>
 
       {/* Navigation */}

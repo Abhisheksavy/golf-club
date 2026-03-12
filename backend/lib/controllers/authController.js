@@ -1,14 +1,48 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyMagicLink = exports.loginWithPassword = exports.requestMagicLink = void 0;
+exports.verifyMagicLink = exports.resetPassword = exports.requestPasswordReset = exports.loginWithPassword = exports.requestMagicLink = void 0;
 const crypto_1 = __importDefault(require("crypto"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const users_1 = require("../models/users");
 const loginToken_1 = require("../models/loginToken");
-const emailService_1 = __importDefault(require("../services/emailService"));
+const passwordResetToken_1 = require("../models/passwordResetToken");
+const emailService_1 = __importStar(require("../services/emailService"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const http_status_codes_1 = require("http-status-codes");
 const response_1 = require("../utils/response");
@@ -103,6 +137,77 @@ const loginWithPassword = async (req, res) => {
     }
 };
 exports.loginWithPassword = loginWithPassword;
+const requestPasswordReset = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email || !EMAIL_REGEX.test(email.trim())) {
+            // Always return success to avoid email enumeration
+            return res
+                .status(http_status_codes_1.StatusCodes.OK)
+                .json(response_1.Response.success("If that email exists, a reset link has been sent.", null, http_status_codes_1.StatusCodes.OK));
+        }
+        const user = await users_1.USER.findOne({ email: email.trim() });
+        if (user) {
+            const token = crypto_1.default.randomBytes(32).toString("hex");
+            const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 60 min
+            await passwordResetToken_1.PasswordResetToken.findOneAndUpdate({ email: email.trim() }, { token, expiresAt }, { upsert: true });
+            const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${token}`;
+            await (0, emailService_1.sendPasswordResetEmail)(email.trim(), resetLink);
+        }
+        return res
+            .status(http_status_codes_1.StatusCodes.OK)
+            .json(response_1.Response.success("If that email exists, a reset link has been sent.", null, http_status_codes_1.StatusCodes.OK));
+    }
+    catch (error) {
+        console.error(error);
+        res
+            .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)
+            .json(response_1.Response.failure("Server error", null, http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR));
+    }
+};
+exports.requestPasswordReset = requestPasswordReset;
+const resetPassword = async (req, res) => {
+    try {
+        const { token } = req.query;
+        const { password } = req.body;
+        if (!token || !password) {
+            return res
+                .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                .json(response_1.Response.failure("Token and password are required", null, http_status_codes_1.StatusCodes.BAD_REQUEST));
+        }
+        if (!PASSWORD_REGEX.test(password)) {
+            return res
+                .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                .json(response_1.Response.failure("Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character", null, http_status_codes_1.StatusCodes.BAD_REQUEST));
+        }
+        const storedToken = await passwordResetToken_1.PasswordResetToken.findOne({ token });
+        if (!storedToken || storedToken.expiresAt < new Date()) {
+            return res
+                .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                .json(response_1.Response.failure("Invalid or expired reset token", null, http_status_codes_1.StatusCodes.BAD_REQUEST));
+        }
+        const user = await users_1.USER.findOne({ email: storedToken.email });
+        if (!user) {
+            return res
+                .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                .json(response_1.Response.failure("User not found", null, http_status_codes_1.StatusCodes.BAD_REQUEST));
+        }
+        user.password = await bcrypt_1.default.hash(password, 10);
+        user.isVerified = true;
+        await user.save();
+        await passwordResetToken_1.PasswordResetToken.deleteOne({ token });
+        return res
+            .status(http_status_codes_1.StatusCodes.OK)
+            .json(response_1.Response.success("Password reset successfully", null, http_status_codes_1.StatusCodes.OK));
+    }
+    catch (error) {
+        console.error(error);
+        res
+            .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)
+            .json(response_1.Response.failure("Server error", null, http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR));
+    }
+};
+exports.resetPassword = resetPassword;
 const verifyMagicLink = async (req, res) => {
     try {
         const { token } = req.query;

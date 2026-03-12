@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { requestMagicLink, verifyMagicLink, loginWithPassword } from "../api/auth";
+import { requestMagicLink, verifyMagicLink, loginWithPassword, requestPasswordReset, resetPassword } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -56,6 +56,31 @@ export const usePasswordLogin = () => {
     },
     onError: (error: any) => {
       toast.error(error?.response?.data?.message || "Login failed");
+    },
+  });
+};
+
+export const useRequestPasswordReset = () => {
+  return useMutation({
+    mutationFn: (email: string) => requestPasswordReset(email),
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Something went wrong");
+    },
+  });
+};
+
+export const useResetPassword = () => {
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: ({ token, password }: { token: string; password: string }) =>
+      resetPassword(token, password),
+    onSuccess: () => {
+      toast.success("Password reset successfully!");
+      navigate("/login");
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to reset password");
     },
   });
 };

@@ -22,4 +22,16 @@ const sendMagicLinkEmail = async (email: string, magicLink: string) => {
   await sgMail.send(msg);
 };
 
+export const sendPasswordResetEmail = async (email: string, resetLink: string) => {
+  const msg = {
+    to: email,
+    from: process.env.EMAIL_FROM!,
+    subject: `Reset your ${process.env.APP_NAME} password`,
+    text: `Click the link below to reset your password. This link expires in 60 minutes.\n\n${resetLink}\n\nIf you did not request a password reset, you can ignore this email.`,
+    html: `<p>Click the link below to reset your password. This link expires in 60 minutes.</p><p><a href="${resetLink}">${resetLink}</a></p><p>If you did not request a password reset, you can ignore this email.</p>`,
+  };
+
+  await sgMail.send(msg);
+};
+
 export default sendMagicLinkEmail;

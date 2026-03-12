@@ -89,7 +89,7 @@ const ClubCard = ({
               <img
                 src={club.image}
                 alt={club.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-inherit"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-white/20">
@@ -195,7 +195,7 @@ const ClubCard = ({
     <button
       type="button"
       onClick={() => onToggle(club)}
-      className={`relative bg-white/10 rounded-2xl overflow-hidden text-left transition-all duration-200 group border border-white/20 ${
+      className={`relative bg-white/10 rounded-2xl overflow-hidden text-left transition-all duration-200 group border border-white/20 flex flex-col h-full ${
         isSelected
           ? "ring-2 ring-[#FBE118] shadow-lg shadow-black/20"
           : "ring-1 ring-white/20 hover:ring-white/40 hover:bg-white/5"
@@ -237,7 +237,7 @@ const ClubCard = ({
       </div>
 
       {/* Image */}
-      <div className="aspect-[4/3] bg-white/5 overflow-hidden">
+      <div className="h-44 w-full shrink-0 bg-white/5 overflow-hidden">
         {club.image ? (
           <img
             src={club.image}
@@ -264,7 +264,7 @@ const ClubCard = ({
       </div>
 
       {/* Content */}
-      <div className="p-4 bg-transparent">
+      <div className="p-4 bg-transparent flex flex-col flex-1">
         {/* Badges */}
         <div className="flex flex-wrap gap-1.5 mb-2">
           {typeof productType === "string" && (
@@ -296,7 +296,7 @@ const ClubCard = ({
         </p>
 
         {/* Price row */}
-        <div className="flex items-center justify-between pt-2 border-t border-white/10">
+        <div className="flex items-center justify-between pt-2 border-t border-white/10 mt-auto">
           {price ? (
             <div className="flex items-baseline gap-1">
               <span className="text-base font-bold text-white">{price}</span>

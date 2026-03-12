@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useRequestMagicLink, usePasswordLogin } from "../hooks/useAuth";
 
 type Tab = "link" | "password";
@@ -131,6 +132,11 @@ const Login = () => {
                     {isSendingLink ? "Sending..." : "Send Magic Link"}
                   </button>
                 </form>
+                <p className="text-center text-sm text-golf-yellow mt-4">
+                  <Link to="/forgot-password" className="underline hover:text-golf-yellow/80">
+                    Forgot password?
+                  </Link>
+                </p>
               </>
             )}
           </>
@@ -197,6 +203,11 @@ const Login = () => {
             <p className="text-xs text-golf-yellow text-center">
               New here? Just enter your email and a password — your account is
               created automatically.
+            </p>
+            <p className="text-center text-sm text-golf-yellow mt-2">
+              <Link to="/forgot-password" className="underline hover:text-golf-yellow/80">
+                Forgot password?
+              </Link>
             </p>
           </form>
         )}

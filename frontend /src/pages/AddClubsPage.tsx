@@ -8,6 +8,7 @@ import {
   useFavouriteSetDetail,
 } from "../hooks/useFavouriteSets";
 import type { Club } from "../types";
+import ClubSelectCard from "../components/ui/ClubSelectCard";
 
 type CategoryKey = string;
 
@@ -358,56 +359,16 @@ const AddClubsPage = () => {
                           : "No clubs in this category."}
                       </p>
                     ) : (
-                      <div className="divide-y divide-white/10">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                         {categoryClubs.map((club) => {
                           const isSelected = pendingClubs.has(club._id);
                           return (
-                            <label
+                            <ClubSelectCard
                               key={club._id}
-                              className={`flex items-center gap-3 py-2 px-1 cursor-pointer rounded transition-colors ${
-                                isSelected ? "bg-white/15" : "hover:bg-white/10"
-                              }`}
-                            >
-                              <input
-                                type="checkbox"
-                                checked={isSelected}
-                                onChange={() => handleToggle(club)}
-                                className="rounded border-white/30 text-golf-yellow focus:ring-[#FBE118] flex-shrink-0 bg-golf-yellow"
-                              />
-                              {club.image && (
-                                <div className="w-20 h-16 rounded-lg bg-white/10 overflow-hidden flex-shrink-0">
-                                  <img
-                                    src={club.image}
-                                    alt={club.name}
-                                    className="w-full h-full object-cover"
-                                  />
-                                </div>
-                              )}
-                              <span
-                                className={`text-sm flex-1 min-w-0 truncate ${
-                                  isSelected
-                                    ? "font-medium text-golf-yellow"
-                                    : "text-golf-yellow"
-                                }`}
-                              >
-                                {club.name}
-                              </span>
-                              {isSelected && (
-                                <svg
-                                  className="w-4 h-4 text-golf-yellow flex-shrink-0"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                  strokeWidth={2.5}
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M5 13l4 4L19 7"
-                                  />
-                                </svg>
-                              )}
-                            </label>
+                              club={club}
+                              isSelected={isSelected}
+                              onToggle={handleToggle}
+                            />
                           );
                         })}
                       </div>
@@ -421,28 +382,30 @@ const AddClubsPage = () => {
       )}
 
       {/* Footer action bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-[#1e4410] border-t border-[#FBE118]/20 px-4 py-3 flex items-center justify-between">
-        <span className="text-sm text-white/70">
-          {pendingClubs.size > 0
-            ? `${pendingClubs.size} club${
-                pendingClubs.size > 1 ? "s" : ""
-              } selected`
-            : "Select clubs to add"}
-        </span>
-        <div className="flex gap-3">
-          <button
-            onClick={() => navigate(`/my-bags/${setId}`)}
-            className="btn-secondary text-sm"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleDone}
-            disabled={pendingClubs.size === 0}
-            className="btn-primary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Done ({pendingClubs.size})
-          </button>
+      <div className="fixed bottom-0 left-0 right-0 bg-[#1e4410] border-t border-[#FBE118]/20">
+        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+          <span className="text-sm text-white/70">
+            {pendingClubs.size > 0
+              ? `${pendingClubs.size} club${
+                  pendingClubs.size > 1 ? "s" : ""
+                } selected`
+              : "Select clubs to add"}
+          </span>
+          <div className="flex gap-3">
+            <button
+              onClick={() => navigate(`/my-bags/${setId}`)}
+              className="btn-secondary text-sm"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleDone}
+              disabled={pendingClubs.size === 0}
+              className="btn-primary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Done ({pendingClubs.size})
+            </button>
+          </div>
         </div>
       </div>
 

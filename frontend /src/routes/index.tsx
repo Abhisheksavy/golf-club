@@ -26,6 +26,8 @@ import AddClubsPage from "../pages/AddClubsPage";
 import NewBagPage from "../pages/NewBagPage";
 // import ProtectedRoute from "../components/ProtectedRoute";
 import AppLayout from "../components/layout/AppLayout";
+import ForgotPassword from "../pages/ForgotPassword";
+import ResetPassword from "../pages/ResetPassword";
 
 export const router = createBrowserRouter([
   {
@@ -101,6 +103,14 @@ export const router = createBrowserRouter([
   {
     path: "/verify",
     element: <Verify />,
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPassword />,
   },
   {
     path: "*",

@@ -116,7 +116,7 @@ const RentalConfirmation = () => {
                       <img
                         src={club.image}
                         alt={club.name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-inherit"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-white/20">

@@ -24,7 +24,7 @@ const FavouriteSetCard = ({ set, onDelete }: FavouriteSetCardProps) => {
                 style={{ borderRight: i < thumbnails.length - 1 ? "2px solid rgba(255,255,255,0.1)" : "none" }}
               >
                 {club.image ? (
-                  <img src={club.image} alt={club.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <img src={club.image} alt={club.name} className="w-full h-full object-inherit group-hover:scale-105 transition-transform duration-300" />
                 ) : (
                   <div className="w-full h-full bg-white/5 flex items-center justify-center">
                     <svg className="w-8 h-8 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor">

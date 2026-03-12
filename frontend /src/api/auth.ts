@@ -19,3 +19,13 @@ export const loginWithPassword = async (
   const { data } = await apiClient.post("/auth/login", { email, password });
   return { message: data.message, token: data.data.token, user: data.data.user };
 };
+
+export const requestPasswordReset = async (email: string): Promise<{ message: string }> => {
+  const { data } = await apiClient.post("/auth/forgot-password", { email });
+  return { message: data.message };
+};
+
+export const resetPassword = async (token: string, password: string): Promise<{ message: string }> => {
+  const { data } = await apiClient.post(`/auth/reset-password?token=${token}`, { password });
+  return { message: data.message };
+};

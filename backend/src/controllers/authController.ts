@@ -2,7 +2,8 @@ import crypto from "crypto";
 import bcrypt from "bcrypt";
 import { USER } from "../models/users";
 import { LoginToken } from "../models/loginToken";
-import sendMagicLinkEmail from "../services/emailService";
+import { PasswordResetToken } from "../models/passwordResetToken";
+import sendMagicLinkEmail, { sendPasswordResetEmail } from "../services/emailService";
 import jwt from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
 import { Response } from "../utils/response";
@@ -173,6 +174,97 @@ export const loginWithPassword = async (req: any, res: any) => {
           StatusCodes.INTERNAL_SERVER_ERROR
         )
       );
+  }
+};
+
+export const requestPasswordReset = async (req: any, res: any) => {
+  try {
+    const { email } = req.body;
+
+    if (!email || !EMAIL_REGEX.test(email.trim())) {
+      // Always return success to avoid email enumeration
+      return res
+        .status(StatusCodes.OK)
+        .json(Response.success("If that email exists, a reset link has been sent.", null, StatusCodes.OK));
+    }
+
+    const user = await USER.findOne({ email: email.trim() });
+    if (user) {
+      const token = crypto.randomBytes(32).toString("hex");
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 60 min
+
+      await PasswordResetToken.findOneAndUpdate(
+        { email: email.trim() },
+        { token, expiresAt },
+        { upsert: true }
+      );
+
+      const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${token}`;
+      await sendPasswordResetEmail(email.trim(), resetLink);
+    }
+
+    return res
+      .status(StatusCodes.OK)
+      .json(Response.success("If that email exists, a reset link has been sent.", null, StatusCodes.OK));
+  } catch (error) {
+    console.error(error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(Response.failure("Server error", null, StatusCodes.INTERNAL_SERVER_ERROR));
+  }
+};
+
+export const resetPassword = async (req: any, res: any) => {
+  try {
+    const { token } = req.query;
+    const { password } = req.body;
+
+    if (!token || !password) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(Response.failure("Token and password are required", null, StatusCodes.BAD_REQUEST));
+    }
+
+    if (!PASSWORD_REGEX.test(password)) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(
+          Response.failure(
+            "Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character",
+            null,
+            StatusCodes.BAD_REQUEST
+          )
+        );
+    }
+
+    const storedToken = await PasswordResetToken.findOne({ token });
+    if (!storedToken || storedToken.expiresAt < new Date()) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(Response.failure("Invalid or expired reset token", null, StatusCodes.BAD_REQUEST));
+    }
+
+    const user = await USER.findOne({ email: storedToken.email });
+    if (!user) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(Response.failure("User not found", null, StatusCodes.BAD_REQUEST));
+    }
+
+    user.password = await bcrypt.hash(password, 10);
+    user.isVerified = true;
+    await user.save();
+
+    await PasswordResetToken.deleteOne({ token });
+
+    return res
+      .status(StatusCodes.OK)
+      .json(Response.success("Password reset successfully", null, StatusCodes.OK));
+  } catch (error) {
+    console.error(error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(Response.failure("Server error", null, StatusCodes.INTERNAL_SERVER_ERROR));
   }
 };
 

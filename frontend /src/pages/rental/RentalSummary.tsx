@@ -198,7 +198,7 @@ const RentalSummary = () => {
                     <img
                       src={club.image}
                       alt={club.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-inherit"
                     />
                   )}
                 </div>

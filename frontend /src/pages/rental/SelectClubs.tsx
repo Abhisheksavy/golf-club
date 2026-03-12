@@ -5,6 +5,7 @@ import { useRental } from "../../context/RentalContext";
 import { getClubs, getAvailableClubs, getCollections } from "../../api/clubs";
 import { getFavourites } from "../../api/favourites";
 import type { Club, AvailableClub } from "../../types";
+import ClubSelectCard from "../../components/ui/ClubSelectCard";
 
 type CategoryKey = string;
 
@@ -331,341 +332,180 @@ const SelectClubs = () => {
         </div>
       )}
 
-      {/* Two-column layout */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:gap-6 lg:items-start">
-        {/* Left: Category accordion sections */}
-        <div className="flex-1 min-w-0 space-y-3">
-          {isLoading ? (
-            <div className="text-center py-16 text-golf-yellow">
-              Loading clubs...
-            </div>
-          ) : (
-            categories.map(({ key, label }) => {
-              const categoryClubs = getClubsForCategory(key);
-              const catPage = getCatPage(key);
-              const catTotalPages = Math.ceil(
-                categoryClubs.length / CATEGORY_PAGE_SIZE
-              );
-              const paginatedClubs = categoryClubs.slice(
-                (catPage - 1) * CATEGORY_PAGE_SIZE,
-                catPage * CATEGORY_PAGE_SIZE
-              );
-              const allCategoryClubs = allClubs.filter(
-                (c) => assignCategory(c) === key
-              );
-              const isCollapsed = collapsed[key] ?? false;
-              const selectedInCategory = allCategoryClubs.filter((c) =>
-                selectedIds.has(c._id)
-              );
-
-              return (
-                <div
-                  key={key}
-                  className="bg-white/10 rounded-lg border border-white/20 overflow-hidden"
-                >
-                  {/* Section header */}
-                  <button
-                    type="button"
-                    onClick={() => toggleCollapse(key)}
-                    className="w-full flex items-center justify-between px-4 py-3 bg-white/5 hover:bg-white/15 transition-colors text-left"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-golf-yellow text-sm">
-                        {label}
-                      </span>
-                      {selectedInCategory.length > 0 && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#FBE118] text-[#285610]">
-                          {selectedInCategory.length} selected
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-golf-yellow">
-                        {allCategoryClubs.length} clubs
-                      </span>
-                      <svg
-                        className={`w-4 h-4 text-[#EDD287] transition-transform ${
-                          isCollapsed ? "-rotate-90" : ""
-                        }`}
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </div>
-                  </button>
-
-                  {/* Section body */}
-                  {!isCollapsed && (
-                    <div className="p-3">
-                      {/* Search */}
-                      <div className="relative mb-2">
-                        <svg
-                          className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-golf-yellow"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                          />
-                        </svg>
-                        <input
-                          type="text"
-                          placeholder={`Search ${label.toLowerCase()} clubs...`}
-                          value={getSearch(key)}
-                          onChange={(e) => setSearch(key, e.target.value)}
-                          className="w-full pl-8 pr-3 py-1.5 text-sm border border-white/20 rounded-md bg-white/10 text-[#EDD287] placeholder-golf-yellow focus:outline-none focus:ring-1 focus:ring-[#FBE118] focus:border-[#FBE118]"
-                        />
-                      </div>
-
-                      {/* Iron type sub-filter */}
-                      {key === "irons" && (
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xs text-golf-yellow">
-                            Type:
-                          </span>
-                          <div className="flex gap-1 flex-wrap">
-                            {IRON_OPTIONS.map(({ key: ik, label: il }) => (
-                              <button
-                                key={ik}
-                                type="button"
-                                onClick={() => {
-                                  setIronTypeFilter(ik);
-                                  setCatPage("irons", 1);
-                                }}
-                                className={`px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors ${
-                                  ironTypeFilter === ik
-                                    ? "bg-[#FBE118] text-[#285610]"
-                                    : "bg-white/10 text-[#EDD287] hover:bg-white/20"
-                                }`}
-                              >
-                                {il}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Club list */}
-                      {categoryClubs.length === 0 ? (
-                        <p className="text-xs text-golf-yellow py-3 text-center">
-                          {getSearch(key)
-                            ? "No clubs match your search."
-                            : "No clubs in this category."}
-                        </p>
-                      ) : (
-                        <div className="divide-y divide-white/10">
-                          {paginatedClubs.map((club) => {
-                            const isSelected = selectedIds.has(club._id);
-                            const unavailable = !club.available;
-
-                            return (
-                              <label
-                                key={club._id}
-                                className={`flex items-center gap-3 py-2 px-1 cursor-pointer rounded transition-colors ${
-                                  unavailable
-                                    ? "opacity-40 cursor-not-allowed"
-                                    : isSelected
-                                    ? "bg-white/15"
-                                    : "hover:bg-white/10"
-                                }`}
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={isSelected}
-                                  disabled={unavailable}
-                                  onChange={() => toggleClub(club)}
-                                  className="rounded border-golf-yellow text-golf-yellow focus:ring-[#FBE118] flex-shrink-0  bg-golf-yellow"
-                                />
-                                {club.image && (
-                                  <div className="w-20 h-16 rounded-lg bg-white/10 overflow-hidden flex-shrink-0">
-                                    <img
-                                      src={club.image}
-                                      alt={club.name}
-                                      className="w-full h-full object-cover"
-                                    />
-                                  </div>
-                                )}
-                                <span
-                                  className={`text-sm flex-1 min-w-0 truncate ${
-                                    isSelected
-                                      ? "font-medium text-golf-yellow"
-                                      : "text-golf-yellow"
-                                  }`}
-                                >
-                                  {club.name}
-                                </span>
-                                {showAvailability && unavailable && (
-                                  <span className="text-xs text-golf-yellow flex-shrink-0">
-                                    {club.unavailabilityReason ===
-                                    "at-this-course"
-                                      ? "Not at course"
-                                      : "Not available"}
-                                  </span>
-                                )}
-                                {isSelected && !unavailable && (
-                                  <svg
-                                    className="w-4 h-4 text-golf-yellow flex-shrink-0"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                    strokeWidth={2.5}
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      d="M5 13l4 4L19 7"
-                                    />
-                                  </svg>
-                                )}
-                              </label>
-                            );
-                          })}
-                        </div>
-                      )}
-                      {catTotalPages > 1 && (
-                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/10">
-                          <p className="text-xs text-golf-yellow">
-                            {(catPage - 1) * CATEGORY_PAGE_SIZE + 1}–
-                            {Math.min(
-                              catPage * CATEGORY_PAGE_SIZE,
-                              categoryClubs.length
-                            )}{" "}
-                            of {categoryClubs.length}
-                          </p>
-                          <div className="flex items-center gap-1">
-                            <button
-                              type="button"
-                              onClick={() => setCatPage(key, catPage - 1)}
-                              disabled={catPage === 1}
-                              className="w-7 h-7 flex items-center justify-center rounded border border-white/20 text-golf-yellow disabled:opacity-30 hover:bg-white/10 text-sm"
-                            >
-                              ‹
-                            </button>
-                            <span className="text-xs text-golf-yellow px-1">
-                              {catPage}/{catTotalPages}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => setCatPage(key, catPage + 1)}
-                              disabled={catPage === catTotalPages}
-                              className="w-7 h-7 flex items-center justify-center rounded border border-white/20 text-golf-yellow disabled:opacity-30 hover:bg-white/10 text-sm"
-                            >
-                              ›
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })
+      {/* Your Bag — compact bar */}
+      <div className="mb-4 bg-white/10 rounded-lg border border-white/20 overflow-hidden">
+        <div className="px-4 py-2 bg-[#FBE118] flex items-center gap-3">
+          <h2 className="text-sm font-semibold text-[#285610] shrink-0">Your Bag</h2>
+          {selectedClubs.length > 0 && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-golf-dark text-golf-yellow shrink-0">
+              {selectedClubs.length}
+            </span>
           )}
         </div>
-
-        {/* Right: Your Bag panel */}
-        <div className="w-full lg:w-56 lg:flex-shrink-0 lg:sticky lg:top-4">
-          <div className="bg-white/10 rounded-lg border border-white/20 overflow-hidden">
-            <div className="px-4 py-3 bg-[#FBE118] flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-[#285610]">Your Bag</h2>
-              {selectedClubs.length > 0 && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-golf-dark text-golf-yellow">
-                  {selectedClubs.length}
-                </span>
-              )}
-            </div>
-
-            {selectedClubs.length === 0 ? (
-              <div className="px-4 py-4 lg:py-6 flex items-center gap-3 lg:flex-col lg:text-center">
-                <svg
-                  className="w-7 h-7 lg:w-8 lg:h-8 text-white/20 lg:mx-auto lg:mb-2 flex-shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+        {selectedClubs.length === 0 ? (
+          <p className="text-xs text-white/40 px-4 py-3">No clubs selected yet.</p>
+        ) : (
+          <div className="flex flex-wrap gap-2 px-4 py-3">
+            {selectedClubs.map((club) => (
+              <span
+                key={club._id}
+                className="inline-flex items-center gap-1.5 pl-3 pr-1 py-1 rounded-full text-xs font-medium bg-white/10 border border-white/20 text-golf-yellow"
+              >
+                {club.name}
+                <button
+                  type="button"
+                  onClick={() => removeClub(club._id)}
+                  className="text-white/40 hover:text-red-400 transition-colors ml-0.5"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                  />
-                </svg>
-                <p className="text-xs text-white/40">No clubs selected yet</p>
-              </div>
-            ) : (
-              <div className="divide-y divide-white/10 max-h-48 lg:max-h-80 overflow-y-auto">
-                {selectedClubs.map((club) => (
-                  <div
-                    key={club._id}
-                    className="flex items-center gap-2 px-3 py-2"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium text-golf-yellow truncate">
-                        {club.name}
-                      </p>
-                      {club.category && (
-                        <p className="text-xs text-golf-yellow capitalize truncate">
-                          {club.category.replace(/-/g, " ")}
-                        </p>
-                      )}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removeClub(club._id)}
-                      className="flex-shrink-0 text-white/30 hover:text-red-400 transition-colors"
-                      title="Remove"
-                    >
-                      <svg
-                        className="w-3.5 h-3.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Save as bag toggle */}
-            <div className="px-3 py-3 border-t border-white/10 bg-white/5">
-              <label className="flex items-center gap-2 text-xs text-golf-yellow cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={saveToBag}
-                  onChange={(e) => setSaveToBag(e.target.checked)}
-                  className="rounded border-white/30 text-golf-yellow focus:ring-[#FBE118] bg-[#EDD287]"
-                />
-                Save as favourite bag
-              </label>
-            </div>
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </span>
+            ))}
           </div>
+        )}
+        <div className="px-4 py-2 border-t border-white/10 bg-white/5">
+          <label className="flex items-center gap-2 text-xs text-golf-yellow cursor-pointer">
+            <input
+              type="checkbox"
+              checked={saveToBag}
+              onChange={(e) => setSaveToBag(e.target.checked)}
+              className="rounded border-white/30 text-golf-yellow focus:ring-[#FBE118] bg-[#EDD287]"
+            />
+            Save as favourite bag
+          </label>
         </div>
+      </div>
+
+      {/* Full-width accordion */}
+      <div className="space-y-3">
+        {isLoading ? (
+          <div className="text-center py-16 text-golf-yellow">Loading clubs...</div>
+        ) : (
+          categories.map(({ key, label }) => {
+            const categoryClubs = getClubsForCategory(key);
+            const catPage = getCatPage(key);
+            const catTotalPages = Math.ceil(categoryClubs.length / CATEGORY_PAGE_SIZE);
+            const paginatedClubs = categoryClubs.slice(
+              (catPage - 1) * CATEGORY_PAGE_SIZE,
+              catPage * CATEGORY_PAGE_SIZE
+            );
+            const allCategoryClubs = allClubs.filter((c) => assignCategory(c) === key);
+            const isCollapsed = collapsed[key] ?? false;
+            const selectedInCategory = allCategoryClubs.filter((c) => selectedIds.has(c._id));
+
+            return (
+              <div key={key} className="bg-white/10 rounded-lg border border-white/20 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => toggleCollapse(key)}
+                  className="w-full flex items-center justify-between px-4 py-3 bg-white/5 hover:bg-white/15 transition-colors text-left"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-golf-yellow text-sm">{label}</span>
+                    {selectedInCategory.length > 0 && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#FBE118] text-[#285610]">
+                        {selectedInCategory.length} selected
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-golf-yellow">{allCategoryClubs.length} clubs</span>
+                    <svg
+                      className={`w-4 h-4 text-[#EDD287] transition-transform ${isCollapsed ? "-rotate-90" : ""}`}
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </button>
+
+                {!isCollapsed && (
+                  <div className="p-4">
+                    <div className="relative mb-3">
+                      <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-golf-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      <input
+                        type="text"
+                        placeholder={`Search ${label.toLowerCase()} clubs...`}
+                        value={getSearch(key)}
+                        onChange={(e) => setSearch(key, e.target.value)}
+                        className="w-full pl-8 pr-3 py-1.5 text-sm border border-white/20 rounded-md bg-white/10 text-[#EDD287] placeholder-golf-yellow focus:outline-none focus:ring-1 focus:ring-[#FBE118] focus:border-[#FBE118]"
+                      />
+                    </div>
+
+                    {key === "irons" && (
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-xs text-golf-yellow">Type:</span>
+                        <div className="flex gap-1 flex-wrap">
+                          {IRON_OPTIONS.map(({ key: ik, label: il }) => (
+                            <button
+                              key={ik}
+                              type="button"
+                              onClick={() => { setIronTypeFilter(ik); setCatPage("irons", 1); }}
+                              className={`px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors ${
+                                ironTypeFilter === ik
+                                  ? "bg-[#FBE118] text-[#285610]"
+                                  : "bg-white/10 text-[#EDD287] hover:bg-white/20"
+                              }`}
+                            >
+                              {il}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {categoryClubs.length === 0 ? (
+                      <p className="text-xs text-golf-yellow py-3 text-center">
+                        {getSearch(key) ? "No clubs match your search." : "No clubs in this category."}
+                      </p>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                        {paginatedClubs.map((club) => {
+                          const isSelected = selectedIds.has(club._id);
+                          const unavailable = !club.available;
+
+                          return (
+                            <ClubSelectCard
+                              key={club._id}
+                              club={club}
+                              isSelected={isSelected}
+                              onToggle={toggleClub}
+                              unavailable={unavailable}
+                              unavailabilityReason={club.unavailabilityReason}
+                              showAvailability={showAvailability}
+                            />
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {catTotalPages > 1 && (
+                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
+                        <p className="text-xs text-golf-yellow">
+                          {(catPage - 1) * CATEGORY_PAGE_SIZE + 1}–{Math.min(catPage * CATEGORY_PAGE_SIZE, categoryClubs.length)} of {categoryClubs.length}
+                        </p>
+                        <div className="flex items-center gap-1">
+                          <button type="button" onClick={() => setCatPage(key, catPage - 1)} disabled={catPage === 1} className="w-7 h-7 flex items-center justify-center rounded border border-white/20 text-golf-yellow disabled:opacity-30 hover:bg-white/10 text-sm">‹</button>
+                          <span className="text-xs text-golf-yellow px-1">{catPage}/{catTotalPages}</span>
+                          <button type="button" onClick={() => setCatPage(key, catPage + 1)} disabled={catPage === catTotalPages} className="w-7 h-7 flex items-center justify-center rounded border border-white/20 text-golf-yellow disabled:opacity-30 hover:bg-white/10 text-sm">›</button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
       </div>
 
       {/* Navigation */}
       <div className="flex justify-between mt-8">
-        <button onClick={() => navigate(-1)} className="btn-secondary">
-          Back
-        </button>
+        <button onClick={() => navigate(-1)} className="btn-secondary">Back</button>
         <button
           onClick={() => navigate("/reserve/summary")}
           disabled={selectedClubs.length === 0}
